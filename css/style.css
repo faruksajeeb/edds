@@ -1,0 +1,287 @@
+@font-face {
+  font-family: myFirstFont;
+  src: url(../fonts/MaterialIcons-Regular.ttf);
+}
+
+body{
+    overflow-x: hidden;
+}
+.active{
+    background-color: #e2d5fb;
+    color: #000000;
+}
+.navigation{
+    position: fixed;
+    width: 250px;
+    height: 100%;
+   /* background-color: tomato; */
+    transition: 0.5s;
+    /* overflow: hidden !important;
+    overflow-anchor: none;
+    -ms-overflow-style: none;
+    touch-action: auto; */
+	
+}
+.navigation.active{
+    width:60px;
+}
+/* .navigation ul{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    
+} */
+.brand-name{
+    margin-bottom: 15px;
+	box-shadow: 0 1px 1px 0 rgb(0 0 0 / 20%);
+	
+ }
+/* .navigation ul li:nth-child(1):hover{ */
+.brand-name:hover{
+    background-color:transparent;
+ }
+ .side-menu{
+    position: relative;
+    overflow: hidden !important;
+    /* overflow-anchor: none;
+    -ms-overflow-style: none;
+    touch-action: auto; */
+}
+.side-menu:hover{
+    overflow-y: scroll !important;
+}
+/* width */
+::-webkit-scrollbar {
+    width: 10px;
+  }
+  
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1; 
+    /* border-radius: 5px; */
+  }
+   
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: #888; 
+    /* border-radius: 5px; */
+  }
+  
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555; 
+  }
+
+.navigation ul li{
+    position: relative;
+    width: 100%;
+    list-style: none;
+    border-bottom: 1px solid #F4F7F5;
+}
+.navigation ul li:hover{
+    background-color: #e2d5fb;
+    color: #000000;
+    /* font-weight: bold; */
+}
+/* .navigation ul li:nth-child(1){ */
+
+ .navigation ul li a{
+    position: relative;
+    display: block;
+    width: 100%;
+    display: flex;
+    text-decoration: none;
+    color:#000;
+}
+.navigation ul li a .icon{
+    position: relative;
+    display: block;
+    min-height: 60px;
+    height: 60px;
+    line-height: 60px;
+    text-align: center;
+    padding: 0 16px;
+    font-size:20px;
+}
+.navigation ul li a .icon .fa{
+    font-size: 20px;
+}
+.navigation ul li a .title{
+    position: relative;
+    display: block;
+    padding: 0 10px;
+    height: 60px;
+    line-height: 60px;
+    white-space: nowrap;
+	font-size:20px;
+}
+.main{
+    position: absolute;
+    width: calc(100% - 250px);
+    left: 250px;
+    min-height: 100vh;
+    background-color:#f7f7f7;
+    transition: 0.5s;
+}
+.main.active{
+    width: calc(100% - 60px);
+    left:60px;
+}
+.main .topbar{
+    width: 100%;
+    background: #FFF;
+	border-left: 1px solid white;
+	box-shadow: 1px 1px 1px 0 rgb(0 0 0 /20%);
+	
+    height: 61px;
+    display: flex;
+    /* justify-content: space-between; */
+    /* align-items: center; */
+}
+.toggle{
+    position: relative;
+    width: 60px;
+    height: 60px;
+    cursor:pointer;
+}
+.toggle::before{
+    content: '\f0c9';
+    font-family: fontAwesome ;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    line-height: 60px;
+    font-size: 24px;
+    text-align: center;
+    color: #111;
+
+}
+.toggle.active::before{
+    content: '\f00d';
+    font-size: 25px;
+    color:#000;
+    font-weight: normal;
+    
+}
+
+.search{
+    position: relative;
+    /* width: 300px; */
+    margin: 10px 10px;
+}
+.search label{
+    position: relative;
+    width: 100%;
+}
+.search label input{
+    width: 100%;
+    height: 40px;
+    border-radius: 40px;
+    padding: 5px 20px;
+    padding-left: 35px;
+    outline: none;
+    border: 1px solid #ccc;
+    align-items: center;
+}
+.search label .fa{
+    position: absolute;
+    left: 15px;
+    top:12px;
+}
+.user {
+    position: relative;
+    /* min-width: 50px; */
+    /* width: 50px;
+    height: 50px; */
+    border-radius: 50%;
+    /* overflow: hidden; */
+    cursor: pointer;
+}
+/* .user img{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+} */
+.card-box{
+    position: relative;
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+    grid-gap:20px;
+}
+.card-box .card{
+    position: relative;
+    background-color: #FFF;
+    padding:20px;
+    display: flex;
+    justify-content: space-between;
+    cursor: pointer;
+}
+.card-box .card .numbers{
+    position: relative;
+    font-size: 1em;
+    font-weight: 500;
+}
+
+/* Resposive Section */
+
+@media(max-width:992px){
+    .navigation{
+        left: -250px;
+    }
+    .navigation.active{
+        left:0;
+        width: 250px;
+    }
+    .main{
+        width:100%;
+        left:0;
+    }
+    .main.active{
+        width:calc(100% - 250px);
+        left: 250px;
+    }
+    .card-box{
+        grid-template-columns: repeat(2,1fr);
+    }    
+}
+@media(max-width:768px){
+    .card-box{
+        grid-template-columns: repeat(1,1fr);
+    }
+}
+@media(max-width:480px){
+    .card-box{
+        grid-template-columns: repeat(1,1fr);
+    }
+    .navigation{
+        width: 100%;
+        left: -100%;
+        z-index: 1000;
+    }
+    .navigation.active{
+        width: 100%;
+        left: 0;
+    }
+    .toggle.active{
+        position: fixed;
+        z-index: 10000;
+        right: 0;
+        left: initial;
+        transition: 2s;
+    }
+    .toggle.active::before{
+        content: '\f00d';
+        font-size: 30px;
+        color:#000;
+        
+    }
+    .main, .main.active{
+        width: 100%;
+        left:0;
+    }
+}
