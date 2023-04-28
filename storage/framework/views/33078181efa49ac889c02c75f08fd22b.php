@@ -1,3 +1,18 @@
+<?php $__env->startPush('styles'); ?>
+    <style>
+        ul {
+            list-style: none;
+            font-size: 20px;
+        }
+
+        input.largerCheckbox {
+            width: 20px;
+            height: 20px;
+        }
+
+        label {}
+    </style>
+<?php $__env->stopPush(); ?>
 <?php if (isset($component)) { $__componentOriginal9ac128a9029c0e4701924bd2d73d7f54 = $component; } ?>
 <?php $component = App\View\Components\AppLayout::resolve([] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? (array) $attributes->getIterator() : [])); ?>
 <?php $component->withName('app-layout'); ?>
@@ -32,68 +47,73 @@
                 <div class="card-body">
                     <form action="<?php echo e(route('roles.store')); ?>" method="POST">
                         <?php echo csrf_field(); ?>
-                        <div class="row">
-                            <div class="col-md-5 border border-1">
-                                <div class="form-group">
-                                    <label for="">Role Name</label>
-                                    <input type="text" name='name' class="form-control">
-                                </div>
-                            </div>
-                            <div class="col-md-7">
-                                <div class="form-group">
-                                    <label for="" class="fw-bolder">Role Permissions</label>
-                                    <br>
-                                    <label class="checkbox select-all-permission">
-                                        <input type="checkbox" name="permission_all" id="permission_all">
-                                        All
-                                    </label>
+                        <div class="form-group">
+                            <label for=""
+                                class="<?php if($errors->has('name')): ?> has-error <?php endif; ?> fw-bold">Role
+                                Name</label><br />
+                            <input type="text" name='name' value="<?php echo e(old('name')); ?>"
+                                class="form-control-lg <?php $__errorArgs = ['name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>">
+                        </div>
+                        <div class="form-group">
+                            <label for="" class="fw-bolder">Role Permissions</label>
+                            <br>
+                            <label class="checkbox select-all-permission">
+                                <input type="checkbox" name="permission_all" id="permission_all" class="largerCheckbox">
+                                All
+                            </label>
 
-                                    <hr>
-                                    <?php $__currentLoopData = $permission_groups; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $groupIndex => $permission_group): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                        <div class="row">
-                                            <div class="col-md-4">
-                                                <label for="permission_group<?php echo e($groupIndex); ?>"
-                                                    class="checkbox group-permission <?php echo e($permission_group->group_name); ?>"  onclick="checkPermissionByGroup('<?php echo e($permission_group->group_name); ?>')">
-                                                    <input type="checkbox" class="group"
-                                                        name="group-permission[]">
-                                                    <?php echo e(ucfirst($permission_group->group_name)); ?>
+                            <div class="row row-cols-1 row-cols-md-4 gx-4 m-1">
+                                <?php $__currentLoopData = $permission_groups; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $groupIndex => $permission_group): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <div class="col themed-grid-col text-start">
+                                        <label for="permission_group<?php echo e($groupIndex); ?>"
+                                            class="checkbox group-permission fw-bold <?php echo e($permission_group->group_name); ?>"
+                                            onclick="checkPermissionByGroup('<?php echo e($permission_group->group_name); ?>')">
+                                            <input type="checkbox" class="group largerCheckbox" name="group-permission[]">
+                                            <?php echo e(ucfirst($permission_group->group_name)); ?>
 
 
-                                                </label>
-                                            </div>
-                                            <div class="col-md-8">
-                                                <?php
-                                                    $groupWisePermissions = \DB::table('permissions')
-                                                        ->where('group_name', $permission_group->group_name)
-                                                        ->get();
-                                                ?>
-                                                <ul>
-                                                    <?php
-                                                        $permissinCount = count($groupWisePermissions);
-                                                    ?>
-                                                    <?php $__currentLoopData = $groupWisePermissions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $permission): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                                        <li
-                                                            class="<?php echo ($index+1<$permissinCount) ? 'border-bottom':'' ?>  p-2">
-                                                            <label class="checkbox single-permission per-<?php echo e($permission_group->group_name); ?>" onclick="checkUncheckModuleByPermission('per-<?php echo e($permission_group->group_name); ?>', '<?php echo e($permission_group->group_name); ?>', <?php echo e(count($groupWisePermissions)); ?>)">
-                                                                <input type="checkbox"  value="<?php echo e($permission->name); ?>" name="permissions[]" id="permission<?php echo e($permission->id); ?>">
-                                                                <?php echo e(ucwords(str_replace('.',' ',$permission->name))); ?>
+                                        </label>
 
-                                                            </label>
-                                                        </li>
-                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                                </ul>
+                                        <hr>
+                                        <?php
+                                            $groupWisePermissions = \DB::table('permissions')
+                                                ->where('group_name', $permission_group->group_name)
+                                                ->get();
+                                        ?>
+                                        <ul>
+                                            <?php
+                                                $permissinCount = count($groupWisePermissions);
+                                            ?>
+                                            <?php $__currentLoopData = $groupWisePermissions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $permission): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                <li
+                                                    class="<?php echo ($index+1<$permissinCount) ? 'border-bottom':'' ?>  p-2">
+                                                    <label
+                                                        class="checkbox single-permission per-<?php echo e($permission_group->group_name); ?>"
+                                                        onclick="checkUncheckModuleByPermission('per-<?php echo e($permission_group->group_name); ?>', '<?php echo e($permission_group->group_name); ?>', <?php echo e(count($groupWisePermissions)); ?>)">
+                                                        <input type="checkbox" value="<?php echo e($permission->name); ?>" class="largerCheckbox"
+                                                            name="permissions[]" id="permission<?php echo e($permission->id); ?>">
+                                                        <?php echo e(ucwords(str_replace('.', ' ', $permission->name))); ?>
 
-                                            </div>
-                                        </div>
-                                        <?php echo ($groupIndex+1<count($permission_groups)) ? '<hr>':'' ?>
-                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                </div>
+                                                    </label>
+                                                </li>
+                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                        </ul>
+                                    </div>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </div>
                         </div>
 
+          
                         <br />
                         <div class="form-group">
-                            <button type="submit" name="submit-btn" class="btn btn-success">Submit</button>
+                            <button type="submit" name="submit-btn" class="btn btn-lg btn-success ">Submit</button>
                         </div>
                     </form>
                 </div>
@@ -116,13 +136,13 @@
             });
 
             function checkPermissionByGroup(groupName) {
-               
+
                 const singleCheckBox = $('.per-' + groupName + " input");
                 if ($('.' + groupName + " input").is(':checked')) {
-                   
+
                     singleCheckBox.prop("checked", true);
                 } else {
-                    
+
                     singleCheckBox.prop("checked", false);
                 }
                 allChecked();
@@ -137,13 +157,14 @@
                 }
                 allChecked();
             }
-            function allChecked(){
+
+            function allChecked() {
                 const countTotalPermission = <?php echo e(count($permissions)); ?>
 
-                 //alert($(".permission input:checked").length);
-                if($(".single-permission input:checked").length == countTotalPermission){
+                //alert($(".permission input:checked").length);
+                if ($(".single-permission input:checked").length == countTotalPermission) {
                     $('.select-all-permission input').prop("checked", true);
-                }else{
+                } else {
                     $('.select-all-permission input').prop("checked", false);
                 }
             }
@@ -154,5 +175,5 @@
 <?php if (isset($__componentOriginal9ac128a9029c0e4701924bd2d73d7f54)): ?>
 <?php $component = $__componentOriginal9ac128a9029c0e4701924bd2d73d7f54; ?>
 <?php unset($__componentOriginal9ac128a9029c0e4701924bd2d73d7f54); ?>
-<?php endif; ?> 
+<?php endif; ?>
 <?php /**PATH C:\xampp8.1.6\htdocs\laravel\edds\resources\views/roles/create.blade.php ENDPATH**/ ?>

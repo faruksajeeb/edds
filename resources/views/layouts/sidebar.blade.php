@@ -54,7 +54,7 @@
                     <li>
                         <a href="#user_submenu1" data-bs-toggle="collapse" class="nav-link ps-1 align-middle">
                             <span class="icon"><i class="fa-solid fa-users"></i></span>
-                            <span class="ms-1 d-sm-inline title ">Users</span>
+                            <span class="ms-1 d-sm-inline title px-0">User Management</span>
                             <i class="icon fa-solid fa-angle-right text-right"></i>
                         </a>
                         <ul class="collapse nav flex-column ms-3 ps-3 {{ Route::is('users.index') || Route::is('users.create') || Route::is('roles.index') || Route::is('roles.create') ? 'show' : '' }}"
@@ -87,6 +87,20 @@
                                         <a href="{{ url('roles') }}" class="nav-link px-2"> <span class="d-sm-inline"><i
                                                     class="fa-solid fa-table"></i> Manage
                                                 Roles</span></a>
+                                    </li>
+                                @endcan
+                                @can('permission.create')
+                                    <li class="{{ Route::is('permission.create') ? 'active' : '' }}">
+                                        <a href="{{ url('permission/create') }}" class="nav-link px-2"> <span
+                                                class="d-sm-inline"><i class="fa-solid fa-pencil"></i> Create
+                                                Permission</span></a>
+                                    </li>
+                                @endcan
+                                @can('permission.view')
+                                    <li class="{{ Route::is('permission.index') ? 'active' : '' }}">
+                                        <a href="{{ url('permissions') }}" class="nav-link px-2"> <span
+                                                class="d-sm-inline"><i class="fa-solid fa-table"></i> Manage
+                                                Permission</span></a>
                                     </li>
                                 @endcan
                             @endif

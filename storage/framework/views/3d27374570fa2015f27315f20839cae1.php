@@ -54,7 +54,7 @@
                     <li>
                         <a href="#user_submenu1" data-bs-toggle="collapse" class="nav-link ps-1 align-middle">
                             <span class="icon"><i class="fa-solid fa-users"></i></span>
-                            <span class="ms-1 d-sm-inline title ">Users</span>
+                            <span class="ms-1 d-sm-inline title px-0">User Management</span>
                             <i class="icon fa-solid fa-angle-right text-right"></i>
                         </a>
                         <ul class="collapse nav flex-column ms-3 ps-3 <?php echo e(Route::is('users.index') || Route::is('users.create') || Route::is('roles.index') || Route::is('roles.create') ? 'show' : ''); ?>"
@@ -87,6 +87,20 @@
                                         <a href="<?php echo e(url('roles')); ?>" class="nav-link px-2"> <span class="d-sm-inline"><i
                                                     class="fa-solid fa-table"></i> Manage
                                                 Roles</span></a>
+                                    </li>
+                                <?php endif; ?>
+                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('permission.create')): ?>
+                                    <li class="<?php echo e(Route::is('permission.create') ? 'active' : ''); ?>">
+                                        <a href="<?php echo e(url('permission/create')); ?>" class="nav-link px-2"> <span
+                                                class="d-sm-inline"><i class="fa-solid fa-pencil"></i> Create
+                                                Permission</span></a>
+                                    </li>
+                                <?php endif; ?>
+                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('permission.view')): ?>
+                                    <li class="<?php echo e(Route::is('permission.index') ? 'active' : ''); ?>">
+                                        <a href="<?php echo e(url('permissions')); ?>" class="nav-link px-2"> <span
+                                                class="d-sm-inline"><i class="fa-solid fa-table"></i> Manage
+                                                Permission</span></a>
                                     </li>
                                 <?php endif; ?>
                             <?php endif; ?>

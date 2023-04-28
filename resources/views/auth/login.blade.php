@@ -89,7 +89,7 @@
 
                     <div class="form-group">
                         <label for="">Email *:</label>
-                        <input type="email" class="form-control " name="email" :value="old('email')" required
+                        <input type="email" class="form-control " name="email" value="{{ old('email') }}" required
                             autofocus />
                     </div>
                     <div class="form-group mt-2">

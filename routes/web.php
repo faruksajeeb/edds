@@ -6,6 +6,7 @@ use App\lib\Webspice;
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SettingController;
 
@@ -39,7 +40,8 @@ Route::middleware('auth')->group(function () {
     Route::group(['middleware' => ['role:superadmin|developer']], function () { //user & role only created by superadmin
         Route::resources([
             'roles' => RoleController::class,
-            'users' => UserController::class
+            'users' => UserController::class,
+            'permissions' => PermissionController::class,
         ]);
         Route::match(['get', 'put'],'company-setting',[SettingController::class,'companySetting'])->name('company-setting');
         Route::match(['get', 'put'],'basic-setting',[SettingController::class,'basicSetting'])->name('basic-setting');

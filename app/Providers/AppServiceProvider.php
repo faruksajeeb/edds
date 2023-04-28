@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider;
@@ -27,6 +28,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        Paginator::useBootstrapFive();
         // $data = Mrpermission::where('status', 1)->get();
         $data = Permission::select('group_name')->where(['status'=>1,'guard_name'=>'web','is_menu'=>'yes'])->groupBy('group_name')->get();
 
