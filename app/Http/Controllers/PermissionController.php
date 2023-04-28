@@ -164,19 +164,16 @@ class PermissionController extends Controller
     public function edit($id)
     {
          #permission verfy
-         if (is_null($this->user) || !$this->user->can('role.edit')) {
+         if (is_null($this->user) || !$this->user->can('permission.edit')) {
             abort(403, 'SORRY! You are unauthorized to access user list!');
         }
         $id = Crypt::decryptString($id);
-        $roleInfo = $this->roles->findById($id);
-       
-        $permissions = Permission::all();
+        $permissionInfo = $this->permissions->findById($id);
       
-        $permission_groups = Permission::select('group_name')->groupBy('group_name')->get();
+        $permission_groups = DB::table('permission_groups')->where('status',1)->get();
         
-        return view('roles.edit', [
-            'roleInfo' => $roleInfo,
-            'permissions' => $permissions,
+        return view('permissions.edit', [
+            'permissionInfo' => $permissionInfo,
             'permission_groups' => $permission_groups,
         ]);
     }
@@ -191,35 +188,62 @@ class PermissionController extends Controller
     public function update(Request $request, $id)
     {
          #permission verfy
-         if (is_null($this->user) || !$this->user->can('role.edit')) {
-            abort(403, 'SORRY! You are unauthorized to access user list!');
+         if (is_null($this->user) || !$this->user->can('permission.edit')) {
+            abort(403, 'SORRY! You are unauthorized to update permission!');
         }
-        $id = Crypt::decryptString($id);
-        $validatedData = $request->validate(
-            [
-                'name' => 'required|regex:/^[a-zA-Z ]+$/u|min:3|max:20|unique:roles,name,' . $id
-            ],
-            [
-                'name.required' => 'Role Name field is required.',
-                'name.unique' =>  '"'.$request->name.'" The role name has already been taken.',
-                'name.regex' => 'The role name format is invalid. Please enter alpabatic text.',
-                'name.min' => 'The role name must be at least 3 characters.',
-                'name.max' => 'The role name may not be greater than 20 characters.'
-            ]
-        );
-        $role = $this->roles->findById($id);
-        $permissions = $request->input('permissions');
-        if(!empty($permissions)){
-            $role->syncPermissions($permissions);
+        $id = Crypt::decryptString($id);    
+
+        if($request->is_menu=='yes'){
+
+            $request->validate(
+                [
+                    'group_name' => 'required',
+                    'menu_name' => 'required',
+                    'icon' => 'required',
+                    'name' => 'required|regex:/^[a-zA-Z. ]+$/u|min:3|max:50|unique:permissions,name,' . $id
+                ],
+                [
+                    'menu_name.required' => 'Menu Name field is required.',
+                    'icon.required' => 'Meue Icon field is required.',
+                    'group_name.required' => 'Group Name field is required.',
+                    'name.required' => 'Permission name field is required.',
+                    'name.unique' =>  '"'.$request->name.'" The permission name has already been taken.',
+                    'name.regex' => 'The permission name format is invalid. Please enter alpabatic text.',
+                    'name.min' => 'The permission name must be at least 3 characters.',
+                    'name.max' => 'The permission name may not be greater than 50 characters.'
+                ]
+            );
+        }else{
+
+            $request->validate(
+                [
+                    'group_name' => 'required',
+                    'name' => 'required|regex:/^[a-zA-Z. ]+$/u|min:3|max:50|unique:permissions,name,' . $id
+                ],
+                [
+                    'group_name.required' => 'Group Name field is required.',
+                    'name.required' => 'Permission name field is required.',
+                    'name.unique' => '"'.$request->name.'", The permission name has already been taken.',
+                    'name.regex' => 'The permission name format is invalid. Please enter alpabatic text.',
+                    'name.min' => 'The permission name must be at least 3 characters.',
+                    'name.max' => 'The permission name may not be greater than 50 characters.'
+                ]
+            );
         }
-        $role->name = $request->name; 
-        $result = $role->save();
+        $permission = $this->permissions->findById($id);
+       
+        $permission->group_name = $request->group_name; 
+        $permission->name = $request->name; 
+        $permission->is_menu = $request->is_menu; 
+        $permission->menu_name = $request->menu_name; 
+        $permission->icon = $request->icon; 
+        $result = $permission->save();
         if ($result) {
             #Log
             Webspice::log($this->tableName, $id, "Data Updated.");
-            Session::flash('success', 'Role Updated Successfully.');
+            Session::flash('success', 'Permission Updated Successfully.');
         } else {
-            Session::flash('error', 'Role not Updated!');
+            Session::flash('error', 'Permission not Updated!');
         }
         return redirect()->back();
     }
@@ -233,20 +257,20 @@ class PermissionController extends Controller
     public function destroy($id)
     {
          #permission verfy
-         if (is_null($this->user) || !$this->user->can('role.delete')) {
-            abort(403, 'SORRY! You are unauthorized to access user list!');
+         if (is_null($this->user) || !$this->user->can('permission.delete')) {
+            abort(403, 'SORRY! You are unauthorized to delete permission!');
         }
         $id = Crypt::decryptString($id);
-        $role = $this->roles->findById($id);
-        if(!is_null($role)){
-            $result = $role->delete();
+        $permission = $this->permissions->findById($id);
+        if(!is_null($permission)){
+            $result = $permission->delete();
         }
         if ($result) {
             # Log
             Webspice::log($this->tableName, $id, "Data Deleted.");
-            Session::flash('success', 'Role deleted Successfully.');
+            Session::flash('success', 'Permission deleted Successfully.');
         } else {
-            Session::flash('error', 'Role not deleted!');
+            Session::flash('error', 'Permission not deleted!');
         }
         return back();
     }
