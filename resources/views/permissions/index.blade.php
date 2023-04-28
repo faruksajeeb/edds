@@ -45,10 +45,10 @@
                                                 value="search">
                                                 <i class="fa fa-search"></i> Search
                                             </button>
-                                            <button class="btn btn-xs btn-success float-end" name="submit_btn"
+                                            {{-- <button class="btn btn-xs btn-success float-end" name="submit_btn"
                                                 value="export" type="submit">
                                                 <i class="fa-solid fa-download"></i> Export
-                                            </button>
+                                            </button> --}}
                                         </div>
                                     </div>
                                 </div>

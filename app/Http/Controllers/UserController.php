@@ -113,11 +113,15 @@ class UserController extends Controller
         );
         $insertId = $this->users->insertUser($request);
         $permissions = $request->permissions;
+        $user = $this->users->find($insertId);
         if (!empty($permissions)) {
-            for ($i = 0; $i < count($permissions); $i++) {
-                $insertId->givePermissionTo($permissions[$i]);
-            }
+            $user->syncPermissions($permissions);
         }
+        // if (!empty($permissions)) {
+        //     for ($i = 0; $i < count($permissions); $i++) {
+        //         $insertId->givePermissionTo($permissions[$i]);
+        //     }
+        // }
         if ($insertId) {
             Webspice::log($this->tableName, $insertId, "Data Created.");
             Session::flash('success', 'User Created Successfully.');
