@@ -59,11 +59,11 @@
                                 </div>
                                 <div class="col-md-4 col-sm-12">
                                     <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('permission.create')): ?>
-                                    <a href="<?php echo e(route('permissions.create')); ?>"
-                                        class="btn btn-xs btn-outline-primary float-end" name="create_new"
-                                        type="button">
-                                        <i class="fa-solid fa-plus"></i> Create Permission
-                                    </a>
+                                        <a href="<?php echo e(route('permissions.create')); ?>"
+                                            class="btn btn-xs btn-outline-primary float-end" name="create_new"
+                                            type="button">
+                                            <i class="fa-solid fa-plus"></i> Create Permission
+                                        </a>
                                     <?php endif; ?>
                                 </div>
 
@@ -93,12 +93,13 @@
                                         <td>
                                             <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('permission.edit')): ?>
                                                 <a href="<?php echo e(route('permissions.edit', Crypt::encryptString($val->id))); ?>"
-                                                    class="btn btn-sm btn-outline-warning"><i class="fa-solid fa-pencil"></i></a>
+                                                    class="btn btn-sm btn-outline-warning"><i
+                                                        class="fa-solid fa-pencil"></i></a>
                                             <?php endif; ?>
                                             <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('permission.delete')): ?>
-                                                <a href="<?php echo e(route('permissions.destroy', Crypt::encryptString($val->id))); ?>"
-                                                    class="btn btn-sm btn-outline-danger"
-                                                    onclick="event.preventDefault(); document.getElementById('delete-form-<?php echo e($val->id); ?>').submit();"><i
+                                                <a href=""
+                                                    class="btn btn-sm btn-outline-danger delete"
+                                                    onclick="event.preventDefault(); confirmDelete(<?php echo e($val->id); ?>)"><i
                                                         class="fa-solid fa-remove"></i></a>
                                                 <form id="delete-form-<?php echo e($val->id); ?>"
                                                     action="<?php echo e(route('permissions.destroy', Crypt::encryptString($val->id))); ?>"
@@ -119,6 +120,27 @@
             </div>
         </div>
     </div>
+
+    <?php $__env->startPush('scripts'); ?>
+    <script>
+        confirmDelete = (id) => {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!'",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('delete-form-' + id).submit();
+                }
+    
+            })
+        }
+    </script>
+    <?php $__env->stopPush(); ?>
  <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__componentOriginal9ac128a9029c0e4701924bd2d73d7f54)): ?>

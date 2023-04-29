@@ -19,7 +19,7 @@
     <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
 
     <link rel="stylesheet" href="<?php echo e(asset('plugins/jquery-ui/jquery-ui.css')); ?>" />
-   
+
     <link rel="stylesheet" type="text/css" href="<?php echo e(asset('css/bootstrap.min.css')); ?>">
     <link rel="stylesheet" type="text/css" href="<?php echo e(asset('css/style.css')); ?>">
     <link rel="stylesheet" type="text/css" href="<?php echo e(asset('plugins/font-awesome/css/all.min.css')); ?>">
@@ -63,7 +63,7 @@
         }
     </style>
 
-   
+
 
     <?php echo \Livewire\Livewire::styles(); ?>
 
@@ -151,6 +151,21 @@
             navigation.classList.toggle('active');
             main.classList.toggle('active');
         }
+        // $(document).on('click', ".delete", function(e) {
+        //     e.preventDefault();
+           
+        //     Swal.fire({
+        //         title: 'Are you sure?',
+        //         text: "You won't be able to revert this!",
+        //         icon: 'warning',
+        //         showCancelButton: true,
+        //         confirmButtonColor: '#3085d6',
+        //         cancelButtonColor: '#d33',
+        //         confirmButtonText: 'Yes, delete it!'
+        //     }).then((result) => {
+        //         return true;
+        //     })
+        // });
         $(document).on('click', ".active_inactive_btn", function() {
             // var status;
             // if ($(this).is(':checked')) {

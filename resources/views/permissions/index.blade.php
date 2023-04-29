@@ -54,11 +54,11 @@
                                 </div>
                                 <div class="col-md-4 col-sm-12">
                                     @can('permission.create')
-                                    <a href="{{ route('permissions.create') }}"
-                                        class="btn btn-xs btn-outline-primary float-end" name="create_new"
-                                        type="button">
-                                        <i class="fa-solid fa-plus"></i> Create Permission
-                                    </a>
+                                        <a href="{{ route('permissions.create') }}"
+                                            class="btn btn-xs btn-outline-primary float-end" name="create_new"
+                                            type="button">
+                                            <i class="fa-solid fa-plus"></i> Create Permission
+                                        </a>
                                     @endcan
                                 </div>
 
@@ -88,12 +88,13 @@
                                         <td>
                                             @can('permission.edit')
                                                 <a href="{{ route('permissions.edit', Crypt::encryptString($val->id)) }}"
-                                                    class="btn btn-sm btn-outline-warning"><i class="fa-solid fa-pencil"></i></a>
+                                                    class="btn btn-sm btn-outline-warning"><i
+                                                        class="fa-solid fa-pencil"></i></a>
                                             @endcan
                                             @can('permission.delete')
-                                                <a href="{{ route('permissions.destroy', Crypt::encryptString($val->id)) }}"
-                                                    class="btn btn-sm btn-outline-danger"
-                                                    onclick="event.preventDefault(); document.getElementById('delete-form-{{ $val->id }}').submit();"><i
+                                                <a href=""
+                                                    class="btn btn-sm btn-outline-danger delete"
+                                                    onclick="event.preventDefault(); confirmDelete({{ $val->id }})"><i
                                                         class="fa-solid fa-remove"></i></a>
                                                 <form id="delete-form-{{ $val->id }}"
                                                     action="{{ route('permissions.destroy', Crypt::encryptString($val->id)) }}"
@@ -113,4 +114,25 @@
             </div>
         </div>
     </div>
+
+    @push('scripts')
+    <script>
+        confirmDelete = (id) => {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!'",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('delete-form-' + id).submit();
+                }
+    
+            })
+        }
+    </script>
+    @endpush
 </x-app-layout>

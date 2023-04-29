@@ -48,7 +48,7 @@
                                                 value="search">
                                                 <i class="fa fa-search"></i> Search
                                             </button>
-                                            @if($loggedUser && $loggedUser->can('user.export'))
+                                            @if ($loggedUser && $loggedUser->can('user.export'))
                                                 <button class="btn btn-xs btn-success float-end" name="submit_btn"
                                                     value="export" type="submit">
                                                     <i class="fa-solid fa-download"></i> Export
@@ -58,7 +58,7 @@
                                     </div>
                                 </div>
                                 <div class="col-md-3 col-sm-12">
-                                    @if($loggedUser && $loggedUser->can('user.create'))
+                                    @if ($loggedUser && $loggedUser->can('user.create'))
                                         <a href="{{ route('users.create') }}"
                                             class="btn btn-xs btn-outline-primary float-end" name="create_new"
                                             type="button">
@@ -93,33 +93,32 @@
                                                 <span class="badge bg-info text-dark">{{ $role->name }}</span>
                                                 {{-- <br /> --}}
                                             @endforeach
-                                           
+
                                         </td>
                                         <td width="30%">
-                                            * User can access assigned role permissions. <br/>
-                                            @if (count($val->permissions)>0)
+                                            * User can access assigned role permissions. <br />
+                                            @if (count($val->permissions) > 0)
                                                 and also access below permissions too.
                                                 @foreach ($val->permissions as $permission)
-                                                <span class="badge bg-info text-dark">{{ $permission->name }}</span>
-                                                {{-- <br /> --}}
-                                            @endforeach
-                                            <br/>
+                                                    <span class="badge bg-info text-dark">{{ $permission->name }}</span>
+                                                    {{-- <br /> --}}
+                                                @endforeach
+                                                <br />
                                             @endif
                                         </td>
                                         <td>{{ $val->created_at }}</td>
                                         <td>{{ $val->updated_at }}</td>
                                         <td>
 
-                                            @if($loggedUser && $loggedUser->can('user.edit'))
+                                            @if ($loggedUser && $loggedUser->can('user.edit'))
                                                 <a href="{{ route('users.edit', Crypt::encryptString($val->id)) }}"
                                                     class="btn btn-outline-warning"><i
                                                         class="fa-solid fa-pencil"></i></a>
                                             @endif
 
-                                            @if($loggedUser && $loggedUser->can('user.delete'))
-                                                <a href="{{ route('users.destroy', Crypt::encryptString($val->id)) }}"
-                                                    class="btn btn-outline-danger"
-                                                    onclick="event.preventDefault(); document.getElementById('delete-form-{{ $val->id }}').submit();"><i
+                                            @if ($loggedUser && $loggedUser->can('user.delete'))
+                                                <a href="" class="btn btn-outline-danger"
+                                                    onclick="event.preventDefault(); confirmDelete({{ $val->id }})"><i
                                                         class="fa-solid fa-remove"></i></a>
                                                 <form id="delete-form-{{ $val->id }}"
                                                     action="{{ route('users.destroy', Crypt::encryptString($val->id)) }}"
@@ -140,4 +139,25 @@
             </div>
         </div>
     </div>
+
+    @push('scripts')
+        <script>
+            confirmDelete = (id) => {
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!'",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        document.getElementById('delete-form-' + id).submit();
+                    }
+
+                })
+            }
+        </script>
+    @endpush
 </x-app-layout>

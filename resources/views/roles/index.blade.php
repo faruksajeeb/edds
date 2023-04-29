@@ -99,7 +99,7 @@
                                             @can('role.delete')
                                                 <a href="{{ route('roles.destroy', Crypt::encryptString($val->id)) }}"
                                                     class="btn btn-outline-danger"
-                                                    onclick="event.preventDefault(); document.getElementById('delete-form-{{ $val->id }}').submit();"><i
+                                                    onclick="event.preventDefault(); confirmDelete({{ $val->id }})"><i
                                                         class="fa-solid fa-remove"></i></a>
                                                 <form id="delete-form-{{ $val->id }}"
                                                     action="{{ route('roles.destroy', Crypt::encryptString($val->id)) }}"
@@ -119,4 +119,25 @@
             </div>
         </div>
     </div>
+    
+    @push('scripts')
+    <script>
+        confirmDelete = (id) => {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!'",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('delete-form-' + id).submit();
+                }
+    
+            })
+        }
+    </script>
+    @endpush
 </x-app-layout>

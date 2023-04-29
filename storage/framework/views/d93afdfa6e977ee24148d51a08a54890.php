@@ -107,7 +107,7 @@
                                             <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('role.delete')): ?>
                                                 <a href="<?php echo e(route('roles.destroy', Crypt::encryptString($val->id))); ?>"
                                                     class="btn btn-outline-danger"
-                                                    onclick="event.preventDefault(); document.getElementById('delete-form-<?php echo e($val->id); ?>').submit();"><i
+                                                    onclick="event.preventDefault(); confirmDelete(<?php echo e($val->id); ?>)"><i
                                                         class="fa-solid fa-remove"></i></a>
                                                 <form id="delete-form-<?php echo e($val->id); ?>"
                                                     action="<?php echo e(route('roles.destroy', Crypt::encryptString($val->id))); ?>"
@@ -128,6 +128,27 @@
             </div>
         </div>
     </div>
+    
+    <?php $__env->startPush('scripts'); ?>
+    <script>
+        confirmDelete = (id) => {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!'",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('delete-form-' + id).submit();
+                }
+    
+            })
+        }
+    </script>
+    <?php $__env->stopPush(); ?>
  <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__componentOriginal9ac128a9029c0e4701924bd2d73d7f54)): ?>

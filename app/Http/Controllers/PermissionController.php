@@ -268,7 +268,7 @@ class PermissionController extends Controller
         if ($result) {
             # Log
             Webspice::log($this->tableName, $id, "Data Deleted.");
-            Session::flash('success', 'Permission deleted Successfully.');
+            Session::flash('success', 'Permission deleted successfully.');
         } else {
             Session::flash('error', 'Permission not deleted!');
         }
