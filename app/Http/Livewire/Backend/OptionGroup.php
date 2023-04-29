@@ -136,7 +136,7 @@ class OptionGroup extends Component
                 // }
                 Cache::forget($this->table);
                 # Return Message
-                $this->emit('added', 'inserted');
+                $this->emit('success', 'inserted');
             }
         } catch (\Exception $e) {
             $this->emit('error', $e->getMessage());
