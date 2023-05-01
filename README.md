@@ -26,7 +26,7 @@ git commit
 # Flow chart
 
 ```mermaid
-graph LR;
+graph;
     Efected Bird --LBM Worker-->B;
     A-->C;
     B-->D;
