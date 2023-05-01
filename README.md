@@ -23,11 +23,11 @@ git commit
 
 ```
 
-# Mermaid JS
+# Flow chart
 
 ```mermaid
 graph LR;
-    A-->B;
+    Efected Bird --LBM Worker -->B;
     A-->C;
     B-->D;
     C-->D;
