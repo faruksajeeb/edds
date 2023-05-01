@@ -26,7 +26,7 @@ git commit
 # Flow chart
 
 ```mermaid
-graph;
+graph LR;
     Bird-->B;
     A-->C;
     B-->D;
