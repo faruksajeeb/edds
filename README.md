@@ -27,7 +27,7 @@ git commit
 
 ```mermaid
 graph LR;
-    Efected Bird --LBM Worker -->B;
+    Efected Bird --LBM Worker-->B;
     A-->C;
     B-->D;
     C-->D;
