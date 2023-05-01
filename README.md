@@ -27,7 +27,7 @@ git commit
 
 ```mermaid
 graph LR;
-    Bird-->B;
+    Bird--consuming-->B;
     A-->C;
     B-->D;
     C-->D;
