@@ -32,4 +32,13 @@ graph LR;
     B-->D;
     C-->D;
 ```
+# Dashboard 
+
+### Effected By Location
+
+| Locaion | Bird | Wild Bird | LBW |
+
+| Dhaka | 5 | 10 | 20 |
+| Chittagong | 5 | 10 | 20 |
+| Khulna | 5 | 10 | 20 |
 
