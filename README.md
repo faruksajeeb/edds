@@ -1,11 +1,15 @@
-# icddr,b
+# icddr, b
 
 ## Early Disease Detection System
 
 ### Categories
-- Poultry
-- Wild Bird
-- LMB
+
+* Poultry
+* Wild Bird
+* LMB
+
+**bold text**
+> reference
 
 ```php
 
@@ -15,7 +19,6 @@ if(){
 
 }
 ```
-
 
 ```bash
 git int
@@ -27,18 +30,18 @@ git commit
 
 ```mermaid
 graph LR;
-    Bird--consuming-->B;
-    A-->C;
+    BirdEye--consuming-->B;
+    A-->B;
     B-->D;
     C-->D;
 ```
+
 # Dashboard 
 
 ### Effected By Location
 
 | Locaion | Bird | Wild Bird | LBW |
-
+| --- | --- | --- | --- |
 | Dhaka | 5 | 10 | 20 |
 | Chittagong | 5 | 10 | 20 |
 | Khulna | 5 | 10 | 20 |
-

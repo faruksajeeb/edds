@@ -91,7 +91,7 @@
                                 <?php endif; ?>
                                 <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('permission.create')): ?>
                                     <li class="<?php echo e(Route::is('permission.create') ? 'active' : ''); ?>">
-                                        <a href="<?php echo e(url('permission/create')); ?>" class="nav-link px-2"> <span
+                                        <a href="<?php echo e(url('permissions/create')); ?>" class="nav-link px-2"> <span
                                                 class="d-sm-inline"><i class="fa-solid fa-pencil"></i> Create
                                                 Permission</span></a>
                                     </li>

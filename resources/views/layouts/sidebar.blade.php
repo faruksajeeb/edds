@@ -91,7 +91,7 @@
                                 @endcan
                                 @can('permission.create')
                                     <li class="{{ Route::is('permission.create') ? 'active' : '' }}">
-                                        <a href="{{ url('permission/create') }}" class="nav-link px-2"> <span
+                                        <a href="{{ url('permissions/create') }}" class="nav-link px-2"> <span
                                                 class="d-sm-inline"><i class="fa-solid fa-pencil"></i> Create
                                                 Permission</span></a>
                                     </li>
