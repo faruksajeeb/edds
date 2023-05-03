@@ -73,6 +73,7 @@
                                     <th>Guard Name</th>
                                     <th>Created At</th>
                                     <th>Updated At</th>
+                                    <th>Status</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -85,7 +86,14 @@
                                         <td>{{ $val->guard_name }}</td>
                                         <td>{{ $val->created_at }}</td>
                                         <td>{{ $val->updated_at }}</td>
-                                        <td>
+                                        <td><div class="form-check form-switch">
+                                            <input class="form-check-input active_inactive_btn "
+                                                status="{{ $val->status }}" {{ $val->status == -1 ? '' : '' }}
+                                                table="permissions" type="checkbox" id="row_{{ $val->id }}"
+                                                value="{{ Crypt::encryptString($val->id) }}"
+                                                {{ $val->status == 1 ? 'checked' : '' }} style="cursor:pointer">
+                                        </div></td>
+                                        <td class="text-nowrap">
                                             @can('permission.edit')
                                                 <a href="{{ route('permissions.edit', Crypt::encryptString($val->id)) }}"
                                                     class="btn btn-sm btn-outline-warning"><i

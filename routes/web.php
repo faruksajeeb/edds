@@ -10,6 +10,8 @@ use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\QuestionController;
+use App\Http\Controllers\AnswerController;
 
 use App\Http\Livewire\Backend\OptionGroup;
 use App\Http\Livewire\Backend\Options;
@@ -43,6 +45,8 @@ Route::middleware('auth')->group(function () {
             'roles' => RoleController::class,
             'users' => UserController::class,
             'permissions' => PermissionController::class,
+            'questions' => QuestionController::class,
+            'answers' => AnswerController::class,
         ]);
         Route::match(['get', 'put'],'company-setting',[SettingController::class,'companySetting'])->name('company-setting');
         Route::match(['get', 'put'],'basic-setting',[SettingController::class,'basicSetting'])->name('basic-setting');

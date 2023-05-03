@@ -14,9 +14,10 @@ use Illuminate\Support\Facades\Redis;
 
 class Webspice
 {
-
+	protected $user;
 	static function test()
 	{
+		
 		return 'Hello! Im from webspice.';
 	}
 
@@ -26,6 +27,22 @@ class Webspice
 		$userId = Auth::user()->id;
 		$userName = Auth::user()->name;
 		Log::channel('customlog')->info($currentTime . ' | USER ID:' . $userId . ' | USER NAME:' . $userName . ' | TABLE:' . $table . ' | ROW ID:' . $id . ' | ' . $action);
+	}
+	public function userVerify(){
+		$this->user = Auth::guard('web')->user();
+		if(!$this->user || is_null($this->user)){
+			redirect('login');
+		}
+	}
+	public function permissionVerify($permissionName)
+	{
+		$this->userVerify();
+		if (is_null($this->user)) {
+			abort(403, 'SORRY! unauthenticated access!');
+		}
+		if (!$this->user->can($permissionName)) {
+			abort(403, 'SORRY! unauthorized access!');
+		}
 	}
 
 	static function textStatus($status)
@@ -217,7 +234,7 @@ class Webspice
 		} catch (Exception $e) {
 			$queryStatus = [
 				'status' => 'not_success',
-				'message' => 'SORRY! Status has not changed.'
+				'message' => 'SORRY! Status has not changed.'.$e->getMessage()
 			];
 		}
 		if ($queryStatus['status'] == 'success') {
@@ -433,29 +450,30 @@ class Webspice
 		return $clean_file_name;
 	}
 
-	static function now($param=null){
-		 date_default_timezone_set('Asia/Dhaka');
-		switch($param){
+	static function now($param = null)
+	{
+		date_default_timezone_set('Asia/Dhaka');
+		switch ($param) {
 			case 'time':
 				return date('h:i:s');
 				break;
-			
+
 			case 'timeampm':
 				return date('h:i:s A');
 				break;
-			
+
 			case 'time24':
 				return date('H:i:s');
 				break;
-			
+
 			case 'date':
 				return date('Y-m-d');
 				break;
-			
+
 			case 'datetime24':
 				return date('Y-m-d H:i:s');
 				break;
-			
+
 			default:
 				return date('Y-m-d h:i:s');
 				break;

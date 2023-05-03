@@ -54,7 +54,7 @@ class PermissionController extends Controller
             });
         }
         $permissions = $query->paginate(8);
-        return view('permissions.index', compact('permissions'));
+        return view('permission.index', compact('permissions'));
     }
 
     /**
@@ -70,7 +70,7 @@ class PermissionController extends Controller
         }
         $permissions = Permission::all();
         $permission_groups = DB::table('permission_groups')->where('status',1)->get();
-        return view('permissions.create', [
+        return view('permission.create', [
             'permission_groups' => $permission_groups,
         ]);
     }
@@ -172,7 +172,7 @@ class PermissionController extends Controller
       
         $permission_groups = DB::table('permission_groups')->where('status',1)->get();
         
-        return view('permissions.edit', [
+        return view('permission.edit', [
             'permissionInfo' => $permissionInfo,
             'permission_groups' => $permission_groups,
         ]);

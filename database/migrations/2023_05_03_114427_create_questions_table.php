@@ -8,15 +8,15 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('option_groups', function (Blueprint $table) {
+        Schema::create('questions', function (Blueprint $table) {
             $table->id();
-            $table->string('option_group_name')->unique();
-            $table->tinyInteger('status')->default(1);
+            $table->string('value')->unique();
+            $table->string('value_bangla')->nullable();
+            $table->string('input_method')->nullable();
+            $table->boolean('status')->default(1);           
             $table->bigInteger('created_by')->unsigned();
             $table->bigInteger('updated_by')->unsigned()->nullable();
             $table->timestamps();
@@ -27,11 +27,9 @@ return new class extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
+    public function down(): void
     {
-        Schema::dropIfExists('option_groups');
+        Schema::dropIfExists('questions');
     }
 };

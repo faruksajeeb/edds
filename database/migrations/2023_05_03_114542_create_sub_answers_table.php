@@ -8,18 +8,19 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('option_groups', function (Blueprint $table) {
+        Schema::create('sub_answers', function (Blueprint $table) {
             $table->id();
-            $table->string('option_group_name')->unique();
+            $table->bigInteger('answer_id')->unsigned();
+            $table->string('value');
+            $table->string('value_bangla')->nullable();
             $table->tinyInteger('status')->default(1);
             $table->bigInteger('created_by')->unsigned();
             $table->bigInteger('updated_by')->unsigned()->nullable();
             $table->timestamps();
+            $table->foreign('answer_id')->references('id')->on('answers')->onDelete('cascade');
             $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('cascade');
         });
@@ -27,11 +28,9 @@ return new class extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
+    public function down(): void
     {
-        Schema::dropIfExists('option_groups');
+        Schema::dropIfExists('sub_answers');
     }
 };

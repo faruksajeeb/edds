@@ -1,23 +1,20 @@
 <x-app-layout>
     <x-slot name="title">
-        Users
+        Roles
     </x-slot>
-    @php
-        $loggedUser = Auth::guard('web')->user();
-    @endphp
     <div class="row">
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header bg-white">
                     <div class="row">
                         <div class="col-md-8">
-                            <h3 class="card-title py-1"><i class="fa fa-list"></i> Users</h3>
+                            <h3 class="card-title py-1"><i class="fa fa-list"></i> Roles</h3>
                         </div>
                         <div class="col-md-4">
                             <nav aria-label="breadcrumb" class="float-end">
                                 <ol class="breadcrumb">
                                     <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Home</a></li>
-                                    <li class="breadcrumb-item " aria-current="page">Users</li>
+                                    <li class="breadcrumb-item " aria-current="page">Roles</li>
                                 </ol>
                             </nav>
                         </div>
@@ -26,7 +23,7 @@
                 <div class="card-body">
                     <div class="">
                         <form action="" method="GET">
-                            @csrf
+                            <input type="hidden" name="_token" value="B7Tuv4nPCe86gWsjastnnmhS3EQPF2a7rOxWV7IA">
                             <div class="row">
                                 <div class="col-md-3 col-sm-12">
                                     <select name="search_status" class="form-select" id="search_status">
@@ -39,7 +36,7 @@
                                         </option>
                                     </select>
                                 </div>
-                                <div class="col-md-6 col-sm-12 px-0">
+                                <div class="col-md-5 col-sm-12 px-0">
                                     <div class="input-group">
                                         <input type="text" name="search_text" value="" class="form-control"
                                             placeholder="Search by text">
@@ -48,39 +45,33 @@
                                                 value="search">
                                                 <i class="fa fa-search"></i> Search
                                             </button>
-                                            @if ($loggedUser && $loggedUser->can('user.export'))
-                                                <button class="btn btn-xs btn-success float-end" name="submit_btn"
-                                                    value="export" type="submit">
-                                                    <i class="fa-solid fa-download"></i> Export
-                                                </button>
-                                            @endif
+                                            <button class="btn btn-xs btn-success float-end" name="submit_btn"
+                                                value="export" type="submit">
+                                                <i class="fa-solid fa-download"></i> Export
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-3 col-sm-12">
-                                    @if ($loggedUser && $loggedUser->can('user.create'))
-                                        <a href="{{ route('users.create') }}"
-                                            class="btn btn-xs btn-outline-primary float-end" name="create_new"
-                                            type="button">
-                                            <i class="fa-solid fa-plus"></i> Create New
-                                        </a>
-                                    @endif
+                                <div class="col-md-4 col-sm-12">
+                                    <a href="{{route('clear-permission-cache')}}" class="btn btn-outline-secondary">Clear Permission Cache</a>
+                                    @can('role.create')
+                                    <a href="{{ route('roles.create') }}"
+                                        class="btn btn-xs btn-outline-primary float-end" name="create_new"
+                                        type="button">
+                                        <i class="fa-solid fa-plus"></i> Create New
+                                    </a>
+                                    @endcan
                                 </div>
 
                             </div>
                         </form>
-                        @if (session('error'))
-                            <div class="alert alert-danger">{{ session('error') }}</div>
-                        @endif
-
                         <table class="table mb-0">
                             <thead>
                                 <tr>
                                     <th>Sl No.</th>
                                     <th>Name</th>
-                                    <th>Email</th>
-                                    <th>Roles</th>
                                     <th>Permissions</th>
+                                    <th>Guard Name</th>
                                     <th>Created At</th>
                                     <th>Updated At</th>
                                     <th>Status</th>
@@ -88,88 +79,73 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($users as $key => $val)
+                                @foreach ($roles as $key => $val)
                                     <tr>
                                         <td>{{ $key + 1 }}</td>
                                         <td>{{ $val->name }}</td>
-                                        <td>{{ $val->email }}</td>
-                                        <td>
-                                            @foreach ($val->roles as $role)
-                                                <span class="badge bg-info text-dark">{{ $role->name }}</span>
+                                        <td width="30%">
+                                            @foreach ($val->permissions as $permission)
+                                                <span class="badge bg-info text-dark">{{ $permission->name }}</span>
                                                 {{-- <br /> --}}
                                             @endforeach
-
                                         </td>
-                                        <td width="30%">
-                                            * User can access assigned role permissions. <br />
-                                            @if (count($val->permissions) > 0)
-                                                and also access below permissions too.
-                                                @foreach ($val->permissions as $permission)
-                                                    <span class="badge bg-info text-dark">{{ $permission->name }}</span>
-                                                    {{-- <br /> --}}
-                                                @endforeach
-                                                <br />
-                                            @endif
-                                        </td>
+                                        <td>{{ $val->guard_name }}</td>
                                         <td>{{ $val->created_at }}</td>
                                         <td>{{ $val->updated_at }}</td>
                                         <td><div class="form-check form-switch">
                                             <input class="form-check-input active_inactive_btn "
                                                 status="{{ $val->status }}" {{ $val->status == -1 ? '' : '' }}
-                                                table="users" type="checkbox" id="row_{{ $val->id }}"
+                                                table="roles" type="checkbox" id="row_{{ $val->id }}"
                                                 value="{{ Crypt::encryptString($val->id) }}"
                                                 {{ $val->status == 1 ? 'checked' : '' }} style="cursor:pointer">
                                         </div></td>
                                         <td class="text-nowrap">
-
-                                            @if ($loggedUser && $loggedUser->can('user.edit'))
-                                                <a href="{{ route('users.edit', Crypt::encryptString($val->id)) }}"
-                                                    class="btn btn-outline-warning"><i
-                                                        class="fa-solid fa-pencil"></i></a>
-                                            @endif
-
-                                            @if ($loggedUser && $loggedUser->can('user.delete'))
-                                                <a href="" class="btn btn-outline-danger"
+                                            @can('role.edit')
+                                                <a href="{{ route('roles.edit', Crypt::encryptString($val->id)) }}"
+                                                    class="btn btn-outline-warning"><i class="fa-solid fa-pencil"></i></a>
+                                            @endcan
+                                            @can('role.delete')
+                                                <a href="{{ route('roles.destroy', Crypt::encryptString($val->id)) }}"
+                                                    class="btn btn-outline-danger"
                                                     onclick="event.preventDefault(); confirmDelete({{ $val->id }})"><i
                                                         class="fa-solid fa-remove"></i></a>
                                                 <form id="delete-form-{{ $val->id }}"
-                                                    action="{{ route('users.destroy', Crypt::encryptString($val->id)) }}"
+                                                    action="{{ route('roles.destroy', Crypt::encryptString($val->id)) }}"
                                                     method="POST">
                                                     @method('DELETE')
                                                     @csrf
                                                 </form>
-                                            @endif
-
+                                            @endcan
                                         </td>
                                     </tr>
                                 @endforeach
                             </tbody>
                         </table>
-                        {{ $users->links() }}
+                        {{ $roles->links() }}
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
+    
     @push('scripts')
-        <script>
-            confirmDelete = (id) => {
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: "You won't be able to revert this!'",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Yes, delete it!'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        document.getElementById('delete-form-' + id).submit();
-                    }
-
-                })
-            }
-        </script>
+    <script>
+        confirmDelete = (id) => {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!'",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('delete-form-' + id).submit();
+                }
+    
+            })
+        }
+    </script>
     @endpush
 </x-app-layout>

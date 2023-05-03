@@ -1,10 +1,18 @@
-<x-app-layout>
-    <x-slot name="title">
+<?php if (isset($component)) { $__componentOriginal9ac128a9029c0e4701924bd2d73d7f54 = $component; } ?>
+<?php $component = App\View\Components\AppLayout::resolve([] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? (array) $attributes->getIterator() : [])); ?>
+<?php $component->withName('app-layout'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag && $constructor = (new ReflectionClass(App\View\Components\AppLayout::class))->getConstructor()): ?>
+<?php $attributes = $attributes->except(collect($constructor->getParameters())->map->getName()->all()); ?>
+<?php endif; ?>
+<?php $component->withAttributes([]); ?>
+     <?php $__env->slot('title', null, []); ?> 
         Users
-    </x-slot>
-    @php
+     <?php $__env->endSlot(); ?>
+    <?php
         $loggedUser = Auth::guard('web')->user();
-    @endphp
+    ?>
     <div class="row">
         <div class="col-md-12">
             <div class="card">
@@ -16,7 +24,7 @@
                         <div class="col-md-4">
                             <nav aria-label="breadcrumb" class="float-end">
                                 <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Home</a></li>
+                                    <li class="breadcrumb-item"><a href="<?php echo e(route('dashboard')); ?>">Home</a></li>
                                     <li class="breadcrumb-item " aria-current="page">Users</li>
                                 </ol>
                             </nav>
@@ -26,7 +34,7 @@
                 <div class="card-body">
                     <div class="">
                         <form action="" method="GET">
-                            @csrf
+                            <?php echo csrf_field(); ?>
                             <div class="row">
                                 <div class="col-md-3 col-sm-12">
                                     <select name="search_status" class="form-select" id="search_status">
@@ -48,30 +56,30 @@
                                                 value="search">
                                                 <i class="fa fa-search"></i> Search
                                             </button>
-                                            @if ($loggedUser && $loggedUser->can('user.export'))
+                                            <?php if($loggedUser && $loggedUser->can('user.export')): ?>
                                                 <button class="btn btn-xs btn-success float-end" name="submit_btn"
                                                     value="export" type="submit">
                                                     <i class="fa-solid fa-download"></i> Export
                                                 </button>
-                                            @endif
+                                            <?php endif; ?>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-md-3 col-sm-12">
-                                    @if ($loggedUser && $loggedUser->can('user.create'))
-                                        <a href="{{ route('users.create') }}"
+                                    <?php if($loggedUser && $loggedUser->can('user.create')): ?>
+                                        <a href="<?php echo e(route('users.create')); ?>"
                                             class="btn btn-xs btn-outline-primary float-end" name="create_new"
                                             type="button">
                                             <i class="fa-solid fa-plus"></i> Create New
                                         </a>
-                                    @endif
+                                    <?php endif; ?>
                                 </div>
 
                             </div>
                         </form>
-                        @if (session('error'))
-                            <div class="alert alert-danger">{{ session('error') }}</div>
-                        @endif
+                        <?php if(session('error')): ?>
+                            <div class="alert alert-danger"><?php echo e(session('error')); ?></div>
+                        <?php endif; ?>
 
                         <table class="table mb-0">
                             <thead>
@@ -88,71 +96,73 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($users as $key => $val)
+                                <?php $__currentLoopData = $users; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $val): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                     <tr>
-                                        <td>{{ $key + 1 }}</td>
-                                        <td>{{ $val->name }}</td>
-                                        <td>{{ $val->email }}</td>
+                                        <td><?php echo e($key + 1); ?></td>
+                                        <td><?php echo e($val->name); ?></td>
+                                        <td><?php echo e($val->email); ?></td>
                                         <td>
-                                            @foreach ($val->roles as $role)
-                                                <span class="badge bg-info text-dark">{{ $role->name }}</span>
-                                                {{-- <br /> --}}
-                                            @endforeach
+                                            <?php $__currentLoopData = $val->roles; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $role): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                <span class="badge bg-info text-dark"><?php echo e($role->name); ?></span>
+                                                
+                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
                                         </td>
                                         <td width="30%">
                                             * User can access assigned role permissions. <br />
-                                            @if (count($val->permissions) > 0)
+                                            <?php if(count($val->permissions) > 0): ?>
                                                 and also access below permissions too.
-                                                @foreach ($val->permissions as $permission)
-                                                    <span class="badge bg-info text-dark">{{ $permission->name }}</span>
-                                                    {{-- <br /> --}}
-                                                @endforeach
+                                                <?php $__currentLoopData = $val->permissions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $permission): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                    <span class="badge bg-info text-dark"><?php echo e($permission->name); ?></span>
+                                                    
+                                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                                 <br />
-                                            @endif
+                                            <?php endif; ?>
                                         </td>
-                                        <td>{{ $val->created_at }}</td>
-                                        <td>{{ $val->updated_at }}</td>
+                                        <td><?php echo e($val->created_at); ?></td>
+                                        <td><?php echo e($val->updated_at); ?></td>
                                         <td><div class="form-check form-switch">
                                             <input class="form-check-input active_inactive_btn "
-                                                status="{{ $val->status }}" {{ $val->status == -1 ? '' : '' }}
-                                                table="users" type="checkbox" id="row_{{ $val->id }}"
-                                                value="{{ Crypt::encryptString($val->id) }}"
-                                                {{ $val->status == 1 ? 'checked' : '' }} style="cursor:pointer">
+                                                status="<?php echo e($val->status); ?>" <?php echo e($val->status == -1 ? '' : ''); ?>
+
+                                                table="users" type="checkbox" id="row_<?php echo e($val->id); ?>"
+                                                value="<?php echo e(Crypt::encryptString($val->id)); ?>"
+                                                <?php echo e($val->status == 1 ? 'checked' : ''); ?> style="cursor:pointer">
                                         </div></td>
                                         <td class="text-nowrap">
 
-                                            @if ($loggedUser && $loggedUser->can('user.edit'))
-                                                <a href="{{ route('users.edit', Crypt::encryptString($val->id)) }}"
+                                            <?php if($loggedUser && $loggedUser->can('user.edit')): ?>
+                                                <a href="<?php echo e(route('users.edit', Crypt::encryptString($val->id))); ?>"
                                                     class="btn btn-outline-warning"><i
                                                         class="fa-solid fa-pencil"></i></a>
-                                            @endif
+                                            <?php endif; ?>
 
-                                            @if ($loggedUser && $loggedUser->can('user.delete'))
+                                            <?php if($loggedUser && $loggedUser->can('user.delete')): ?>
                                                 <a href="" class="btn btn-outline-danger"
-                                                    onclick="event.preventDefault(); confirmDelete({{ $val->id }})"><i
+                                                    onclick="event.preventDefault(); confirmDelete(<?php echo e($val->id); ?>)"><i
                                                         class="fa-solid fa-remove"></i></a>
-                                                <form id="delete-form-{{ $val->id }}"
-                                                    action="{{ route('users.destroy', Crypt::encryptString($val->id)) }}"
+                                                <form id="delete-form-<?php echo e($val->id); ?>"
+                                                    action="<?php echo e(route('users.destroy', Crypt::encryptString($val->id))); ?>"
                                                     method="POST">
-                                                    @method('DELETE')
-                                                    @csrf
+                                                    <?php echo method_field('DELETE'); ?>
+                                                    <?php echo csrf_field(); ?>
                                                 </form>
-                                            @endif
+                                            <?php endif; ?>
 
                                         </td>
                                     </tr>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </tbody>
                         </table>
-                        {{ $users->links() }}
+                        <?php echo e($users->links()); ?>
+
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    @push('scripts')
+    <?php $__env->startPush('scripts'); ?>
         <script>
             confirmDelete = (id) => {
                 Swal.fire({
@@ -171,5 +181,11 @@
                 })
             }
         </script>
-    @endpush
-</x-app-layout>
+    <?php $__env->stopPush(); ?>
+ <?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal9ac128a9029c0e4701924bd2d73d7f54)): ?>
+<?php $component = $__componentOriginal9ac128a9029c0e4701924bd2d73d7f54; ?>
+<?php unset($__componentOriginal9ac128a9029c0e4701924bd2d73d7f54); ?>
+<?php endif; ?>
+<?php /**PATH C:\xampp8.1.6\htdocs\laravel\edds\resources\views/users/index.blade.php ENDPATH**/ ?>

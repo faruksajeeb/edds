@@ -54,7 +54,7 @@ class RoleController extends Controller
             });
         }
         $roles = $query->paginate(10);
-        return view('roles.index', compact('roles'));
+        return view('role.index', compact('roles'));
     }
 
     /**
@@ -71,7 +71,7 @@ class RoleController extends Controller
         $permissions = Permission::all();
         // $permission_groups = Permission::select('group_name')->groupBy('group_name')->get();
         $permission_groups = DB::table('permission_groups')->where('status',1)->get();
-        return view('roles.create', [
+        return view('role.create', [
             'permissions' => $permissions,
             'permission_groups' => $permission_groups,
         ]);
@@ -152,7 +152,7 @@ class RoleController extends Controller
        // $permission_groups = Permission::select('group_name')->groupBy('group_name')->get();
        $permission_groups = DB::table('permission_groups')->where('status',1)->get();
         
-        return view('roles.edit', [
+        return view('role.edit', [
             'roleInfo' => $roleInfo,
             'permissions' => $permissions,
             'permission_groups' => $permission_groups,

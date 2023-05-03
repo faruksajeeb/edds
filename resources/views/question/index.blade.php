@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="title">
-        Roles
+        Questions
     </x-slot>
     <div class="row">
         <div class="col-md-12">
@@ -8,13 +8,13 @@
                 <div class="card-header bg-white">
                     <div class="row">
                         <div class="col-md-8">
-                            <h3 class="card-title py-1"><i class="fa fa-list"></i> Roles</h3>
+                            <h3 class="card-title py-1"><i class="fa fa-list"></i> Questions</h3>
                         </div>
                         <div class="col-md-4">
                             <nav aria-label="breadcrumb" class="float-end">
                                 <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Home</a></li>
-                                    <li class="breadcrumb-item " aria-current="page">Roles</li>
+                                    <li class="breadcrumb-item"><a href="#">Question & Answer</a></li>
+                                    <li class="breadcrumb-item " aria-current="page">Questions</li>
                                 </ol>
                             </nav>
                         </div>
@@ -45,21 +45,20 @@
                                                 value="search">
                                                 <i class="fa fa-search"></i> Search
                                             </button>
-                                            <button class="btn btn-xs btn-success float-end" name="submit_btn"
+                                            {{-- <button class="btn btn-xs btn-success float-end" name="submit_btn"
                                                 value="export" type="submit">
                                                 <i class="fa-solid fa-download"></i> Export
-                                            </button>
+                                            </button> --}}
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-md-4 col-sm-12">
-                                    <a href="{{route('clear-permission-cache')}}" class="btn btn-outline-secondary">Clear Permission Cache</a>
-                                    @can('role.create')
-                                    <a href="{{ route('roles.create') }}"
-                                        class="btn btn-xs btn-outline-primary float-end" name="create_new"
-                                        type="button">
-                                        <i class="fa-solid fa-plus"></i> Create New
-                                    </a>
+                                    @can('permission.create')
+                                        <a href="{{ route('permissions.create') }}"
+                                            class="btn btn-xs btn-outline-primary float-end" name="create_new"
+                                            type="button">
+                                            <i class="fa-solid fa-plus"></i> Create Question
+                                        </a>
                                     @endcan
                                 </div>
 
@@ -69,40 +68,42 @@
                             <thead>
                                 <tr>
                                     <th>Sl No.</th>
-                                    <th>Name</th>
-                                    <th>Permissions</th>
-                                    <th>Guard Name</th>
+                                    <th>Value</th>
+                                    <th>Value Bangla</th>
                                     <th>Created At</th>
-                                    <th>Updated At</th>
+                                    <th>Updated At</th>                                    
+                                    <th>Status</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($roles as $key => $val)
+                                @foreach ($questions as $index => $val)
                                     <tr>
-                                        <td>{{ $key + 1 }}</td>
-                                        <td>{{ $val->name }}</td>
-                                        <td width="30%">
-                                            @foreach ($val->permissions as $permission)
-                                                <span class="badge bg-info text-dark">{{ $permission->name }}</span>
-                                                {{-- <br /> --}}
-                                            @endforeach
-                                        </td>
-                                        <td>{{ $val->guard_name }}</td>
+                                        <td>{{ $index + $questions->firstItem() }}</td>
+                                        <td>{{ $val->value }}</td>
+                                        <td>{{ $val->value_bangla }}</td>
                                         <td>{{ $val->created_at }}</td>
                                         <td>{{ $val->updated_at }}</td>
-                                        <td>
-                                            @can('role.edit')
-                                                <a href="{{ route('roles.edit', Crypt::encryptString($val->id)) }}"
-                                                    class="btn btn-outline-warning"><i class="fa-solid fa-pencil"></i></a>
+                                        <td><div class="form-check form-switch">
+                                            <input class="form-check-input active_inactive_btn "
+                                                status="{{ $val->status }}" {{ $val->status == -1 ? '' : '' }}
+                                                table="questions" type="checkbox" id="row_{{ $val->id }}"
+                                                value="{{ Crypt::encryptString($val->id) }}"
+                                                {{ $val->status == 1 ? 'checked' : '' }} style="cursor:pointer">
+                                        </div></td>
+                                        <td class="text-nowrap">
+                                            @can('permission.edit')
+                                                <a href="{{ route('permissions.edit', Crypt::encryptString($val->id)) }}"
+                                                    class="btn btn-sm btn-outline-warning"><i
+                                                        class="fa-solid fa-pencil"></i></a>
                                             @endcan
-                                            @can('role.delete')
-                                                <a href="{{ route('roles.destroy', Crypt::encryptString($val->id)) }}"
-                                                    class="btn btn-outline-danger"
+                                            @can('permission.delete')
+                                                <a href=""
+                                                    class="btn btn-sm btn-outline-danger delete"
                                                     onclick="event.preventDefault(); confirmDelete({{ $val->id }})"><i
                                                         class="fa-solid fa-remove"></i></a>
                                                 <form id="delete-form-{{ $val->id }}"
-                                                    action="{{ route('roles.destroy', Crypt::encryptString($val->id)) }}"
+                                                    action="{{ route('permissions.destroy', Crypt::encryptString($val->id)) }}"
                                                     method="POST">
                                                     @method('DELETE')
                                                     @csrf
@@ -113,13 +114,13 @@
                                 @endforeach
                             </tbody>
                         </table>
-                        {{ $roles->links() }}
+                        {{ $questions->links() }}
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    
+
     @push('scripts')
     <script>
         confirmDelete = (id) => {
