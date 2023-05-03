@@ -93,8 +93,8 @@ class PermissionController extends Controller
                 [
                     'group_name' => 'required',
                     'menu_name' => 'required',
-                    'icon' => 'required',
-                    'name' => 'required|regex:/^[a-zA-Z. ]+$/u|min:3|max:50|unique:permissions',
+                    // 'icon' => 'required',
+                    'name' => 'required|regex:/^[a-zA-Z._ ]+$/u|min:3|max:50|unique:permissions',
                 ],
                 [
                     'menu_name.required' => 'Menu Name field is required.',
@@ -199,7 +199,7 @@ class PermissionController extends Controller
                 [
                     'group_name' => 'required',
                     'menu_name' => 'required',
-                    'icon' => 'required',
+                    // 'icon' => 'required',
                     'name' => 'required|regex:/^[a-zA-Z. ]+$/u|min:3|max:50|unique:permissions,name,' . $id
                 ],
                 [

@@ -58,17 +58,17 @@
                                 @foreach ($permission_groups as $groupIndex => $permission_group)
                                     <div class="col themed-grid-col text-start">
                                         <label for="permission_group{{ $groupIndex }}"
-                                            class="checkbox group-permission fw-bold {{ $permission_group->group_name }}"
-                                            onclick="checkPermissionByGroup('{{ $permission_group->group_name }}')">
+                                            class="checkbox group-permission fw-bold {{ $permission_group->name }}"
+                                            onclick="checkPermissionByGroup('{{ $permission_group->name }}')">
                                             <input type="checkbox" class="group largerCheckbox" name="group-permission[]">
-                                            {{ ucfirst($permission_group->group_name) }}
+                                            {{ ucfirst($permission_group->name) }}
 
                                         </label>
 
                                         <hr>
                                         @php
                                             $groupWisePermissions = \DB::table('permissions')
-                                                ->where('group_name', $permission_group->group_name)
+                                                ->where('group_name', $permission_group->name)
                                                 ->get();
                                         @endphp
                                         <ul>
@@ -79,8 +79,8 @@
                                                 <li
                                                     class="@php echo ($index+1<$permissinCount) ? 'border-bottom':'' @endphp  p-2">
                                                     <label
-                                                        class="checkbox single-permission per-{{ $permission_group->group_name }}"
-                                                        onclick="checkUncheckModuleByPermission('per-{{ $permission_group->group_name }}', '{{ $permission_group->group_name }}', {{ count($groupWisePermissions) }})">
+                                                        class="checkbox single-permission per-{{ $permission_group->name }}"
+                                                        onclick="checkUncheckModuleByPermission('per-{{ $permission_group->name }}', '{{ $permission_group->name }}', {{ count($groupWisePermissions) }})">
                                                         <input type="checkbox" value="{{ $permission->name }}" class="largerCheckbox"
                                                             name="permissions[]" id="permission{{ $permission->id }}">
                                                         {{ ucwords(str_replace('.', ' ', $permission->name)) }}

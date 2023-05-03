@@ -18,64 +18,41 @@
             </style>
     <?php $__env->stopPush(); ?>
     <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('dashboard.view')): ?>
-        <div class="card-box p-1">
-            <div class="card mx-1">
-                <div class="row ">
-                    <div class="col-md-8">
-                        <div class="numbers">0</div>
-                        <div class="card-name">Total Poultry Infected</div>
-                    </div>
-                    <div class="col-md-4 d-flex align-items-center justify-content-center border-start">
-                        <div class="iconBox">
-                            <i class="fa-solid fa-kiwi-bird display-6 "></i>
-                        </div>
-                    </div>
+        
+        
+        <form action="" method="POST" class="mt-2">
+            <?php echo csrf_field(); ?>
+            <div class="row">
+                <div class="col-md-3">
+                    <select name="chart_type" id="chart_type" class="form-select">
+                        <option value="">--Select Chart Type--</option>
+                        <option value="column">Column</option>
+                        <option value="bar">Bar</option>
+                        <option value="pie">Pie</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="date_from" id="date_from" placeholder="Date From" class="datepicker form-control" required/>
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="date_to" id="date_to" placeholder="Date To" class="datepicker form-control" required/>
+                </div>
+                <div class="col-md-3">
+                    <button class="form-control btn btn-secondary">Generate</button>
                 </div>
             </div>
-            <div class="card">
-                <div class="row ">
-                    <div class="col-md-8">
-                        <div class="numbers"> 0</div>
-                        <div class="card-name">Total Bird Infected</div>
-                    </div>
-                    <div class="col-md-4 d-flex align-items-center justify-content-center border-start">
-                        <div class="iconBox">
-                            <i class="fa-solid fa-dove display-6"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="row ">
-                    <div class="col-md-8">
-                        <div class="numbers"> 0</div>
-                        <div class="card-name">Today Poultry Infected</div>
-                    </div>
-                    <div class="col-md-4 d-flex align-items-center justify-content-center border-start">
-                        <div class="iconBox">
-                            <i class="fa-solid fa-kiwi-bird display-6 "></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="row ">
-                    <div class="col-md-8">
-                        <div class="numbers"> 0</div>
-                        <div class="card-name">Today Bird Infected</div>
-                    </div>
-                    <div class="col-md-4 d-flex align-items-center justify-content-center border-start">
-                        <div class="iconBox">
-                            <i class="fa-solid fa-dove display-6"></i>
-                        </div>
-                    </div>
-                </div>
+        </form>
+        <div class="row chart_report mx-1 my-3">
+            <div class="col-md-12 chart_container h-100 bg-white">
+
             </div>
         </div>
         
 
         <!-- Modal -->
-                  
+              
+        
+        
     <?php endif; ?>
  <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>

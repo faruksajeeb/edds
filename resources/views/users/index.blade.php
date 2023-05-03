@@ -26,7 +26,7 @@
                 <div class="card-body">
                     <div class="">
                         <form action="" method="GET">
-                            <input type="hidden" name="_token" value="B7Tuv4nPCe86gWsjastnnmhS3EQPF2a7rOxWV7IA">
+                            @csrf
                             <div class="row">
                                 <div class="col-md-3 col-sm-12">
                                     <select name="search_status" class="form-select" id="search_status">
@@ -69,6 +69,10 @@
 
                             </div>
                         </form>
+                        @if (session('error'))
+                            <div class="alert alert-danger">{{ session('error') }}</div>
+                        @endif
+
                         <table class="table mb-0">
                             <thead>
                                 <tr>

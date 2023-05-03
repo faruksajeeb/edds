@@ -52,13 +52,16 @@ class UserController extends Controller
         }
         $searchText = $request->search_text;
         if ($searchText != null) {
-            // $query = $query->search($request->search_text); // search by value
+            // $query = $query->search($request->search_text); // search by value     
+
             $query->where(function ($query) use ($searchText) {
                 $query->where('name', 'LIKE', '%' . $searchText . '%')
                     ->orWhere('email', 'LIKE', '%' . $searchText . '%');
             });
         }
+
         $users = $query->paginate(10);
+
         #Query End
         return view('users.index', compact('users'));
     }
@@ -257,7 +260,7 @@ class UserController extends Controller
                 ]
             );
             #Match The Old Password
-            if(!Hash::check($request->old_password, auth()->user()->password)){
+            if (!Hash::check($request->old_password, auth()->user()->password)) {
                 return back()->with("error", "Old Password Doesn't match!");
             }
 

@@ -37,7 +37,7 @@
                                 class="form-select  @error('group_name') is-invalid @enderror">
                                 <option value="">--select permission group--</option>
                                 @foreach ($permission_groups as $val)
-                                    <option value="{{ $val->name }}">{{ $val->name }}</option>
+                                    <option value="{{ $val->name }}" {{ (old('group_name')==$val->name) ? 'selected':''; }}>{{ $val->name }}</option>
                                 @endforeach
                             </select>
                         </div>

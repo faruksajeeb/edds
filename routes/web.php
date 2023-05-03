@@ -9,6 +9,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\ReportController;
 
 use App\Http\Livewire\Backend\OptionGroup;
 use App\Http\Livewire\Backend\Options;
@@ -60,6 +61,7 @@ Route::middleware('auth')->group(function () {
     Route::get('options',Options::class)->name('options'); 
     Route::get('categories',CategoryComponent::class)->name('categories'); 
     Route::get('subcategories',SubcategoryComponent::class)->name('subcategories'); 
+    Route::get('survey-report',[ReportController::class,'surveyReport'])->name('survey-report'); 
        
     Route::get('clear-permission-cache',[RoleController::class,'clearPermissionCache'])->name('clear-permission-cache');
 });

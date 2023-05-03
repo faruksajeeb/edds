@@ -60,19 +60,19 @@
                                 @foreach ($permission_groups as $groupIndex => $permission_group)
                                     @php
                                         $groupWisePermissions = \DB::table('permissions')
-                                            ->where('group_name', $permission_group->group_name)
+                                            ->where('group_name', $permission_group->name)
                                             ->get();
                                     @endphp
                                     <div class="col themed-grid-col text-start">
                                         <div class="col-md-12">
                                             <label for="permission_group{{ $groupIndex }}"
-                                                class="checkbox group-permission {{ $permission_group->group_name }}"
-                                                onclick="checkPermissionByGroup('{{ $permission_group->group_name }}')">
+                                                class="checkbox group-permission {{ $permission_group->name }}"
+                                                onclick="checkPermissionByGroup('{{ $permission_group->name }}')">
 
                                                 <input type="checkbox" class="group largerCheckbox"
                                                     name="group-permission[]"
                                                     {{ App\Models\User::roleHasPermissions($roleInfo, $groupWisePermissions) ? 'checked' : '' }}>
-                                                {{ ucfirst($permission_group->group_name) }}
+                                                {{ ucfirst($permission_group->name) }}
 
                                             </label>
                                         </div>
@@ -86,8 +86,8 @@
                                                     <li
                                                         class="@php echo ($index+1<$permissinCount) ? 'border-bottom':'' @endphp  p-2">
                                                         <label
-                                                            class="checkbox single-permission per-{{ $permission_group->group_name }}"
-                                                            onclick="checkUncheckModuleByPermission('per-{{ $permission_group->group_name }}', '{{ $permission_group->group_name }}', {{ count($groupWisePermissions) }})">
+                                                            class="checkbox single-permission per-{{ $permission_group->name }}"
+                                                            onclick="checkUncheckModuleByPermission('per-{{ $permission_group->name }}', '{{ $permission_group->name }}', {{ count($groupWisePermissions) }})">
                                                             <input type="checkbox" class="largerCheckbox"
                                                                 value="{{ $permission->name }}" name="permissions[]"
                                                                 id="permission{{ $permission->id }}"

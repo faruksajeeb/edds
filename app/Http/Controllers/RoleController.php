@@ -69,7 +69,8 @@ class RoleController extends Controller
             abort(403, 'SORRY! You are unauthorized to access user list!');
         }
         $permissions = Permission::all();
-        $permission_groups = Permission::select('group_name')->groupBy('group_name')->get();
+        // $permission_groups = Permission::select('group_name')->groupBy('group_name')->get();
+        $permission_groups = DB::table('permission_groups')->where('status',1)->get();
         return view('roles.create', [
             'permissions' => $permissions,
             'permission_groups' => $permission_groups,
@@ -148,8 +149,8 @@ class RoleController extends Controller
         $roleInfo = $this->roles->findById($id);
        
         $permissions = Permission::all();
-      
-        $permission_groups = Permission::select('group_name')->groupBy('group_name')->get();
+       // $permission_groups = Permission::select('group_name')->groupBy('group_name')->get();
+       $permission_groups = DB::table('permission_groups')->where('status',1)->get();
         
         return view('roles.edit', [
             'roleInfo' => $roleInfo,
