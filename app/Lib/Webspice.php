@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Crypt;
 use Exception;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Session;
 
 class Webspice
 {
@@ -21,7 +22,7 @@ class Webspice
 		return 'Hello! Im from webspice.';
 	}
 
-	static function log($table, $id, $action)
+	static function log(string $table, int $id, string $action)
 	{
 		$currentTime = Carbon::now("Asia/Dhaka");
 		$userId = Auth::user()->id;
@@ -34,7 +35,7 @@ class Webspice
 			redirect('login');
 		}
 	}
-	public function permissionVerify($permissionName)
+	public function permissionVerify(string $permissionName)
 	{
 		$this->userVerify();
 		if (is_null($this->user)) {
@@ -43,6 +44,25 @@ class Webspice
 		if (!$this->user->can($permissionName)) {
 			abort(403, 'SORRY! unauthorized access!');
 		}
+	}
+
+	public function insertOrFail(string $type,string $message=null){		
+		Session::flash($type, $type=='success'?'Data Inserted Successfully. '.$message:'SORRY! Data not inserted. '.$message);
+	}
+	public function updateOrFail(string $type,string $message=null){		
+		Session::flash($type, $type=='success'?'Data Updated Successfully. '.$message:'SORRY! Data not updated. '.$message);
+	}
+	public function deleteOrFail(string $type,string $message=null){		
+		Session::flash($type, $type=='success'?'Data Deleted Successfully. '.$message:'SORRY! Data not deleted. '.$message);
+	}
+
+	public function encryptDecrypt(string $type,$value){
+		if($type=='decrypt'){
+			$value = Crypt::decryptString($value);
+		}elseif($type=='encrypt'){
+			$value = Crypt::encryptString($value);
+		}
+		return $value;
 	}
 
 	static function textStatus($status)
@@ -211,20 +231,21 @@ class Webspice
 	public function activeInactive(Request $request)
 	{
 		try {
-			$id = Crypt::decryptString($request->id);
+			$id = $this->encryptDecrypt('decrypt',$request->id);
 			$status = '';
 			$text = '';
 			if ($request->status == 1) {
 				$status = -1;
-				$text = 'inactive';
+				$text = 'INACTIVATED';
 			} elseif ($request->status == -1) {
 				$status = 1;
-				$text = 'active';
+				$text = 'ACTIVATED';
 			}
+			
 			$res = DB::table($request->table)->where('id', $id)->update([
 				'status' => $status,
-				'updated_by' => Auth::user()->id,
-				'updated_at' => Carbon::now("Asia/Dhaka")
+				'updated_by' => $this->getUserId(),
+				'updated_at' =>  $this->now("datetime24")
 			]);
 			$queryStatus = [
 				'status' => 'success',
@@ -239,7 +260,7 @@ class Webspice
 		}
 		if ($queryStatus['status'] == 'success') {
 			# log
-			$this->log($request->table, $id, $queryStatus['message']);
+			$this->log($request->table, $id, $text);
 
 			# Update chace 
 			//  $cache = Redis::get($request->table);
@@ -259,8 +280,8 @@ class Webspice
 			$cacheData = collect(json_decode($cache));
 			$data = $cacheData->where('id', $id)->first();
 			$data->status = $status;
-			$data->updated_by = Auth::user()->id;
-			$data->updated_at = Carbon::now("Asia/Dhaka");
+			$data->updated_by = $this->getUserId();
+			$data->updated_at = $this->now("datetime24");
 			$index = $cacheData->search($data);
 			$cacheData[$index] = $data;
 			// Redis::set($request->table, json_encode($cacheData));
@@ -269,6 +290,10 @@ class Webspice
 		}
 
 		return response()->json($queryStatus);
+	}
+
+	function forgetCache($tableName){
+		Cache::forget($tableName);
 	}
 
 	function static_exchange_status($status)
@@ -452,31 +477,36 @@ class Webspice
 
 	static function now($param = null)
 	{
-		date_default_timezone_set('Asia/Dhaka');
+		// date_default_timezone_set('Asia/Dhaka');
+		$date =  Carbon::now('Asia/Dhaka');
 		switch ($param) {
 			case 'time':
-				return date('h:i:s');
+				return $date->format('h:i:s');
 				break;
 
 			case 'timeampm':
-				return date('h:i:s A');
+				return $date->format('h:i:s A');
 				break;
 
 			case 'time24':
-				return date('H:i:s');
+				return $date->format('H:i:s');
 				break;
 
 			case 'date':
-				return date('Y-m-d');
+				return $date->format('Y-m-d');
 				break;
 
 			case 'datetime24':
-				return date('Y-m-d H:i:s');
+				return $date->format('Y-m-d H:i:s');
 				break;
 
 			default:
-				return date('Y-m-d h:i:s');
+				return $date->format('Y-m-d h:i:s');
 				break;
 		}
+	}
+
+	public function getUserId():int{
+		return Auth::user()->id;
 	}
 }

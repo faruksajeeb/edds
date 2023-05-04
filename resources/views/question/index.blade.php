@@ -53,8 +53,8 @@
                                     </div>
                                 </div>
                                 <div class="col-md-4 col-sm-12">
-                                    @can('permission.create')
-                                        <a href="{{ route('permissions.create') }}"
+                                    @can('question.create')
+                                        <a href="{{ route('questions.create') }}"
                                             class="btn btn-xs btn-outline-primary float-end" name="create_new"
                                             type="button">
                                             <i class="fa-solid fa-plus"></i> Create Question
@@ -92,18 +92,18 @@
                                                 {{ $val->status == 1 ? 'checked' : '' }} style="cursor:pointer">
                                         </div></td>
                                         <td class="text-nowrap">
-                                            @can('permission.edit')
-                                                <a href="{{ route('permissions.edit', Crypt::encryptString($val->id)) }}"
+                                            @can('question.edit')
+                                                <a href="{{ route('questions.edit', Crypt::encryptString($val->id)) }}"
                                                     class="btn btn-sm btn-outline-warning"><i
                                                         class="fa-solid fa-pencil"></i></a>
                                             @endcan
-                                            @can('permission.delete')
+                                            @can('question.delete')
                                                 <a href=""
                                                     class="btn btn-sm btn-outline-danger delete"
                                                     onclick="event.preventDefault(); confirmDelete({{ $val->id }})"><i
                                                         class="fa-solid fa-remove"></i></a>
                                                 <form id="delete-form-{{ $val->id }}"
-                                                    action="{{ route('permissions.destroy', Crypt::encryptString($val->id)) }}"
+                                                    action="{{ route('questions.destroy', Crypt::encryptString($val->id)) }}"
                                                     method="POST">
                                                     @method('DELETE')
                                                     @csrf

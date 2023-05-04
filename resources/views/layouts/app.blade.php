@@ -116,6 +116,7 @@
     <script>
         // Example starter JavaScript for disabling form submissions if there are invalid fields
         (function() {
+            $('.btn-submit').prop('disabled', false);
             'use strict'
             // Fetch all the forms we want to apply custom Bootstrap validation styles to
             var forms = document.querySelectorAll('.needs-validation')
@@ -126,11 +127,17 @@
                         if (!form.checkValidity()) {
                             event.preventDefault()
                             event.stopPropagation()
+                        }else{
+                            $('.btn-submit').prop('disabled', true);
+                            $('.btn-submit').html('Saving...');
                         }
                         form.classList.add('was-validated')
                     }, false)
+                   
                 })
+              
         })();
+       
 
         $(".yearpicker").yearpicker();
         $(".datepicker").datepicker({

@@ -6,6 +6,7 @@ use App\Lib\Webspice;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Question;
+use Exception;
 
 class QuestionController extends Controller
 {
@@ -14,11 +15,11 @@ class QuestionController extends Controller
     protected $questions;
     protected $userid;
     public $tableName;
-    
 
-    public function __construct(Question $questions)
+
+    public function __construct(Question $questions, Webspice $webspice)
     {
-        $this->webspice = new Webspice();
+        $this->webspice = $webspice;
         $this->questions = $questions;
         $this->tableName = 'questions';
         $this->middleware(function ($request, $next) {
@@ -26,11 +27,11 @@ class QuestionController extends Controller
             return $next($request);
         });
     }
-    
+
     public function index(Request $request)
     {
-         #permission verfy
-         $this->webspice->permissionVerify('question.view');
+        #permission verfy
+        $this->webspice->permissionVerify('question.view');
 
         $query = $this->questions->orderBy('created_at', 'desc');
         if ($request->search_status != null) {
@@ -45,7 +46,7 @@ class QuestionController extends Controller
             });
         }
         $questions = $query->paginate(10);
-        return view('question.index',compact('questions'));
+        return view('question.index', compact('questions'));
     }
 
     /**
@@ -53,7 +54,9 @@ class QuestionController extends Controller
      */
     public function create()
     {
-        //
+        #permission verfy
+        $this->webspice->permissionVerify('question.create');
+        return view('question.create');
     }
 
     /**
@@ -61,7 +64,42 @@ class QuestionController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        #permission verfy
+        $this->webspice->permissionVerify('question.create');
+
+        $request->validate(
+            [
+                'value' => 'required|regex:/^[a-zA-Z0-9._ ]+$/u|min:3|max:1000|unique:questions',
+            ],
+            [
+                'value.required' => 'Value field is required.'
+            ]
+        );
+
+        $data = array(
+            'value' => $request->value,
+            'value_bangla' => $request->value_bangla,
+            'created_at' => $this->webspice->now('datetime24'),
+            'created_by' => Auth::user()->id,
+        );
+
+
+        try {
+            $question = $this->questions->create($data);
+            if ($question) {
+                $this->webspice->log($this->tableName, $question->id, "INSERTED");
+                # Cache Update
+                $this->webspice->forgetCache($this->tableName);
+                $this->webspice->insertOrFail('success');
+            } else {
+                $this->webspice->insertOrFail('error');
+            }
+        } catch (Exception $e) {
+            $this->webspice->insertOrFail('error', $e->getMessage());
+        }
+
+
+        return redirect()->back();
     }
 
     /**
@@ -77,7 +115,15 @@ class QuestionController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        # permission verfy
+        $this->webspice->permissionVerify('question.edit');
+        # decrypt value
+        $id = $this->webspice->encryptDecrypt('decrypt', $id);
+
+        $questionInfo = $this->questions->find($id);
+        return view('question.edit', [
+            'questionInfo' => $questionInfo,
+        ]);
     }
 
     /**
@@ -85,7 +131,45 @@ class QuestionController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        # permission verfy
+        $this->webspice->permissionVerify('question.edit');
+
+        # decrypt value
+        $id = $this->webspice->encryptDecrypt('decrypt', $id);
+
+        $request->validate(
+            [
+                'value' => 'required|regex:/^[a-zA-Z0-9._ ]+$/u|min:3|max:1000|unique:questions,value,' . $id,
+            ],
+            [
+                'value.required' => 'Value field is required.',
+                'value.unique' => 'This value has already been taken for another record.'
+            ]
+        );
+
+        $question = $this->questions->find($id);
+
+        $question->value = $request->value;
+        $question->value_bangla = $request->value_bangla;
+        $question->updated_at = $this->webspice->now('datetime24');
+        $question->updated_by = $this->webspice->getUserId();
+        try {
+            $result = $question->save();
+            if ($result) {
+                #Log
+                $this->webspice->log($this->tableName, $id, "UPDATED");
+                # Cache Update
+                $this->webspice->forgetCache($this->tableName);
+                #Message
+                $this->webspice->updateOrFail('success');
+            } else {
+                $this->webspice->updateOrFail('error');
+            }
+        } catch (Exception $e) {
+            $this->webspice->updateOrFail('error', $e->getMessage());
+        }
+
+        return redirect('questions');
     }
 
     /**
@@ -93,6 +177,25 @@ class QuestionController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        # permission verfy
+        $this->webspice->permissionVerify('question.delete');
+
+        $id = $this->webspice->encryptDecrypt('decrypt', $id);
+        $question = $this->questions->find($id);
+        try {
+            if (!is_null($question)) {
+                $result = $question->delete();
+            }
+            if ($result) {
+                # Log
+                $this->webspice->log($this->tableName, $id, "DELETED");
+                $this->webspice->deleteOrFail('success');
+            } else {
+                $this->webspice->deleteOrFail('error');
+            }
+        } catch (Exception $e) {
+            $this->webspice->deleteOrFail('error', $e->getMessage());
+        }
+        return back();
     }
 }

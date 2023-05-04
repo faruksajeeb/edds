@@ -58,8 +58,8 @@
                                     </div>
                                 </div>
                                 <div class="col-md-4 col-sm-12">
-                                    <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('permission.create')): ?>
-                                        <a href="<?php echo e(route('permissions.create')); ?>"
+                                    <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('question.create')): ?>
+                                        <a href="<?php echo e(route('questions.create')); ?>"
                                             class="btn btn-xs btn-outline-primary float-end" name="create_new"
                                             type="button">
                                             <i class="fa-solid fa-plus"></i> Create Question
@@ -97,19 +97,19 @@
                                                 value="<?php echo e(Crypt::encryptString($val->id)); ?>"
                                                 <?php echo e($val->status == 1 ? 'checked' : ''); ?> style="cursor:pointer">
                                         </div></td>
-                                        <td>
-                                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('permission.edit')): ?>
-                                                <a href="<?php echo e(route('permissions.edit', Crypt::encryptString($val->id))); ?>"
+                                        <td class="text-nowrap">
+                                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('question.edit')): ?>
+                                                <a href="<?php echo e(route('questions.edit', Crypt::encryptString($val->id))); ?>"
                                                     class="btn btn-sm btn-outline-warning"><i
                                                         class="fa-solid fa-pencil"></i></a>
                                             <?php endif; ?>
-                                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('permission.delete')): ?>
+                                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('question.delete')): ?>
                                                 <a href=""
                                                     class="btn btn-sm btn-outline-danger delete"
                                                     onclick="event.preventDefault(); confirmDelete(<?php echo e($val->id); ?>)"><i
                                                         class="fa-solid fa-remove"></i></a>
                                                 <form id="delete-form-<?php echo e($val->id); ?>"
-                                                    action="<?php echo e(route('permissions.destroy', Crypt::encryptString($val->id))); ?>"
+                                                    action="<?php echo e(route('questions.destroy', Crypt::encryptString($val->id))); ?>"
                                                     method="POST">
                                                     <?php echo method_field('DELETE'); ?>
                                                     <?php echo csrf_field(); ?>
