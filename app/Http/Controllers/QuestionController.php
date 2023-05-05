@@ -4,17 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Lib\Webspice;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use App\Models\Question;
 use Exception;
+use Illuminate\Support\Facades\Cache;
 
 class QuestionController extends Controller
 {
     public $webspice;
-    protected $user;
-    protected $questions;
-    protected $userid;
     public $tableName;
+    protected $questions;
 
 
     public function __construct(Question $questions, Webspice $webspice)
@@ -23,7 +21,6 @@ class QuestionController extends Controller
         $this->questions = $questions;
         $this->tableName = 'questions';
         $this->middleware(function ($request, $next) {
-            $this->user = Auth::guard('web')->user();
             return $next($request);
         });
     }
@@ -32,20 +29,23 @@ class QuestionController extends Controller
     {
         #permission verfy
         $this->webspice->permissionVerify('question.view');
-
-        $query = $this->questions->orderBy('created_at', 'desc');
-        if ($request->search_status != null) {
-            $query->where('status', $request->search_status);
-        }
-        $searchText = $request->search_text;
-        if ($searchText != null) {
-            // $query = $query->search($request->search_text); // search by value
-            $query->where(function ($query) use ($searchText) {
-                $query->where('value', 'LIKE', '%' . $searchText . '%')
-                    ->orWhere('value_bangla', 'LIKE', '%' . $searchText . '%');
-            });
-        }
-        $questions = $query->paginate(10);
+        // $questions = Cache::remember('questions-page-' . request('page', 1), 60*60, function () use($request) {
+            $query = $this->questions->orderBy('created_at', 'desc');
+            if ($request->search_status != null) {
+                $query->where('status', $request->search_status);
+            }
+            $searchText = $request->search_text;
+            if ($searchText != null) {
+                // $query = $query->search($request->search_text); // search by value
+                $query->where(function ($query) use ($searchText) {
+                    $query->where('value', 'LIKE', '%' . $searchText . '%')
+                        ->orWhere('value_bangla', 'LIKE', '%' . $searchText . '%');
+                });
+            }
+            // return $query->paginate(5);
+            $questions = $query->paginate(5);
+        // });
+   
         return view('question.index', compact('questions'));
     }
 
@@ -80,7 +80,7 @@ class QuestionController extends Controller
             'value' => $request->value,
             'value_bangla' => $request->value_bangla,
             'created_at' => $this->webspice->now('datetime24'),
-            'created_by' => Auth::user()->id,
+            'created_by' => $this->webspice->getUserId(),
         );
 
 
