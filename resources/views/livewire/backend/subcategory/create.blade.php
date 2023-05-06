@@ -8,7 +8,7 @@
     aria-hidden="true">
     <div class="modal-dialog modal-md">
         <div class="modal-content">
-            <form wire:submit.prevent="store">
+            <form wire:submit.prevent="store" class="needs-validation" novalidate>
                 @csrf
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel"><i class="fa fa-plus"></i> Create Subcategory

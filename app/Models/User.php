@@ -69,20 +69,7 @@ class User extends Authenticatable
         }
         return $user->id; // return insert id
     }
-    public static function updateUser($request,$id){
-        $user = User::find($id);
-        $user->name = $request->name;
-        $user->email = $request->email;
-        if($request->password){
-            $user->password =Hash::make($request->password);
-        }        
-        $user->save();
-        $user->roles()->detach(); // delete from model table
-        if($request->roles){
-            $user->assignRole($request->roles);
-        }
-        return true;
-    }
+    
 
     public static function menuByGroupName($groupName){
         return DB::table('permissions')->where('group_name',$groupName)->get();

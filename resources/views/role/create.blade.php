@@ -37,7 +37,7 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('roles.store') }}" method="POST">
+                    <form action="{{ route('roles.store') }}" method="POST" class="needs-validation" novalidate>
                         @csrf
                         <div class="form-group">
                             <label for=""
@@ -96,7 +96,7 @@
           
                         <br />
                         <div class="form-group">
-                            <button type="submit" name="submit-btn" class="btn btn-lg btn-success ">Submit</button>
+                            <button type="submit" name="submit-btn" class="btn btn-lg btn-success   btn-submit">Submit</button>
                         </div>
                     </form>
                 </div>

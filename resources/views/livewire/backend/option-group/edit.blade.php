@@ -3,7 +3,7 @@
     aria-hidden="true">
     <div class="modal-dialog modal-md">
         <div class="modal-content">
-            <form wire:submit.prevent="update" class="needs-validation" method="POST">
+            <form wire:submit.prevent="update" class="needs-validation" method="POST" class="needs-validation" novalidate>
                 @csrf
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel"><i class="fa fa-plus"></i> Edit Option Group

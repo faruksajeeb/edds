@@ -38,7 +38,7 @@
                 </div>
                 <div class="card-body">
                     <form action="{{ route('permissions.update', Crypt::encryptString($permissionInfo->id)) }}"
-                        method="POST">
+                        method="POST" class="needs-validation" novalidate>
                         @method('PUT')
                         @csrf
                         <div class="form-group">
@@ -91,7 +91,7 @@
 
                         <br />
                         <div class="form-group">
-                            <button type="submit" name="submit-btn" class="btn btn-success btn-lg">Submit</button>
+                            <button type="submit" name="submit-btn" class="btn btn-success btn-lg btn-submit">Submit</button>
                         </div>
                     </form>
                 </div>

@@ -16,9 +16,15 @@ use Illuminate\Support\Facades\Session;
 class Webspice
 {
 	protected $user;
+	public $toEmail = 'ofsajeeb@gmail.com';
+	public function settings()
+	{
+
+	}
+
 	static function test()
 	{
-		
+
 		return 'Hello! Im from webspice.';
 	}
 
@@ -29,9 +35,10 @@ class Webspice
 		$userName = Auth::user()->name;
 		Log::channel('customlog')->info($currentTime . ' | USER ID:' . $userId . ' | USER NAME:' . $userName . ' | TABLE:' . $table . ' | ROW ID:' . $id . ' | ' . $action);
 	}
-	public function userVerify(){
+	public function userVerify()
+	{
 		$this->user = Auth::guard('web')->user();
-		if(!$this->user || is_null($this->user)){
+		if (!$this->user || is_null($this->user)) {
 			redirect('login');
 		}
 	}
@@ -46,20 +53,24 @@ class Webspice
 		}
 	}
 
-	public function insertOrFail(string $type,string $message=null){		
-		Session::flash($type, $type=='success'?'Data Inserted Successfully. '.$message:'SORRY! Data not inserted. '.$message);
+	public function insertOrFail(string $type, string $message = null)
+	{
+		Session::flash($type, $type == 'success' ? 'Data Inserted Successfully. ' . $message : 'SORRY! Data not inserted. ' . $message);
 	}
-	public function updateOrFail(string $type,string $message=null){		
-		Session::flash($type, $type=='success'?'Data Updated Successfully. '.$message:'SORRY! Data not updated. '.$message);
+	public function updateOrFail(string $type, string $message = null)
+	{
+		Session::flash($type, $type == 'success' ? 'Data Updated Successfully. ' . $message : 'SORRY! Data not updated. ' . $message);
 	}
-	public function deleteOrFail(string $type,string $message=null){		
-		Session::flash($type, $type=='success'?'Data Deleted Successfully. '.$message:'SORRY! Data not deleted. '.$message);
+	public function deleteOrFail(string $type, string $message = null)
+	{
+		Session::flash($type, $type == 'success' ? 'Data Deleted Successfully. ' . $message : 'SORRY! Data not deleted. ' . $message);
 	}
 
-	public function encryptDecrypt(string $type,$value){
-		if($type=='decrypt'){
+	public function encryptDecrypt(string $type, $value)
+	{
+		if ($type == 'decrypt') {
 			$value = Crypt::decryptString($value);
-		}elseif($type=='encrypt'){
+		} elseif ($type == 'encrypt') {
 			$value = Crypt::encryptString($value);
 		}
 		return $value;
@@ -231,7 +242,7 @@ class Webspice
 	public function activeInactive(Request $request)
 	{
 		try {
-			$id = $this->encryptDecrypt('decrypt',$request->id);
+			$id = $this->encryptDecrypt('decrypt', $request->id);
 			$status = '';
 			$text = '';
 			if ($request->status == 1) {
@@ -241,7 +252,7 @@ class Webspice
 				$status = 1;
 				$text = 'ACTIVATED';
 			}
-			
+
 			$res = DB::table($request->table)->where('id', $id)->update([
 				'status' => $status,
 				'updated_by' => $this->getUserId(),
@@ -255,7 +266,7 @@ class Webspice
 		} catch (Exception $e) {
 			$queryStatus = [
 				'status' => 'not_success',
-				'message' => 'SORRY! Status has not changed.'.$e->getMessage()
+				'message' => 'SORRY! Status has not changed.' . $e->getMessage()
 			];
 		}
 		if ($queryStatus['status'] == 'success') {
@@ -292,7 +303,8 @@ class Webspice
 		return response()->json($queryStatus);
 	}
 
-	function forgetCache($tableName){
+	function forgetCache($tableName)
+	{
 		Cache::forget($tableName);
 	}
 
@@ -506,7 +518,8 @@ class Webspice
 		}
 	}
 
-	public function getUserId():int{
+	public function getUserId(): int
+	{
 		return Auth::user()->id;
 	}
 }

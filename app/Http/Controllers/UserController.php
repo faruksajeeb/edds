@@ -19,13 +19,15 @@ class UserController extends Controller
     /**
      * The user repository instance.
      */
-    public $user;
-    public $tableName;
+    protected $webspice;
+    protected $user;
+    protected $tableName;
     protected $users;
 
     public function __construct(User $users)
     {
         $this->tableName = 'users';
+        $this->webspice = new Webspice();
         $this->middleware(function ($request, $next) {
             //    $this->user = Auth::user();
             $this->user = Auth::guard('web')->user();
@@ -102,7 +104,7 @@ class UserController extends Controller
 
         $request->validate(
             [
-                'name' => 'required|regex:/^[a-zA-Z ]+$/u|min:3|max:20',
+                'name' => 'required|regex:/^[a-zA-Z0-9_ ]+$/u|min:3|max:20',
                 'email' => 'required|min:3|email|max:20|unique:users',
                 'password' => 'required|min:6|confirmed',
             ],
@@ -192,7 +194,7 @@ class UserController extends Controller
         $user = $this->users->find($id);
         $request->validate(
             [
-                'name'     => 'required|regex:/^[a-zA-Z ]+$/u|min:3|max:50',
+                'name'     => 'required|regex:/^[a-zA-Z0-9_ ]+$/u|min:3|max:50',
                 'email'    => 'required|min:3|email|max:20|unique:users,email,' . $id,
                 'password' => 'nullable|min:6|confirmed',
             ],
@@ -204,17 +206,27 @@ class UserController extends Controller
                 'name.max'      => 'The User name may not be greater than 20 characters.'
             ]
         );
-        $result = $this->users->updateUser($request, $id);
-        $permissions = $request->permissions;
-        if (!empty($permissions)) {
-            $user->syncPermissions($permissions);
-        }
-        if ($result) {
-            # write log
-            Webspice::log($this->tableName, $id, "Data updated.!");
-            Session::flash('success', 'User has been updated successfully.');
-        } else {
-            Session::flash('error', 'User not updated!');
+        try {
+            $user = User::find($id);
+            $user->name = $request->name;
+            $user->email = $request->email;
+            if ($request->password) {
+                $user->password = Hash::make($request->password);
+            }
+            $user->save();
+
+            $user->roles()->detach(); // delete from model table
+            if ($request->roles) {
+                $user->assignRole($request->roles);
+            }
+
+            $permissions = $request->permissions;
+            if (!empty($permissions)) {
+                $user->syncPermissions($permissions);
+            }
+            # Success Message & Log into Observers
+        } catch (Exception $e) {
+            $this->webspice->updateOrFail('error', $e->getMessage());
         }
         return redirect()->back();
     }

@@ -39,7 +39,7 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('roles.update', Crypt::encryptString($roleInfo->id)) }}" method="POST">
+                    <form action="{{ route('roles.update', Crypt::encryptString($roleInfo->id)) }}" method="POST" class="needs-validation" novalidate>
                         @method('PUT')
                         @csrf
                         <div class="form-group">
@@ -107,7 +107,7 @@
 
                         <br />
                         <div class="form-group">
-                            <button type="submit" name="submit-btn" class="btn btn-success btn-lg">Submit</button>
+                            <button type="submit" name="submit-btn" class="btn btn-success btn-lg   btn-submit">Save Changes</button>
                         </div>
                     </form>
                 </div>

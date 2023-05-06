@@ -18,7 +18,7 @@
                         </div>
                     </div>
                 </div>
-                <form action="{{ route('change-password') }}" method="POST">
+                <form action="{{ route('change-password') }}" method="POST" class="needs-validation" novalidate>
                     @method('PUT')
                     @csrf
                     <div class="form-group">

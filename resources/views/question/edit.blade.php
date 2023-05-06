@@ -28,7 +28,7 @@
                 </div>
                 <div class="card-body">
                     <form action="{{ route('questions.update', Crypt::encryptString($questionInfo->id)) }}"
-                        method="POST">
+                        method="POST" class="needs-validation" novalidate>
                         @method('PUT')
                         @csrf
                         <div class="form-group mb-3">
