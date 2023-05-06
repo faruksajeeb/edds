@@ -127,7 +127,7 @@
 
                         <br />
                         <div class="form-group">
-                            <button type="submit" name="submit-btn" class="btn btn-success  btn-submit">Save Changes</button>
+                            <button type="submit" name="submit-btn" class="btn btn-success btn-submit">Save Changes</button>
                         </div>
                     </form>
                 </div>

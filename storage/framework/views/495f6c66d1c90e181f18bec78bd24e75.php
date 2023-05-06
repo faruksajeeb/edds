@@ -2,7 +2,7 @@
     <style>
         ul {
             list-style: none;
-            font-size:17px;
+            font-size: 17px;
         }
 
         input.largerCheckbox {
@@ -43,33 +43,122 @@
                     </div>
                 </div>
                 <div class="card-body  p-3">
-                    <form action="<?php echo e(route('users.store')); ?>" method="POST">
+                    <form action="<?php echo e(route('users.store')); ?>" method="POST" class="needs-validation" novalidate>
                         <?php echo csrf_field(); ?>
                         <div class="row  p-3">
                             <div class="col-md-5 border border-1  p-3">
                                 <div class="form-group">
                                     <label for="">User Name</label>
-                                    <input type="text" name='name' value="<?php echo e(old('name')); ?>" class="form-control">
+                                    <input type="text" name='name' value="<?php echo e(old('name')); ?>"
+                                        class="form-control" required>
+                                    <?php if($errors->has('name')): ?>
+                                        <?php $__errorArgs = ['name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                            <div class="alert alert-danger"><?php echo e($message); ?></div>
+                                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                                    <?php else: ?>
+                                        <div class="invalid-feedback">
+                                            Please enter a name.
+                                        </div>
+                                    <?php endif; ?>
                                 </div>
                                 <div class="form-group">
                                     <label for="">User Email</label>
-                                    <input type="text" name='email' value="<?php echo e(old('email')); ?>" class="form-control">
+                                    <input type="text" name='email' value="<?php echo e(old('email')); ?>"
+                                        class="form-control" required>
+                                    <?php if($errors->has('email')): ?>
+                                        <?php $__errorArgs = ['email'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                            <div class="alert alert-danger"><?php echo e($message); ?></div>
+                                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                                    <?php else: ?>
+                                        <div class="invalid-feedback">
+                                            Please enter an email.
+                                        </div>
+                                    <?php endif; ?>
                                 </div>
                                 <div class="form-group">
                                     <label for="">Password</label>
-                                    <input type="password" name='password' value="<?php echo e(old('password')); ?>" class="form-control">
+                                    <input type="password" name='password' value="<?php echo e(old('password')); ?>"
+                                        class="form-control" required>
+                                    <?php if($errors->has('password')): ?>
+                                        <?php $__errorArgs = ['password'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                            <div class="alert alert-danger"><?php echo e($message); ?></div>
+                                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                                    <?php else: ?>
+                                        <div class="invalid-feedback">
+                                            Please enter a password.
+                                        </div>
+                                    <?php endif; ?>
                                 </div>
                                 <div class="form-group">
                                     <label for="">Confirm Password</label>
                                     <input type="password" name='password_confirmation' class="form-control">
+                                    <?php if($errors->has('password_confirmation')): ?>
+                                        <?php $__errorArgs = ['password_confirmation'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                            <div class="alert alert-danger"><?php echo e($message); ?></div>
+                                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                                    <?php else: ?>
+                                        <div class="invalid-feedback">
+                                            Please enter a value.
+                                        </div>
+                                    <?php endif; ?>
                                 </div>
                                 <div class="form-group">
                                     <label for="roles">Assign Roles</label>
-                                    <select name="roles[]" id="" class="form-control select2" multiple required>
-                                        <?php $__currentLoopData = $roles; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $role): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>                                            
-                                            <option value="<?php echo e($role->id); ?>" <?php echo e(in_array($role->id,array(old('roles')))? 'selected':''); ?>><?php echo e(ucwords($role->name)); ?></option>
+                                   <?php 
+                                   //dd(gettype(old('roles')))
+                                   ?>
+                                    <select name="roles[]" id="" class="form-control select2" multiple
+                                        required>
+                                        <?php $__currentLoopData = $roles; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $role): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <option value="<?php echo e($role->id); ?>"
+                                                <?php if(old('roles')): ?><?php echo e((in_array($role->id, old('roles')) ) ? 'selected' : ''); ?> <?php endif; ?>>
+                                                <?php echo e(ucwords($role->name)); ?></option>
                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </select>
+                                    <?php if($errors->has('roles')): ?>
+                                        <?php $__errorArgs = ['roles'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                            <div class="alert alert-danger"><?php echo e($message); ?></div>
+                                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                                    <?php else: ?>
+                                        <div class="invalid-feedback">
+                                            Please select a role.
+                                        </div>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                             <div class="col-md-7">
@@ -77,8 +166,9 @@
                                     <label for="" class="fw-bolder">User Permissions</label>
                                     <br>
                                     * User can access assigned role permissions.
-                                        and If needed extra permission, please checked your desire permission from below list & save.
-                                        <br/>
+                                    and If needed extra permission, please checked your desire permission from below
+                                    list & save.
+                                    <br />
                                     <label class="checkbox select-all-permission">
                                         <input type="checkbox" name="permission_all" id="permission_all">
                                         All
@@ -89,9 +179,9 @@
                                         <div class="row">
                                             <div class="col-md-4">
                                                 <label for="permission_group<?php echo e($groupIndex); ?>"
-                                                    class="checkbox group-permission <?php echo e($permission_group->group_name); ?>"  onclick="checkPermissionByGroup('<?php echo e($permission_group->group_name); ?>')">
-                                                    <input type="checkbox" class="group"
-                                                        name="group-permission[]">
+                                                    class="checkbox group-permission <?php echo e($permission_group->group_name); ?>"
+                                                    onclick="checkPermissionByGroup('<?php echo e($permission_group->group_name); ?>')">
+                                                    <input type="checkbox" class="group" name="group-permission[]">
                                                     <?php echo e(ucfirst($permission_group->group_name)); ?>
 
 
@@ -110,9 +200,13 @@
                                                     <?php $__currentLoopData = $groupWisePermissions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $permission): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                                         <li
                                                             class="<?php echo ($index+1<$permissinCount) ? 'border-bottom':'' ?>  p-2">
-                                                            <label class="checkbox single-permission per-<?php echo e($permission_group->group_name); ?>" onclick="checkUncheckModuleByPermission('per-<?php echo e($permission_group->group_name); ?>', '<?php echo e($permission_group->group_name); ?>', <?php echo e(count($groupWisePermissions)); ?>)">
-                                                                <input type="checkbox"  value="<?php echo e($permission->name); ?>" name="permissions[]" id="permission<?php echo e($permission->id); ?>">
-                                                                <?php echo e(ucwords(str_replace('.',' ',$permission->name))); ?>
+                                                            <label
+                                                                class="checkbox single-permission per-<?php echo e($permission_group->group_name); ?>"
+                                                                onclick="checkUncheckModuleByPermission('per-<?php echo e($permission_group->group_name); ?>', '<?php echo e($permission_group->group_name); ?>', <?php echo e(count($groupWisePermissions)); ?>)">
+                                                                <input type="checkbox" value="<?php echo e($permission->name); ?>"
+                                                                    name="permissions[]"
+                                                                    id="permission<?php echo e($permission->id); ?>">
+                                                                <?php echo e(ucwords(str_replace('.', ' ', $permission->name))); ?>
 
                                                             </label>
                                                         </li>
@@ -129,7 +223,7 @@
 
                         <br />
                         <div class="form-group">
-                            <button type="submit" name="submit-btn" class="btn btn-success">Submit</button>
+                            <button type="submit" name="submit-btn" class="btn btn-success btn-submit">Submit</button>
                         </div>
                     </form>
                 </div>
@@ -138,7 +232,7 @@
     </div>
     <?php $__env->startPush('scripts'); ?>
         <script>
-             $(function() {
+            $(function() {
                 allChecked();
             });
             $('.select-all-permission input').on('click', function() {
@@ -152,13 +246,13 @@
             });
 
             function checkPermissionByGroup(groupName) {
-               
+
                 const singleCheckBox = $('.per-' + groupName + " input");
                 if ($('.' + groupName + " input").is(':checked')) {
-                   
+
                     singleCheckBox.prop("checked", true);
                 } else {
-                    
+
                     singleCheckBox.prop("checked", false);
                 }
                 allChecked();
@@ -173,13 +267,14 @@
                 }
                 allChecked();
             }
-            function allChecked(){
+
+            function allChecked() {
                 const countTotalPermission = <?php echo e(count($permissions)); ?>
 
-                 //alert($(".permission input:checked").length);
-                if($(".single-permission input:checked").length == countTotalPermission){
+                //alert($(".permission input:checked").length);
+                if ($(".single-permission input:checked").length == countTotalPermission) {
                     $('.select-all-permission input').prop("checked", true);
-                }else{
+                } else {
                     $('.select-all-permission input').prop("checked", false);
                 }
             }
@@ -190,5 +285,5 @@
 <?php if (isset($__componentOriginal9ac128a9029c0e4701924bd2d73d7f54)): ?>
 <?php $component = $__componentOriginal9ac128a9029c0e4701924bd2d73d7f54; ?>
 <?php unset($__componentOriginal9ac128a9029c0e4701924bd2d73d7f54); ?>
-<?php endif; ?> 
+<?php endif; ?>
 <?php /**PATH C:\xampp8.1.6\htdocs\laravel\edds\resources\views/users/create.blade.php ENDPATH**/ ?>

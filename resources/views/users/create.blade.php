@@ -2,7 +2,7 @@
     <style>
         ul {
             list-style: none;
-            font-size:17px;
+            font-size: 17px;
         }
 
         input.largerCheckbox {
@@ -41,27 +41,81 @@
                             <div class="col-md-5 border border-1  p-3">
                                 <div class="form-group">
                                     <label for="">User Name</label>
-                                    <input type="text" name='name' value="{{old('name')}}" class="form-control">
+                                    <input type="text" name='name' value="{{ old('name') }}"
+                                        class="form-control" required>
+                                    @if ($errors->has('name'))
+                                        @error('name')
+                                            <div class="alert alert-danger">{{ $message }}</div>
+                                        @enderror
+                                    @else
+                                        <div class="invalid-feedback">
+                                            Please enter a name.
+                                        </div>
+                                    @endif
                                 </div>
                                 <div class="form-group">
                                     <label for="">User Email</label>
-                                    <input type="text" name='email' value="{{old('email')}}" class="form-control">
+                                    <input type="text" name='email' value="{{ old('email') }}"
+                                        class="form-control" required>
+                                    @if ($errors->has('email'))
+                                        @error('email')
+                                            <div class="alert alert-danger">{{ $message }}</div>
+                                        @enderror
+                                    @else
+                                        <div class="invalid-feedback">
+                                            Please enter an email.
+                                        </div>
+                                    @endif
                                 </div>
                                 <div class="form-group">
                                     <label for="">Password</label>
-                                    <input type="password" name='password' value="{{old('password')}}" class="form-control">
+                                    <input type="password" name='password' value="{{ old('password') }}"
+                                        class="form-control" required>
+                                    @if ($errors->has('password'))
+                                        @error('password')
+                                            <div class="alert alert-danger">{{ $message }}</div>
+                                        @enderror
+                                    @else
+                                        <div class="invalid-feedback">
+                                            Please enter a password.
+                                        </div>
+                                    @endif
                                 </div>
                                 <div class="form-group">
                                     <label for="">Confirm Password</label>
                                     <input type="password" name='password_confirmation' class="form-control">
+                                    @if ($errors->has('password_confirmation'))
+                                        @error('password_confirmation')
+                                            <div class="alert alert-danger">{{ $message }}</div>
+                                        @enderror
+                                    @else
+                                        <div class="invalid-feedback">
+                                            Please enter a value.
+                                        </div>
+                                    @endif
                                 </div>
                                 <div class="form-group">
                                     <label for="roles">Assign Roles</label>
-                                    <select name="roles[]" id="" class="form-control select2" multiple required>
-                                        @foreach ($roles as $role)                                            
-                                            <option value="{{$role->id}}" {{ in_array($role->id,array(old('roles')))? 'selected':''}}>{{ucwords($role->name)}}</option>
+                                   @php 
+                                   //dd(gettype(old('roles')))
+                                   @endphp
+                                    <select name="roles[]" id="" class="form-control select2" multiple
+                                        required>
+                                        @foreach ($roles as $role)
+                                            <option value="{{ $role->id }}"
+                                                @if(old('roles')){{ (in_array($role->id, old('roles')) ) ? 'selected' : '' }} @endif>
+                                                {{ ucwords($role->name) }}</option>
                                         @endforeach
                                     </select>
+                                    @if ($errors->has('roles'))
+                                        @error('roles')
+                                            <div class="alert alert-danger">{{ $message }}</div>
+                                        @enderror
+                                    @else
+                                        <div class="invalid-feedback">
+                                            Please select a role.
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
                             <div class="col-md-7">
@@ -69,8 +123,9 @@
                                     <label for="" class="fw-bolder">User Permissions</label>
                                     <br>
                                     * User can access assigned role permissions.
-                                        and If needed extra permission, please checked your desire permission from below list & save.
-                                        <br/>
+                                    and If needed extra permission, please checked your desire permission from below
+                                    list & save.
+                                    <br />
                                     <label class="checkbox select-all-permission">
                                         <input type="checkbox" name="permission_all" id="permission_all">
                                         All
@@ -81,9 +136,9 @@
                                         <div class="row">
                                             <div class="col-md-4">
                                                 <label for="permission_group{{ $groupIndex }}"
-                                                    class="checkbox group-permission {{ $permission_group->group_name}}"  onclick="checkPermissionByGroup('{{$permission_group->group_name}}')">
-                                                    <input type="checkbox" class="group"
-                                                        name="group-permission[]">
+                                                    class="checkbox group-permission {{ $permission_group->group_name }}"
+                                                    onclick="checkPermissionByGroup('{{ $permission_group->group_name }}')">
+                                                    <input type="checkbox" class="group" name="group-permission[]">
                                                     {{ ucfirst($permission_group->group_name) }}
 
                                                 </label>
@@ -101,9 +156,13 @@
                                                     @foreach ($groupWisePermissions as $index => $permission)
                                                         <li
                                                             class="@php echo ($index+1<$permissinCount) ? 'border-bottom':'' @endphp  p-2">
-                                                            <label class="checkbox single-permission per-{{ $permission_group->group_name}}" onclick="checkUncheckModuleByPermission('per-{{$permission_group->group_name}}', '{{ $permission_group->group_name}}', {{count($groupWisePermissions)}})">
-                                                                <input type="checkbox"  value="{{$permission->name}}" name="permissions[]" id="permission{{ $permission->id}}">
-                                                                {{ ucwords(str_replace('.',' ',$permission->name)) }}
+                                                            <label
+                                                                class="checkbox single-permission per-{{ $permission_group->group_name }}"
+                                                                onclick="checkUncheckModuleByPermission('per-{{ $permission_group->group_name }}', '{{ $permission_group->group_name }}', {{ count($groupWisePermissions) }})">
+                                                                <input type="checkbox" value="{{ $permission->name }}"
+                                                                    name="permissions[]"
+                                                                    id="permission{{ $permission->id }}">
+                                                                {{ ucwords(str_replace('.', ' ', $permission->name)) }}
                                                             </label>
                                                         </li>
                                                     @endforeach
@@ -119,7 +178,7 @@
 
                         <br />
                         <div class="form-group">
-                            <button type="submit" name="submit-btn" class="btn btn-success">Submit</button>
+                            <button type="submit" name="submit-btn" class="btn btn-success btn-submit">Submit</button>
                         </div>
                     </form>
                 </div>
@@ -128,7 +187,7 @@
     </div>
     @push('scripts')
         <script>
-             $(function() {
+            $(function() {
                 allChecked();
             });
             $('.select-all-permission input').on('click', function() {
@@ -142,13 +201,13 @@
             });
 
             function checkPermissionByGroup(groupName) {
-               
+
                 const singleCheckBox = $('.per-' + groupName + " input");
                 if ($('.' + groupName + " input").is(':checked')) {
-                   
+
                     singleCheckBox.prop("checked", true);
                 } else {
-                    
+
                     singleCheckBox.prop("checked", false);
                 }
                 allChecked();
@@ -163,15 +222,16 @@
                 }
                 allChecked();
             }
-            function allChecked(){
-                const countTotalPermission = {{count($permissions)}}
-                 //alert($(".permission input:checked").length);
-                if($(".single-permission input:checked").length == countTotalPermission){
+
+            function allChecked() {
+                const countTotalPermission = {{ count($permissions) }}
+                //alert($(".permission input:checked").length);
+                if ($(".single-permission input:checked").length == countTotalPermission) {
                     $('.select-all-permission input').prop("checked", true);
-                }else{
+                } else {
                     $('.select-all-permission input').prop("checked", false);
                 }
             }
         </script>
     @endpush
-</x-app-layout> 
+</x-app-layout>

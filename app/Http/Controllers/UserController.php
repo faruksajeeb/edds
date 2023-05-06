@@ -6,6 +6,7 @@ use App\Lib\Webspice;
 use Illuminate\Http\Request;
 use App\Models\User;
 use DB;
+use Exception;
 use Illuminate\Contracts\Session\Session as SessionSession;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
@@ -43,9 +44,7 @@ class UserController extends Controller
     public function index(Request $request)
     {
         #permission verfy
-        if (is_null($this->user) || !$this->user->can('user.view')) {
-            abort(403, 'SORRY! You are unauthorized to access user list!');
-        }
+        $this->webspice->permissionVerify('user.view');
 
         # Query Start
         $query = $this->users->orderBy('created_at', 'desc');
@@ -78,9 +77,7 @@ class UserController extends Controller
     public function create()
     {
         #permission verfy
-        if (is_null($this->user) || !$this->user->can('user.create')) {
-            abort(403, 'SORRY! You are unauthorized to create user!');
-        }
+        $this->webspice->permissionVerify('user.create');
 
         $roles = Role::all();
         $permissions = Permission::all();
@@ -98,9 +95,7 @@ class UserController extends Controller
     public function store(Request $request)
     {
         #permission verfy
-        if (is_null($this->user) || !$this->user->can('user.create')) {
-            abort(403, 'SORRY! You are unauthorized to create user!');
-        }
+        $this->webspice->permissionVerify('user.create');
 
         $request->validate(
             [
@@ -116,24 +111,36 @@ class UserController extends Controller
                 'name.max' => 'The User name may not be greater than 20 characters.'
             ]
         );
-        $insertId = $this->users->insertUser($request);
-        $permissions = $request->permissions;
-        $user = $this->users->find($insertId);
-        if (!empty($permissions)) {
-            $user->syncPermissions($permissions);
+        //$insertId = $this->users->insertUser($request);
+        try {
+            $user = new User();
+            $user->name = $request->name;
+            $user->email = $request->email;
+            $user->password = Hash::make($request->password);
+            $user->created_at = $this->webspice->now('datetime24');
+            $user->created_by = $this->webspice->getUserId();
+            $user->save();
+            if ($request->roles) {
+                $user->assignRole($request->roles);
+            }
+
+            $permissions = $request->permissions;
+            // $user = $this->users->find($insertId);
+            if (!empty($permissions)) {
+                $user->syncPermissions($permissions);
+            }
+            // if (!empty($permissions)) {
+            //     for ($i = 0; $i < count($permissions); $i++) {
+            //         $insertId->givePermissionTo($permissions[$i]);
+            //     }
+            // }
+
+            # Success Message & Log into Observers
+        } catch (Exception $e) {
+            $this->webspice->message('error', $e->getMessage());
         }
-        // if (!empty($permissions)) {
-        //     for ($i = 0; $i < count($permissions); $i++) {
-        //         $insertId->givePermissionTo($permissions[$i]);
-        //     }
-        // }
-        if ($insertId) {
-            Webspice::log($this->tableName, $insertId, "Data Created.");
-            Session::flash('success', 'User Created Successfully.');
-        } else {
-            Session::flash('error', 'User not created!');
-        }
-        return redirect()->back();
+
+        return redirect('users');
     }
 
     /**
@@ -144,10 +151,8 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        #permission verify
-        if (is_null($this->users) || !$this->users->can('user.view')) {
-            abort(403, 'SORRY! You are unauthorized to show user!');
-        }
+        #permission verfy
+        $this->webspice->permissionVerify('user.view');
     }
 
     /**
@@ -158,11 +163,12 @@ class UserController extends Controller
      */
     public function edit($id)
     {
-        #permission verify
-        if (is_null($this->user) || !$this->user->can('user.edit')) {
-            abort(403, 'SORRY! You are unauthorized to edit user!');
-        }
-        $id = Crypt::decryptString($id);
+        #permission verfy
+        $this->webspice->permissionVerify('user.edit');
+
+        # decrypt value
+        $id = $this->webspice->encryptDecrypt('decrypt', $id);
+
         $user = $this->users->find($id);
         $roles = Role::all();
         $permissions = Permission::all();
@@ -185,12 +191,11 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        #permission verify
-        if (is_null($this->user) || !$this->user->can('user.edit')) {
-            abort(403, 'SORRY! You are unauthorized to edit user!');
-        }
+        #permission verfy
+        $this->webspice->permissionVerify('user.edit');
+        # decrypt value
+        $id = $this->webspice->encryptDecrypt('decrypt', $id);
 
-        $id = Crypt::decryptString($id);
         $user = $this->users->find($id);
         $request->validate(
             [
@@ -213,6 +218,8 @@ class UserController extends Controller
             if ($request->password) {
                 $user->password = Hash::make($request->password);
             }
+            $user->updated_at = $this->webspice->now('datetime24');
+            $user->updated_by = $this->webspice->getUserId();
             $user->save();
 
             $user->roles()->detach(); // delete from model table
@@ -224,11 +231,11 @@ class UserController extends Controller
             if (!empty($permissions)) {
                 $user->syncPermissions($permissions);
             }
-            # Success Message & Log into Observers
+            # Success Message & Log into UserObservers
         } catch (Exception $e) {
-            $this->webspice->updateOrFail('error', $e->getMessage());
+            $this->webspice->message('error', $e->getMessage());
         }
-        return redirect()->back();
+        return redirect('users');
     }
 
     /**
@@ -239,22 +246,20 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        #permission verify
-        if (is_null($this->user) || !$this->user->can('user.delete')) {
-            abort(403, 'SORRY! You are unauthorized to delete user!');
-        }
+        #permission verfy
+        $this->webspice->permissionVerify('user.delete');
 
-        $id = Crypt::decryptString($id);
-        $user = $this->users->find($id);
-        if (!is_null($user)) {
-            $result = $user->delete();
+        # decrypt value
+        $id = $this->webspice->encryptDecrypt('decrypt', $id);
+        try {
+            $user = $this->users->find($id);
+            if (!is_null($user)) {
+                $user->delete();
+            }
+        } catch (Exception $e) {
+            $this->webspice->message('error', $e->getMessage());
         }
-        if ($result) {
-            Webspice::log($this->tableName, $id, "Data deleted.");
-            Session::flash('success', 'User deleted Successfully.');
-        } else {
-            Session::flash('error', 'User not deleted!');
-        }
+        
         return redirect()->back();
     }
 

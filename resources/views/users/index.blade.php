@@ -11,7 +11,14 @@
                 <div class="card-header bg-white">
                     <div class="row">
                         <div class="col-md-8">
-                            <h3 class="card-title py-1"><i class="fa fa-list"></i> Users</h3>
+                            <h5 class="card-title py-1"><i class="fa fa-list"></i>
+                                @if (request()->get('status') == 'archived')
+                                    Archived
+                                @else
+                                    All
+                                @endif Users
+                            </h5>
+
                         </div>
                         <div class="col-md-4">
                             <nav aria-label="breadcrumb" class="float-end">
@@ -20,6 +27,23 @@
                                     <li class="breadcrumb-item " aria-current="page">Users</li>
                                 </ol>
                             </nav>
+
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            @if (request()->get('status') != 'archived')
+                                <a href="{{ url('/users?status=archived') }}">Archived users</a>
+                            @else
+                                <a href="{{ url('/users') }}">All users</a>
+                            @endif
+                            @if (request()->get('status') == 'archived')
+                                <div class="float-end">
+                                    {!! Form::open(['method' => 'POST', 'route' => ['users.restore-all'], 'style' => 'display:inline']) !!}
+                                    {!! Form::submit('Restore All', ['class' => 'btn btn-primary btn-sm']) !!}
+                                    {!! Form::close() !!}
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -81,8 +105,8 @@
                                     <th>Email</th>
                                     <th>Roles</th>
                                     <th>Permissions</th>
-                                    <th>Created At</th>
-                                    <th>Updated At</th>
+                                    {{-- <th>Created At</th>
+                                    <th>Updated At</th> --}}
                                     <th>Status</th>
                                     <th>Action</th>
                                 </tr>
@@ -111,33 +135,56 @@
                                                 <br />
                                             @endif
                                         </td>
-                                        <td>{{ $val->created_at }}</td>
-                                        <td>{{ $val->updated_at }}</td>
-                                        <td><div class="form-check form-switch">
-                                            <input class="form-check-input active_inactive_btn "
-                                                status="{{ $val->status }}" {{ $val->status == -1 ? '' : '' }}
-                                                table="users" type="checkbox" id="row_{{ $val->id }}"
-                                                value="{{ Crypt::encryptString($val->id) }}"
-                                                {{ $val->status == 1 ? 'checked' : '' }} style="cursor:pointer">
-                                        </div></td>
+                                        {{-- <td>{{ $val->created_at }}</td>
+                                        <td>{{ $val->updated_at }}</td> --}}
+                                        <td>
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input active_inactive_btn "
+                                                    status="{{ $val->status }}" {{ $val->status == -1 ? '' : '' }}
+                                                    table="users" type="checkbox" id="row_{{ $val->id }}"
+                                                    value="{{ Crypt::encryptString($val->id) }}"
+                                                    {{ $val->status == 1 ? 'checked' : '' }} style="cursor:pointer">
+                                            </div>
+                                        </td>
                                         <td class="text-nowrap">
 
                                             @if ($loggedUser && $loggedUser->can('user.edit'))
                                                 <a href="{{ route('users.edit', Crypt::encryptString($val->id)) }}"
-                                                    class="btn btn-outline-warning"><i
-                                                        class="fa-solid fa-pencil"></i></a>
+                                                    class="btn btn-outline-warning btn-sm"><i
+                                                        class="fa-solid fa-pencil"></i> Edit</a>
                                             @endif
 
+                                            
+
+                                            @if (request()->get('status') == 'archived')
+                                                {!! Form::open(['method' => 'POST', 'route' => ['users.restore', $val->id], 'style' => 'display:inline']) !!}
+                                                {!! Form::submit('Restore', ['class' => 'btn btn-primary btn-sm']) !!}
+                                                {!! Form::close() !!}
+                                            @else
                                             @if ($loggedUser && $loggedUser->can('user.delete'))
-                                                <a href="" class="btn btn-outline-danger"
+                                                <a href="" class="btn btn-outline-danger btn-sm"
                                                     onclick="event.preventDefault(); confirmDelete({{ $val->id }})"><i
-                                                        class="fa-solid fa-remove"></i></a>
+                                                        class="fa-solid fa-remove"></i> Delete</a>
                                                 <form id="delete-form-{{ $val->id }}"
                                                     action="{{ route('users.destroy', Crypt::encryptString($val->id)) }}"
                                                     method="POST">
                                                     @method('DELETE')
                                                     @csrf
                                                 </form>
+                                            @endif
+                                                {{-- {!! Form::open(['method' => 'DELETE', 'route' => ['users.destroy', $val->id], 'style' => 'display:inline']) !!}
+                                                {!! Form::submit('Delete', ['class' => 'btn btn-danger btn-sm']) !!}
+                                                {!! Form::close() !!} --}}
+                                            @endif
+
+                                            @if (request()->get('status') == 'archived')
+                                                {!! Form::open([
+                                                    'method' => 'DELETE',
+                                                    'route' => ['users.force-delete', $val->id],
+                                                    'style' => 'display:inline',
+                                                ]) !!}
+                                                {!! Form::submit('Force Delete', ['class' => 'btn btn-danger btn-sm']) !!}
+                                                {!! Form::close() !!}
                                             @endif
 
                                         </td>

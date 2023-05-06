@@ -52,6 +52,30 @@ class Webspice
 			abort(403, 'SORRY! unauthorized access!');
 		}
 	}
+	public function message(string $type, string $message = null){
+		switch ($type) {
+			case 'insert_success':
+				Session::flash('success','Data Inserted Successfully.');
+			  break;
+			case 'update_success':
+			  Session::flash('success','Data Updated Successfully.');
+			  break;
+			case 'delete_success':
+				Session::flash('success','Data Deleted Successfully.');
+			  break;			
+			case 'restore_success':
+				Session::flash('success','Data Restored Successfully.');
+			  break;			
+			case 'force_delete_success':
+			  Session::flash('success','Data force deleted successfully.');
+			  break;
+			case 'error':
+				Session::flash('error','Operation Failed.'. $message);
+				break;			
+			default:
+				Session::flash('error','We could not execute your request. Something went wrong.');
+		  }
+	}
 
 	public function insertOrFail(string $type, string $message = null)
 	{

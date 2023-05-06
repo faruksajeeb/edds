@@ -24,6 +24,7 @@ return new class extends Migration
             $table->tinyInteger('status')->default(1);
             $table->bigInteger('created_by')->unsigned()->nullable();
             $table->bigInteger('updated_by')->unsigned()->nullable();
+            $table->softDeletes();
         });
     }
 

@@ -19,7 +19,14 @@
                 <div class="card-header bg-white">
                     <div class="row">
                         <div class="col-md-8">
-                            <h3 class="card-title py-1"><i class="fa fa-list"></i> Users</h3>
+                            <h5 class="card-title py-1"><i class="fa fa-list"></i>
+                                <?php if(request()->get('status') == 'archived'): ?>
+                                    Archived
+                                <?php else: ?>
+                                    All
+                                <?php endif; ?> Users
+                            </h5>
+
                         </div>
                         <div class="col-md-4">
                             <nav aria-label="breadcrumb" class="float-end">
@@ -28,6 +35,26 @@
                                     <li class="breadcrumb-item " aria-current="page">Users</li>
                                 </ol>
                             </nav>
+
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <?php if(request()->get('status') != 'archived'): ?>
+                                <a href="<?php echo e(url('/users?status=archived')); ?>">Archived users</a>
+                            <?php else: ?>
+                                <a href="<?php echo e(url('/users')); ?>">All users</a>
+                            <?php endif; ?>
+                            <?php if(request()->get('status') == 'archived'): ?>
+                                <div class="float-end">
+                                    <?php echo Form::open(['method' => 'POST', 'route' => ['users.restore-all'], 'style' => 'display:inline']); ?>
+
+                                    <?php echo Form::submit('Restore All', ['class' => 'btn btn-primary btn-sm']); ?>
+
+                                    <?php echo Form::close(); ?>
+
+                                </div>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -89,8 +116,7 @@
                                     <th>Email</th>
                                     <th>Roles</th>
                                     <th>Permissions</th>
-                                    <th>Created At</th>
-                                    <th>Updated At</th>
+                                    
                                     <th>Status</th>
                                     <th>Action</th>
                                 </tr>
@@ -119,34 +145,60 @@
                                                 <br />
                                             <?php endif; ?>
                                         </td>
-                                        <td><?php echo e($val->created_at); ?></td>
-                                        <td><?php echo e($val->updated_at); ?></td>
-                                        <td><div class="form-check form-switch">
-                                            <input class="form-check-input active_inactive_btn "
-                                                status="<?php echo e($val->status); ?>" <?php echo e($val->status == -1 ? '' : ''); ?>
+                                        
+                                        <td>
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input active_inactive_btn "
+                                                    status="<?php echo e($val->status); ?>" <?php echo e($val->status == -1 ? '' : ''); ?>
 
-                                                table="users" type="checkbox" id="row_<?php echo e($val->id); ?>"
-                                                value="<?php echo e(Crypt::encryptString($val->id)); ?>"
-                                                <?php echo e($val->status == 1 ? 'checked' : ''); ?> style="cursor:pointer">
-                                        </div></td>
+                                                    table="users" type="checkbox" id="row_<?php echo e($val->id); ?>"
+                                                    value="<?php echo e(Crypt::encryptString($val->id)); ?>"
+                                                    <?php echo e($val->status == 1 ? 'checked' : ''); ?> style="cursor:pointer">
+                                            </div>
+                                        </td>
                                         <td class="text-nowrap">
 
                                             <?php if($loggedUser && $loggedUser->can('user.edit')): ?>
                                                 <a href="<?php echo e(route('users.edit', Crypt::encryptString($val->id))); ?>"
-                                                    class="btn btn-outline-warning"><i
-                                                        class="fa-solid fa-pencil"></i></a>
+                                                    class="btn btn-outline-warning btn-sm"><i
+                                                        class="fa-solid fa-pencil"></i> Edit</a>
                                             <?php endif; ?>
 
+                                            
+
+                                            <?php if(request()->get('status') == 'archived'): ?>
+                                                <?php echo Form::open(['method' => 'POST', 'route' => ['users.restore', $val->id], 'style' => 'display:inline']); ?>
+
+                                                <?php echo Form::submit('Restore', ['class' => 'btn btn-primary btn-sm']); ?>
+
+                                                <?php echo Form::close(); ?>
+
+                                            <?php else: ?>
                                             <?php if($loggedUser && $loggedUser->can('user.delete')): ?>
-                                                <a href="" class="btn btn-outline-danger"
+                                                <a href="" class="btn btn-outline-danger btn-sm"
                                                     onclick="event.preventDefault(); confirmDelete(<?php echo e($val->id); ?>)"><i
-                                                        class="fa-solid fa-remove"></i></a>
+                                                        class="fa-solid fa-remove"></i> Delete</a>
                                                 <form id="delete-form-<?php echo e($val->id); ?>"
                                                     action="<?php echo e(route('users.destroy', Crypt::encryptString($val->id))); ?>"
                                                     method="POST">
                                                     <?php echo method_field('DELETE'); ?>
                                                     <?php echo csrf_field(); ?>
                                                 </form>
+                                            <?php endif; ?>
+                                                
+                                            <?php endif; ?>
+
+                                            <?php if(request()->get('status') == 'archived'): ?>
+                                                <?php echo Form::open([
+                                                    'method' => 'DELETE',
+                                                    'route' => ['users.force-delete', $val->id],
+                                                    'style' => 'display:inline',
+                                                ]); ?>
+
+                                                <?php echo Form::submit('Force Delete', ['class' => 'btn btn-danger btn-sm']); ?>
+
+                                                <?php echo Form::close(); ?>
+
                                             <?php endif; ?>
 
                                         </td>

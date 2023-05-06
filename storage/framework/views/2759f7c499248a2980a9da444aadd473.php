@@ -36,7 +36,7 @@
                 </div>
                 <div class="card-body">
                     <form action="<?php echo e(route('questions.update', Crypt::encryptString($questionInfo->id))); ?>"
-                        method="POST">
+                        method="POST" class="needs-validation" novalidate>
                         <?php echo method_field('PUT'); ?>
                         <?php echo csrf_field(); ?>
                         <div class="form-group mb-3">
