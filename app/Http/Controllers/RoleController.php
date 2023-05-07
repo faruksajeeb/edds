@@ -2,24 +2,29 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use App\Lib\Webspice;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Crypt;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\RoleExport;
+
 
 class RoleController extends Controller
 {
-    protected $user;
+    protected $webspice;
+    protected $role;
     protected $roles;
-    protected $userid;
+    protected $roleid;
     public $tableName;
 
     public function __construct(Role $roles)
     {
+        $this->webspice = new Webspice();
         $this->roles = $roles;
         $this->tableName = 'roles';
         $this->middleware(function ($request, $next) {
@@ -28,20 +33,21 @@ class RoleController extends Controller
             return $next($request);
         });
     }
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index(Request $request)
     {
-         #permission verfy
-         if (is_null($this->user) || !$this->user->can('role.view')) {
-            abort(403, 'SORRY! You are unauthorized to access user list!');
+        #permission verfy
+        $this->webspice->permissionVerify('role.view');
+
+        $fileTag = '';
+        if ($request->get('status') == 'archived') {
+            $fileTag = 'Archived ';
+            $query = $this->roles->orderBy('deleted_at', 'desc');
+            $query->onlyTrashed();
+        } else {
+            $query = $this->roles->orderBy('created_at', 'desc');
         }
-        // $all_roles_in_database = Role::all()->pluck('name');
-        // $roles = $this->roles->all();
-        $query = $this->roles->orderBy('created_at', 'desc');
+
         if ($request->search_status != null) {
             $query->where('status', $request->search_status);
         }
@@ -53,42 +59,36 @@ class RoleController extends Controller
                     ->orWhere('guard_name', 'LIKE', '%' . $searchText . '%');
             });
         }
+        if ($request->submit_btn == 'export') {
+            $title = $fileTag . 'Role List';
+            $fileName = str_replace(' ', '_', strtolower($title));
+            return Excel::download(new RoleExport($query->get(), $title), $fileName . '_' . time() . '.xlsx');
+        }
+
         $roles = $query->paginate(10);
         return view('role.index', compact('roles'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function create()
     {
-         #permission verfy
-         if (is_null($this->user) || !$this->user->can('role.create')) {
-            abort(403, 'SORRY! You are unauthorized to access user list!');
-        }
+        #permission verfy
+        $this->webspice->permissionVerify('role.create');
+
         $permissions = Permission::all();
         // $permission_groups = Permission::select('group_name')->groupBy('group_name')->get();
-        $permission_groups = DB::table('permission_groups')->where('status',1)->get();
+        $permission_groups = DB::table('permission_groups')->where('status', 1)->get();
         return view('role.create', [
             'permissions' => $permissions,
             'permission_groups' => $permission_groups,
         ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+
     public function store(Request $request)
     {
-         #permission verfy
-         if (is_null($this->user) || !$this->user->can('role.create')) {
-            abort(403, 'SORRY! You are unauthorized to access user list!');
-        }
+        #permission verfy
+        $this->webspice->permissionVerify('role.create');
 
         $validatedData = $request->validate(
             [
@@ -105,53 +105,44 @@ class RoleController extends Controller
         $data = array(
             'name' => $request->name
         );
-
-        $role = $this->roles->create($data);
-        $permissions = $request->permissions;
-        if(!empty($permissions)){
-            for ($i = 0; $i < count($permissions); $i++) {
-                $role->givePermissionTo($permissions[$i]);
+        try {
+            $role = $this->roles->create($data);
+            $permissions = $request->permissions;
+            if (!empty($permissions)) {
+                for ($i = 0; $i < count($permissions); $i++) {
+                    $role->givePermissionTo($permissions[$i]);
+                }
             }
+        } catch (Exception $e) {
+            $this->webspice->message('error', $e->getMessage());
         }
-        if ($role) {
-            Webspice::log($this->tableName, $role->id, "Data Created.");
-            Session::flash('success', 'Role Inserted Successfully.');
-        } else {
-            Session::flash('error', 'Role not inserted!');
-        }
+
         return redirect()->back();
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+
     public function show($id)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+
     public function edit($id)
     {
-         #permission verfy
-         if (is_null($this->user) || !$this->user->can('role.edit')) {
-            abort(403, 'SORRY! You are unauthorized to access user list!');
+        #permission verfy
+        $this->webspice->permissionVerify('role.edit');
+        try {
+            # decrypt value
+            $id = $this->webspice->encryptDecrypt('decrypt', $id);
+
+            $roleInfo = $this->roles->findById($id);
+
+            $permissions = Permission::all();
+            // $permission_groups = Permission::select('group_name')->groupBy('group_name')->get();
+            $permission_groups = DB::table('permission_groups')->where('status', 1)->get();
+        } catch (Exception $e) {
+            $this->webspice->message('error', $e->getMessage());
         }
-        $id = Crypt::decryptString($id);
-        $roleInfo = $this->roles->findById($id);
-       
-        $permissions = Permission::all();
-       // $permission_groups = Permission::select('group_name')->groupBy('group_name')->get();
-       $permission_groups = DB::table('permission_groups')->where('status',1)->get();
-        
         return view('role.edit', [
             'roleInfo' => $roleInfo,
             'permissions' => $permissions,
@@ -159,77 +150,107 @@ class RoleController extends Controller
         ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+
     public function update(Request $request, $id)
     {
-         #permission verfy
-         if (is_null($this->user) || !$this->user->can('role.edit')) {
-            abort(403, 'SORRY! You are unauthorized to access user list!');
+        #permission verfy
+        $this->webspice->permissionVerify('role.edit');
+        try {
+            # decrypt value
+            $id = $this->webspice->encryptDecrypt('decrypt', $id);
+
+            $request->validate(
+                [
+                    'name' => 'required|regex:/^[a-zA-Z ]+$/u|min:3|max:20|unique:roles,name,' . $id
+                ],
+                [
+                    'name.required' => 'Role Name field is required.',
+                    'name.unique' =>  '"' . $request->name . '" The role name has already been taken.',
+                    'name.regex' => 'The role name format is invalid. Please enter alpabatic text.',
+                    'name.min' => 'The role name must be at least 3 characters.',
+                    'name.max' => 'The role name may not be greater than 20 characters.'
+                ]
+            );
+
+            $role = $this->roles->findById($id);
+            $permissions = $request->input('permissions');
+            if (!empty($permissions)) {
+                $role->syncPermissions($permissions);
+            }
+            $role->name = $request->name;
+            $role->save();
+        } catch (Exception $e) {
+            $this->webspice->message('error', $e->getMessage());
         }
-        $id = Crypt::decryptString($id);
-        $validatedData = $request->validate(
-            [
-                'name' => 'required|regex:/^[a-zA-Z ]+$/u|min:3|max:20|unique:roles,name,' . $id
-            ],
-            [
-                'name.required' => 'Role Name field is required.',
-                'name.unique' =>  '"'.$request->name.'" The role name has already been taken.',
-                'name.regex' => 'The role name format is invalid. Please enter alpabatic text.',
-                'name.min' => 'The role name must be at least 3 characters.',
-                'name.max' => 'The role name may not be greater than 20 characters.'
-            ]
-        );
-        $role = $this->roles->findById($id);
-        $permissions = $request->input('permissions');
-        if(!empty($permissions)){
-            $role->syncPermissions($permissions);
-        }
-        $role->name = $request->name; 
-        $result = $role->save();
-        if ($result) {
-            #Log
-            Webspice::log($this->tableName, $id, "Data Updated.");
-            Session::flash('success', 'Role Updated Successfully.');
-        } else {
-            Session::flash('error', 'Role not Updated!');
-        }
-        return redirect()->back();
+        return redirect()->route('roles.index');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+
     public function destroy($id)
     {
-         #permission verfy
-         if (is_null($this->user) || !$this->user->can('role.delete')) {
-            abort(403, 'SORRY! You are unauthorized to access user list!');
-        }
-        $id = Crypt::decryptString($id);
-        $role = $this->roles->findById($id);
-        if(!is_null($role)){
-            $result = $role->delete();
-        }
-        if ($result) {
-            # Log
-            Webspice::log($this->tableName, $id, "Data Deleted.");
-            Session::flash('success', 'Role deleted Successfully.');
-        } else {
-            Session::flash('error', 'Role not deleted!');
+        #permission verfy
+        $this->webspice->permissionVerify('role.delete');
+        try {
+            # decrypt value
+            $id = $this->webspice->encryptDecrypt('decrypt', $id);
+
+            $role = $this->roles->findById($id);            
+            $role->delete();
+            
+        } catch (Exception $e) {
+            $this->webspice->message('error', $e->getMessage());
         }
         return back();
     }
 
-    public function clearPermissionCache(){
+
+    public function forceDelete($id)
+    {
+        #permission verfy
+        $this->webspice->permissionVerify('role.force_delete');
+        try {
+            #decrypt value
+            $id = $this->webspice->encryptDecrypt('decrypt', $id);
+            $role = Role::withTrashed()->findOrFail($id);
+            $role->forceDelete();
+        } catch (Exception $e) {
+            $this->webspice->message('error', $e->getMessage());
+        }
+        return redirect()->back();
+    }
+    public function restore($id)
+    {
+        #permission verfy
+        $this->webspice->permissionVerify('role.restore');
+        try {
+            $id = $this->webspice->encryptDecrypt('decrypt', $id);
+            $role = Role::withTrashed()->findOrFail($id);
+            $role->restore();
+        } catch (Exception $e) {
+            $this->webspice->message('error', $e->getMessage());
+        }
+        // return redirect()->route('roles.index', ['status' => 'archived'])->withSuccess(__('User restored successfully.'));
+        return redirect()->route('roles.index');
+    }
+
+    public function restoreAll()
+    {
+        #permission verfy
+        $this->webspice->permissionVerify('role.restore');
+        try {
+            $roles = Role::onlyTrashed()->get();
+            foreach ($roles as $role) {
+                $role->restore();
+            }
+        } catch (Exception $e) {
+            $this->webspice->message('error', $e->getMessage());
+        }
+        return redirect()->route('roles.index');
+        // return redirect()->route('roles.index')->withSuccess(__('All roles restored successfully.'));
+    }
+
+    public function clearPermissionCache()
+    {
         app()->make(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
         Session::flash('success', 'Permission cache cleared Successfully.');
         return back();

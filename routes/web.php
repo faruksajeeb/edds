@@ -60,10 +60,18 @@ Route::middleware('auth')->group(function () {
         Route::match(['get', 'put'], 'toxbox-setting', [SettingController::class, 'toxboxSetting'])->name('toxbox-setting');
         Route::match(['get', 'put'], 'cron-setting', [SettingController::class, 'cronSetting'])->name('cron-setting');
     });
-    Route::post('users/{user}/restore', 'UsersController@restore')->name('users.restore');
-    Route::delete('users/{user}/force-delete', 'UsersController@forceDelete')->name('users.force-delete');
-    Route::post('users/restore-all', 'UsersController@restoreAll')->name('users.restore-all');
+    Route::post('users/{user}/restore',[UserController::class,'restore'])->name('users.restore');
+    Route::delete('users/{user}/force-delete',[UserController::class,'forceDelete'])->name('users.force-delete');
+    Route::post('users/restore-all',[UserController::class,'restoreAll'])->name('users.restore-all');
     
+    Route::post('roles/{role}/restore',[RoleController::class,'restore'])->name('roles.restore');
+    Route::delete('roles/{role}/force-delete',[RoleController::class,'forceDelete'])->name('roles.force-delete');
+    Route::post('roles/restore-all',[RoleController::class,'restoreAll'])->name('roles.restore-all');
+    
+    Route::post('permissions/{role}/restore',[PermissionController::class,'restore'])->name('permissions.restore');
+    Route::delete('permissions/{role}/force-delete',[PermissionController::class,'forceDelete'])->name('permissions.force-delete');
+    Route::post('permissions/restore-all',[PermissionController::class,'restoreAll'])->name('permissions.restore-all');
+
     Route::get('option-groups', OptionGroup::class)->name('option-groups');
     Route::get('options', Options::class)->name('options');
     Route::get('categories', CategoryComponent::class)->name('categories');

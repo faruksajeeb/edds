@@ -5,15 +5,13 @@ namespace App\Http\Controllers;
 use App\Lib\Webspice;
 use Illuminate\Http\Request;
 use App\Models\User;
-use DB;
 use Exception;
-use Illuminate\Contracts\Session\Session as SessionSession;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Session;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\UserExport;
 
 class UserController extends Controller
 {
@@ -47,7 +45,14 @@ class UserController extends Controller
         $this->webspice->permissionVerify('user.view');
 
         # Query Start
-        $query = $this->users->orderBy('created_at', 'desc');
+        $fileTag = '';
+        if ($request->get('status') == 'archived') {
+            $fileTag = 'Archived ';
+            $query = $this->users->orderBy('deleted_at', 'desc');
+            $query->onlyTrashed();
+        } else {
+            $query = $this->users->orderBy('created_at', 'desc');
+        }
         if ($request->search_status != null) {
             $query->where('status', $request->search_status);
         }
@@ -61,7 +66,12 @@ class UserController extends Controller
             });
         }
 
-        $users = $query->paginate(10);
+        if ($request->submit_btn == 'export') {
+            $title = $fileTag . 'User List';
+            $fileName = str_replace(' ', '_', strtolower($title));
+            return Excel::download(new UserExport($query->get(), $title), $fileName . '_' . time() . '.xlsx');
+        }
+        $users = $query->paginate(5);
 
         #Query End
         return view('users.index', compact('users'));
@@ -248,10 +258,9 @@ class UserController extends Controller
     {
         #permission verfy
         $this->webspice->permissionVerify('user.delete');
-
-        # decrypt value
-        $id = $this->webspice->encryptDecrypt('decrypt', $id);
         try {
+            # decrypt value
+            $id = $this->webspice->encryptDecrypt('decrypt', $id);
             $user = $this->users->find($id);
             if (!is_null($user)) {
                 $user->delete();
@@ -259,7 +268,7 @@ class UserController extends Controller
         } catch (Exception $e) {
             $this->webspice->message('error', $e->getMessage());
         }
-        
+
         return redirect()->back();
     }
 
@@ -294,5 +303,52 @@ class UserController extends Controller
     public function userProfile()
     {
         return view('users.user-profile');
+    }
+
+
+
+    public function forceDelete($id)
+    {
+        #permission verfy
+        $this->webspice->permissionVerify('user.force_delete');
+        try {
+            #decrypt value
+            $id = $this->webspice->encryptDecrypt('decrypt', $id);
+            $user = User::withTrashed()->findOrFail($id);
+            $user->forceDelete();
+        } catch (Exception $e) {
+            $this->webspice->message('error', $e->getMessage());
+        }
+        return redirect()->back();
+    }
+    public function restore($id)
+    {
+        #permission verfy
+        $this->webspice->permissionVerify('user.restore');
+        try {
+            $id = $this->webspice->encryptDecrypt('decrypt', $id);
+            $user = User::withTrashed()->findOrFail($id);
+            $user->restore();
+        } catch (Exception $e) {
+            $this->webspice->message('error', $e->getMessage());
+        }
+        // return redirect()->route('users.index', ['status' => 'archived'])->withSuccess(__('User restored successfully.'));
+        return redirect()->route('users.index');
+    }
+
+    public function restoreAll()
+    {
+        #permission verfy
+        $this->webspice->permissionVerify('user.restore');
+        try {
+            $users = User::onlyTrashed()->get();
+            foreach ($users as $user) {
+                $user->restore();
+            }
+        } catch (Exception $e) {
+            $this->webspice->message('error', $e->getMessage());
+        }
+        return redirect()->route('users.index');
+        // return redirect()->route('users.index')->withSuccess(__('All users restored successfully.'));
     }
 }

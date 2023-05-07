@@ -5,9 +5,6 @@ namespace App\Observers;
 use App\Models\User;
 use App\Lib\Webspice;
 
-use Mail;
-use Exception;
-
 class UserObserver
 {
     protected $webspice;
@@ -16,33 +13,29 @@ class UserObserver
     {
         $this->webspice = $webspice;
     }
+
+    public function cacheClear(){
+        $this->webspice->forgetCache('users');
+    }
     /**
      * Handle the User "created" event.
      */
     public function created(User $user): void
     {
-       
-
-        $message = $user->name . " User has been created successfully.!";
-
         #Log
         $this->webspice->log('users', $user->id, "INSERTED");
         # Cache Update
-        $this->webspice->forgetCache('users');
+        $this->cacheClear();
         #Message
         $this->webspice->message('insert_success');
 
-        
-        # Send Mail
+        #Send Email
+        $subject = $user->name." user updated";
         $data = array(
-            'name' => "Sajeeb",
-            'body' => $message
+            'name' => 'Admin',
+            'body' => 'User("'.$user->name.') has been created successfully.'
         );
-
-        Mail::send('mail.user_mail', $data, function ($message) {
-            $message->to('ofsajeeb@gmail.com', 'Sajeeb Omar')->subject('New User Created');
-            $message->from('noreply@gmail.com', 'EDDS ADMIN');
-        });
+        $this->webspice->sendEmail($to=$this->webspice->adminEmail,$cc=null,$subject,$data,$template='mail.user_mail');
     }
 
 
@@ -50,31 +43,25 @@ class UserObserver
      * Handle the User "updated" event.
      */
     public function updated(User $user): void
-    {        
-        $body = $user->name . " User has been updated successfully.!";
+    {   
         #Log
         $this->webspice->log('users', $user->id, "UPDATED");
         # Cache Update
-        $this->webspice->forgetCache('users');
+        $this->cacheClear();
         #Message
         $this->webspice->message('update_success');
-
       
         // $user->updated_at = $this->webspice->now('datetime24');
         // $user->updated_by = $this->webspice->getUserId();
         // $user->save();
 
-
-        # Send Mail
+        #Send Email
+        $subject = $user->name." user updated";
         $data = array(
-            'name' => "Sajeeb",
-            'body' => $body
+            'name' => 'Admin',
+            'body' => 'User('.$user->name.') has been updated successfully.'
         );
-
-        Mail::send('mail.user_mail', $data, function ($message) {
-            $message->to($this->webspice->toEmail, 'Sajeeb Omar')->subject(' User Information Updated');
-            $message->from('noreply@gmail.com', 'EDDS ADMIN');
-        });
+        $this->webspice->sendEmail($to=$this->webspice->adminEmail,$cc=null,$subject,$data,$template='mail.user_mail');
     }
 
     /**
@@ -82,50 +69,49 @@ class UserObserver
      */
     public function deleted(User $user): void
     {
-        $message = $user->name . " User has been deleted successfully.!";
-
         #Log
         $this->webspice->log('users', $user->id, "DELETED");
         # Cache Update
-        $this->webspice->forgetCache('users');
+        $this->cacheClear();
         #Message
         $this->webspice->message('delete_success');
 
-        # Send Mail
+        #Send Email
+        $subject = $user->name." user delete";
         $data = array(
-            'name' => "Sajeeb",
-            'body' => $message
+            'name' => 'Admin',
+            'body' => 'User('.$user->name.') has been deleted successfully.'
         );
+        $this->webspice->sendEmail($to=$this->webspice->adminEmail,$cc=null,$subject,$data,$template='mail.user_mail');
 
-        Mail::send('mail.user_mail', $data, function ($message) use($user){
-            $message->to($this->webspice->toEmail, 'Sajeeb Omar')->subject($user->name.' User Deleted');
-            $message->from('noreply@gmail.com', 'EDDS ADMIN');
-        });
+        // $user->deleted_at = $this->webspice->now('datetime24');
+        // $user->deleted_by = $this->webspice->getUserId();
+        // $user->save();
     }
 
     /**
      * Handle the User "restored" event.
      */
     public function restored(User $user): void
-    {
-        $message = $user->name . " has been restored successfully.!";
+    {        
         #Log
         $this->webspice->log('users', $user->id, "RESTORED");
         # Cache Update
-        $this->webspice->forgetCache('users');
+        $this->cacheClear();
         #Message
         $this->webspice->message('restore_success');
 
-        # Send Mail
+        
+        #Send Email
+        $subject = $user->name." user restored";
         $data = array(
-            'name' => "Sajeeb",
-            'body' => $message
+            'name' => 'Admin',
+            'body' => "User(".$user->name.") has been restored successfully.!"
         );
-
-        Mail::send('mail.user_mail', $data, function ($message) use($user){
-            $message->to($this->webspice->toEmail, 'Sajeeb Omar')->subject($user->name.' User Restored');
-            $message->from('noreply@gmail.com', 'EDDS ADMIN');
-        });
+        $this->webspice->sendEmail($to=$this->webspice->adminEmail,$cc=null,$subject,$data,$template='mail.user_mail');
+        
+        // $user->deleted_by = NULL;
+        // $user->save();
     }
 
     /**
@@ -133,24 +119,19 @@ class UserObserver
      */
     public function forceDeleted(User $user): void
     {
-        $message = $user->name . " has been force deleted successfully.!";
         #Log
         $this->webspice->log('users', $user->id, "FORCE DELETED");
         # Cache Update
-        $this->webspice->forgetCache('users');
+        $this->cacheClear();
         #Message
         $this->webspice->message('force_delete_success');
 
-        
-        # Send Mail
+        #Send Email
+        $subject = $user->name." user force delete";
         $data = array(
-            'name' => "Sajeeb",
-            'body' => $message
+            'name' => 'Admin',
+            'body' => "User(".$user->name.") has been deleted permenently."
         );
-
-        Mail::send('mail.user_mail', $data, function ($message) use($user){
-            $message->to($this->webspice->toEmail, 'Sajeeb Omar')->subject($user->name.' User force deleted');
-            $message->from('noreply@gmail.com', 'EDDS ADMIN');
-        });
+        $this->webspice->sendEmail($to=$this->webspice->adminEmail,$cc=null,$subject,$data,$template='mail.user_mail');
     }
 }

@@ -32,7 +32,11 @@
                             <nav aria-label="breadcrumb" class="float-end">
                                 <ol class="breadcrumb">
                                     <li class="breadcrumb-item"><a href="<?php echo e(route('dashboard')); ?>">Home</a></li>
-                                    <li class="breadcrumb-item " aria-current="page">Users</li>
+                                    <li class="breadcrumb-item " aria-current="page"><?php if(request()->get('status') == 'archived'): ?>
+                                        Archived
+                                    <?php else: ?>
+                                        All
+                                    <?php endif; ?> Users</li>
                                 </ol>
                             </nav>
 
@@ -46,14 +50,18 @@
                                 <a href="<?php echo e(url('/users')); ?>">All users</a>
                             <?php endif; ?>
                             <?php if(request()->get('status') == 'archived'): ?>
-                                <div class="float-end">
-                                    <?php echo Form::open(['method' => 'POST', 'route' => ['users.restore-all'], 'style' => 'display:inline']); ?>
-
-                                    <?php echo Form::submit('Restore All', ['class' => 'btn btn-primary btn-sm']); ?>
-
-                                    <?php echo Form::close(); ?>
-
-                                </div>
+                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('user.restore')): ?>
+                                    <div class="float-end">
+                                        <a href="" class="btn btn-primary btn-sm btn-restore-all"
+                                            onclick="event.preventDefault(); restoreAllConfirmation()"><i
+                                                class="fa-solid fa-trash-arrow-up"></i> Restore All</a>
+                                        <form id="restore-all-form" action="<?php echo e(route('users.restore-all')); ?>"
+                                            style="display:inline" method="POST">
+                                            <?php echo method_field('POST'); ?>
+                                            <?php echo csrf_field(); ?>
+                                        </form>
+                                    </div>
+                                <?php endif; ?>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -62,15 +70,14 @@
                     <div class="">
                         <form action="" method="GET">
                             <?php echo csrf_field(); ?>
+                            <input type="hidden" name="status" value="<?php echo e((request()->get('status') == 'archived') ? 'archived':''); ?>">
                             <div class="row">
                                 <div class="col-md-3 col-sm-12">
                                     <select name="search_status" class="form-select" id="search_status">
                                         <option value="">Select Status</option>
-                                        <option value="7">Active
+                                        <option value="1">Active
                                         </option>
-                                        <option value="-7">Inactive
-                                        </option>
-                                        <option value="-1">Deleted
+                                        <option value="-1">Inactive
                                         </option>
                                     </select>
                                 </div>
@@ -83,8 +90,9 @@
                                                 value="search">
                                                 <i class="fa fa-search"></i> Search
                                             </button>
-                                            <?php if($loggedUser && $loggedUser->can('user.export')): ?>
-                                                <button class="btn btn-xs btn-success float-end" name="submit_btn"
+                                            <a href='<?php echo e((request()->get('status') == 'archived') ? url('/users?status=archived'): url('/users')); ?>' class="btn btn-xs btn-secondary mx-1"><i class="fa fa-refresh"></i></a>
+                                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('user.export')): ?>
+                                                <button class="btn btn-xs btn-success float-end mx-1" name="submit_btn"
                                                     value="export" type="submit">
                                                     <i class="fa-solid fa-download"></i> Export
                                                 </button>
@@ -93,7 +101,7 @@
                                     </div>
                                 </div>
                                 <div class="col-md-3 col-sm-12">
-                                    <?php if($loggedUser && $loggedUser->can('user.create')): ?>
+                                    <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('user.create')): ?>
                                         <a href="<?php echo e(route('users.create')); ?>"
                                             class="btn btn-xs btn-outline-primary float-end" name="create_new"
                                             type="button">
@@ -104,9 +112,7 @@
 
                             </div>
                         </form>
-                        <?php if(session('error')): ?>
-                            <div class="alert alert-danger"><?php echo e(session('error')); ?></div>
-                        <?php endif; ?>
+                        
 
                         <table class="table mb-0">
                             <thead>
@@ -117,14 +123,14 @@
                                     <th>Roles</th>
                                     <th>Permissions</th>
                                     
-                                    <th>Status</th>
+                                    <th class="text-end">Status</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <?php $__currentLoopData = $users; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $val): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                     <tr>
-                                        <td><?php echo e($key + 1); ?></td>
+                                        <td><?php echo e($key + $users->firstItem()); ?></td>
                                         <td><?php echo e($val->name); ?></td>
                                         <td><?php echo e($val->email); ?></td>
                                         <td>
@@ -146,59 +152,72 @@
                                             <?php endif; ?>
                                         </td>
                                         
-                                        <td>
+                                        <td class="text-end">
                                             <div class="form-check form-switch">
-                                                <input class="form-check-input active_inactive_btn "
-                                                    status="<?php echo e($val->status); ?>" <?php echo e($val->status == -1 ? '' : ''); ?>
+                                                <?php if(request()->get('status') == 'archived'): ?>
+                                                    <span class="badge bg-secondary">Archived</span>
+                                                <?php else: ?>
+                                                    <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('user.edit')): ?>
+                                                        <input class="form-check-input active_inactive_btn "
+                                                            status="<?php echo e($val->status); ?>"
+                                                            <?php echo e($val->status == -1 ? '' : ''); ?> table="users"
+                                                            type="checkbox" id="row_<?php echo e($val->id); ?>"
+                                                            value="<?php echo e(Crypt::encryptString($val->id)); ?>"
+                                                            <?php echo e($val->status == 1 ? 'checked' : ''); ?>
 
-                                                    table="users" type="checkbox" id="row_<?php echo e($val->id); ?>"
-                                                    value="<?php echo e(Crypt::encryptString($val->id)); ?>"
-                                                    <?php echo e($val->status == 1 ? 'checked' : ''); ?> style="cursor:pointer">
+                                                            style="cursor:pointer">
+                                                    <?php endif; ?>
+                                                <?php endif; ?>
                                             </div>
                                         </td>
                                         <td class="text-nowrap">
-
-                                            <?php if($loggedUser && $loggedUser->can('user.edit')): ?>
-                                                <a href="<?php echo e(route('users.edit', Crypt::encryptString($val->id))); ?>"
-                                                    class="btn btn-outline-warning btn-sm"><i
-                                                        class="fa-solid fa-pencil"></i> Edit</a>
-                                            <?php endif; ?>
-
-                                            
-
                                             <?php if(request()->get('status') == 'archived'): ?>
-                                                <?php echo Form::open(['method' => 'POST', 'route' => ['users.restore', $val->id], 'style' => 'display:inline']); ?>
-
-                                                <?php echo Form::submit('Restore', ['class' => 'btn btn-primary btn-sm']); ?>
-
-                                                <?php echo Form::close(); ?>
-
-                                            <?php else: ?>
-                                            <?php if($loggedUser && $loggedUser->can('user.delete')): ?>
-                                                <a href="" class="btn btn-outline-danger btn-sm"
-                                                    onclick="event.preventDefault(); confirmDelete(<?php echo e($val->id); ?>)"><i
-                                                        class="fa-solid fa-remove"></i> Delete</a>
-                                                <form id="delete-form-<?php echo e($val->id); ?>"
-                                                    action="<?php echo e(route('users.destroy', Crypt::encryptString($val->id))); ?>"
-                                                    method="POST">
-                                                    <?php echo method_field('DELETE'); ?>
-                                                    <?php echo csrf_field(); ?>
-                                                </form>
-                                            <?php endif; ?>
                                                 
-                                            <?php endif; ?>
-
-                                            <?php if(request()->get('status') == 'archived'): ?>
-                                                <?php echo Form::open([
-                                                    'method' => 'DELETE',
-                                                    'route' => ['users.force-delete', $val->id],
-                                                    'style' => 'display:inline',
-                                                ]); ?>
-
-                                                <?php echo Form::submit('Force Delete', ['class' => 'btn btn-danger btn-sm']); ?>
-
-                                                <?php echo Form::close(); ?>
-
+                                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('user.restore')): ?>
+                                                    <a href=""
+                                                        class="btn btn-primary btn-sm btn-restore-<?php echo e($val->id); ?>"
+                                                        onclick="event.preventDefault(); restoreConfirmation(<?php echo e($val->id); ?>)"><i
+                                                            class="fa-solid fa-trash-arrow-up"></i> Restore</a>
+                                                    <form id="restore-form-<?php echo e($val->id); ?>"
+                                                        action="<?php echo e(route('users.restore', Crypt::encryptString($val->id))); ?>"
+                                                        method="POST" style="display: none">
+                                                        <?php echo method_field('POST'); ?>
+                                                        <?php echo csrf_field(); ?>
+                                                    </form>
+                                                <?php endif; ?>
+                                                
+                                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('user.force_delete')): ?>
+                                                    <a href=""
+                                                        class="btn btn-danger btn-sm btn-force-delete-<?php echo e($val->id); ?>"
+                                                        onclick="event.preventDefault(); forceDelete(<?php echo e($val->id); ?>)"><i
+                                                            class="fa-solid fa-remove"></i> Force Delete</a>
+                                                    <form id="force-delete-form-<?php echo e($val->id); ?>" style="display: none"
+                                                        action="<?php echo e(route('users.force-delete', Crypt::encryptString($val->id))); ?>"
+                                                        method="POST">
+                                                        <?php echo method_field('DELETE'); ?>
+                                                        <?php echo csrf_field(); ?>
+                                                    </form>
+                                                <?php endif; ?>
+                                            <?php else: ?>
+                                                
+                                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('user.edit')): ?>
+                                                    <a href="<?php echo e(route('users.edit', Crypt::encryptString($val->id))); ?>"
+                                                        class="btn btn-outline-warning btn-sm"><i
+                                                            class="fa-solid fa-pencil"></i> Edit</a>
+                                                <?php endif; ?>
+                                                
+                                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('user.delete')): ?>
+                                                    <a href=""
+                                                        class="btn btn-outline-danger btn-sm btn-delete-<?php echo e($val->id); ?>"
+                                                        onclick="event.preventDefault(); confirmDelete(<?php echo e($val->id); ?>)"><i
+                                                            class="fa-solid fa-trash"></i> Delete</a>
+                                                    <form id="delete-form-<?php echo e($val->id); ?>" style="display: none"
+                                                        action="<?php echo e(route('users.destroy', Crypt::encryptString($val->id))); ?>"
+                                                        method="POST">
+                                                        <?php echo method_field('DELETE'); ?>
+                                                        <?php echo csrf_field(); ?>
+                                                    </form>
+                                                <?php endif; ?>
                                             <?php endif; ?>
 
                                         </td>
@@ -206,7 +225,7 @@
                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </tbody>
                         </table>
-                        <?php echo e($users->links()); ?>
+                        <?php echo e($users->withQueryString()->links()); ?>
 
                     </div>
                 </div>
@@ -214,25 +233,13 @@
         </div>
     </div>
 
+    <?php $__env->startPush('styles'); ?>
+        <style>
+            
+        </style>
+    <?php $__env->stopPush(); ?>
     <?php $__env->startPush('scripts'); ?>
-        <script>
-            confirmDelete = (id) => {
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: "You won't be able to revert this!'",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Yes, delete it!'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        document.getElementById('delete-form-' + id).submit();
-                    }
-
-                })
-            }
-        </script>
+        <script></script>
     <?php $__env->stopPush(); ?>
  <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>

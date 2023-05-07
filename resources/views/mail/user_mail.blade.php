@@ -1,2 +1,3 @@
-<h1>Hi, {{ $name }}</h1>
+<strong>Dear, {{ $name }}</strong>
+<br/>
 <p>{{$body}}</p>

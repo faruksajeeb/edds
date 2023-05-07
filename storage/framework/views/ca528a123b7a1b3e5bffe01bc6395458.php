@@ -61,6 +61,12 @@
             background-color: purple;
             border-color: #ddd;
         }
+
+        .disabledAnchor {
+                pointer-events: none !important;
+                cursor: default;
+                color: #CCC;
+            }
     </style>
 
 
@@ -121,17 +127,17 @@
                         if (!form.checkValidity()) {
                             event.preventDefault()
                             event.stopPropagation()
-                        }else{
+                        } else {
                             $('.btn-submit').prop('disabled', true);
                             $('.btn-submit').html('Saving...');
                         }
                         form.classList.add('was-validated')
                     }, false)
-                   
+
                 })
-              
+
         })();
-       
+
 
         $(".yearpicker").yearpicker();
         $(".datepicker").datepicker({
@@ -160,7 +166,7 @@
         }
         // $(document).on('click', ".delete", function(e) {
         //     e.preventDefault();
-           
+
         //     Swal.fire({
         //         title: 'Are you sure?',
         //         text: "You won't be able to revert this!",
@@ -233,6 +239,116 @@
             })
 
         });
+
+        let confirmDelete = (id) => {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You can be able to revert this!'",
+                icon: 'warning',
+                allowOutsideClick: false,
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $('.btn-delete-' + id).addClass('disabledAnchor');
+                    $('.btn-delete-' + id).html(
+                        '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Deleting...'
+                    );
+                    document.getElementById('delete-form-' + id).submit();
+                    processing('Deleting...');
+                }
+
+            })
+        }
+        let forceDelete = (id) => {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!'",
+                icon: 'warning',
+                allowOutsideClick: false,
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $('.btn-force-delete-' + id).addClass('disabledAnchor');
+                    $('.btn-force-delete-' + id).html(
+                        '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Force Deleting...'
+                    );
+                    document.getElementById('force-delete-form-' + id).submit();
+                    processing('Force Deleting...');
+                }
+
+            })
+        }
+        let restoreConfirmation = (id) => {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You want to restore this!'",
+                icon: 'warning',
+                allowOutsideClick: false,
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, restore it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $('.btn-restore-' + id).addClass('disabledAnchor');
+                    $('.btn-restore-' + id).html(
+                        '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Restoring...'
+                    );
+                    document.getElementById('restore-form-' + id).submit();
+                    processing('Restoring...');
+                }
+
+            })
+        }
+        let restoreAllConfirmation = () => {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You want to restore all archived data!'",
+                icon: 'warning',
+                allowOutsideClick: false,
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, restore all!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $('.btn-restore-all').addClass('disabledAnchor');
+                    $('.btn-restore-all').html(
+                        '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Restoring All...'
+                    );
+                    document.getElementById('restore-all-form').submit();
+                    processing('Restoring All...');
+                }
+
+            })
+        }
+
+        let processing = (val)=> {
+            Swal.fire({
+                title: val,
+                // html: 'I will close in <b></b> milliseconds.',
+                html: '',
+                //timer: 10000,
+                allowOutsideClick: false,
+                timerProgressBar: false,
+                didOpen: () => {
+                    Swal.showLoading()
+                    /*const b = Swal.getHtmlContainer().querySelector('b')
+                    timerInterval = setInterval(() => {
+                    	b.textContent = Swal.getTimerLeft()
+                    }, 100)*/
+                },
+                willClose: () => {
+                    clearInterval(timerInterval)
+                }
+            })
+        }
     </script>
 
     <?php echo $__env->yieldPushContent('scripts'); ?>

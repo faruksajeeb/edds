@@ -10,13 +10,17 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Exception;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Redis;
+// use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Session;
+use Mail;
 
 class Webspice
 {
 	protected $user;
-	public $toEmail = 'ofsajeeb@gmail.com';
+	public $emailFrom = 'dev4nns@gmail.com';
+	public $adminEmail = 'ofsajeeb@gmail.com';
+	public $emailFromName = "EDDS ADMIN";
+	
 	public function settings()
 	{
 
@@ -70,7 +74,7 @@ class Webspice
 			  Session::flash('success','Data force deleted successfully.');
 			  break;
 			case 'error':
-				Session::flash('error','Operation Failed.'. $message);
+				Session::flash('error','Operation Failed. '. $message);
 				break;			
 			default:
 				Session::flash('error','We could not execute your request. Something went wrong.');
@@ -271,10 +275,10 @@ class Webspice
 			$text = '';
 			if ($request->status == 1) {
 				$status = -1;
-				$text = 'INACTIVATED';
+				$text = 'inactivated';
 			} elseif ($request->status == -1) {
 				$status = 1;
-				$text = 'ACTIVATED';
+				$text = 'activated';
 			}
 
 			$res = DB::table($request->table)->where('id', $id)->update([
@@ -545,5 +549,15 @@ class Webspice
 	public function getUserId(): int
 	{
 		return Auth::user()->id;
+	}
+
+	public function sendEmail(string $to,string $cc=null,string $subject,array $data=null,string $template){
+		# Send Mail
+		$to = 'ofsajeeb@gmail.com'; # please comment this line on production
+        // Mail::send($template, $data, function ($email) use($to,$subject){
+        //     $email->to($to, 'Concern');
+		// 	$email->subject($subject);
+        //     $email->from($this->emailFrom, $this->emailFromName);
+        // });
 	}
 }

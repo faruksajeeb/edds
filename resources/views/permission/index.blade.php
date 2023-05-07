@@ -8,31 +8,62 @@
                 <div class="card-header bg-white">
                     <div class="row">
                         <div class="col-md-8">
-                            <h3 class="card-title py-1"><i class="fa fa-list"></i> Permission List</h3>
+                            <h3 class="card-title py-1"><i class="fa fa-list"></i>
+                                @if (request()->get('status') == 'archived')
+                                    Archived
+                                @endif Permissions
+                            </h3>
                         </div>
                         <div class="col-md-4">
                             <nav aria-label="breadcrumb" class="float-end">
                                 <ol class="breadcrumb">
                                     <li class="breadcrumb-item"><a href="#">User Management</a></li>
-                                    <li class="breadcrumb-item " aria-current="page">Permissions</li>
+                                    <li class="breadcrumb-item " aria-current="page">
+                                        @if (request()->get('status') == 'archived')
+                                            Archived
+                                        @endif Permissions
+                                    </li>
                                 </ol>
                             </nav>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            @if (request()->get('status') != 'archived')
+                                <a href="{{ url('/permissions?status=archived') }}">Archived permissions</a>
+                            @else
+                                <a href="{{ url('/permissions') }}">Permissions</a>
+                            @endif
+                            @if (request()->get('status') == 'archived')
+                                @can('user.restore')
+                                    <div class="float-end">
+                                        <a href="" class="btn btn-primary btn-sm btn-restore-all"
+                                            onclick="event.preventDefault(); restoreAllConfirmation()"><i
+                                                class="fa-solid fa-trash-arrow-up"></i> Restore All</a>
+                                        <form id="restore-all-form" action="{{ route('permissions.restore-all') }}"
+                                            style="display:inline" method="POST">
+                                            @method('POST')
+                                            @csrf
+                                        </form>
+                                    </div>
+                                @endcan
+                            @endif
                         </div>
                     </div>
                 </div>
                 <div class="card-body">
                     <div class="">
                         <form action="" method="GET">
-                            <input type="hidden" name="_token" value="B7Tuv4nPCe86gWsjastnnmhS3EQPF2a7rOxWV7IA">
+                            @csrf
+                            <input type="hidden" name="status"
+                                value="{{ request()->get('status') == 'archived' ? 'archived' : '' }}">
                             <div class="row">
                                 <div class="col-md-3 col-sm-12">
                                     <select name="search_status" class="form-select" id="search_status">
                                         <option value="">Select Status</option>
-                                        <option value="7">Active
+                                        <option value="1">Active
                                         </option>
-                                        <option value="-7">Inactive
-                                        </option>
-                                        <option value="-1">Deleted
+                                        <option value="-1">Inactive
                                         </option>
                                     </select>
                                 </div>
@@ -45,10 +76,12 @@
                                                 value="search">
                                                 <i class="fa fa-search"></i> Search
                                             </button>
-                                            {{-- <button class="btn btn-xs btn-success float-end" name="submit_btn"
+                                            <a href='{{ request()->get('status') == 'archived' ? url('/permissions?status=archived') : url('/permissions') }}'
+                                                class="btn btn-xs btn-secondary mx-1"><i class="fa fa-refresh"></i></a>
+                                            <button class="btn btn-xs btn-success float-end" name="submit_btn"
                                                 value="export" type="submit">
                                                 <i class="fa-solid fa-download"></i> Export
-                                            </button> --}}
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -86,61 +119,83 @@
                                         <td>{{ $val->guard_name }}</td>
                                         <td>{{ $val->created_at }}</td>
                                         <td>{{ $val->updated_at }}</td>
-                                        <td><div class="form-check form-switch">
-                                            <input class="form-check-input active_inactive_btn "
-                                                status="{{ $val->status }}" {{ $val->status == -1 ? '' : '' }}
-                                                table="permissions" type="checkbox" id="row_{{ $val->id }}"
-                                                value="{{ Crypt::encryptString($val->id) }}"
-                                                {{ $val->status == 1 ? 'checked' : '' }} style="cursor:pointer">
-                                        </div></td>
-                                        <td class="text-nowrap">
-                                            @can('permission.edit')
-                                                <a href="{{ route('permissions.edit', Crypt::encryptString($val->id)) }}"
-                                                    class="btn btn-sm btn-outline-warning"><i
-                                                        class="fa-solid fa-pencil"></i></a>
-                                            @endcan
-                                            @can('permission.delete')
-                                                <a href=""
-                                                    class="btn btn-sm btn-outline-danger delete"
-                                                    onclick="event.preventDefault(); confirmDelete({{ $val->id }})"><i
-                                                        class="fa-solid fa-remove"></i></a>
-                                                <form id="delete-form-{{ $val->id }}"
-                                                    action="{{ route('permissions.destroy', Crypt::encryptString($val->id)) }}"
-                                                    method="POST">
-                                                    @method('DELETE')
-                                                    @csrf
-                                                </form>
-                                            @endcan
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
+                                        <td>
+                                            <div class="form-check form-switch">
+                                                @if (request()->get('status') == 'archived')
+                                                    <span class="badge bg-secondary">Archived</span>
+                                                @else
+                                                    @can('permission.edit')
+                                                        <input class="form-check-input active_inactive_btn "
+                                                            status="{{ $val->status }}"
+                                                            {{ $val->status == -1 ? '' : '' }} table="permissions"
+                                                            type="checkbox" id="row_{{ $val->id }}"
+                                                            value="{{ Crypt::encryptString($val->id) }}"
+                                                            {{ $val->status == 1 ? 'checked' : '' }}
+                                                            style="cursor:pointer">
+                                                    @endif
+                                    @endif
+                        </div>
+                        </td>
+                        <td class="text-nowrap">
+                            @if (request()->get('status') == 'archived')
+                                {{-- restore button --}}
+                                @can('permission.restore')
+                                    <a href="" class="btn btn-primary btn-sm btn-restore-{{ $val->id }}"
+                                        onclick="event.preventDefault(); restoreConfirmation({{ $val->id }})"><i
+                                            class="fa-solid fa-trash-arrow-up"></i> Restore</a>
+                                    <form id="restore-form-{{ $val->id }}"
+                                        action="{{ route('permissions.restore', Crypt::encryptString($val->id)) }}" method="POST"
+                                        style="display: none">
+                                        @method('POST')
+                                        @csrf
+                                    </form>
+                                @endcan
+                                {{-- force delete button --}}
+                                @can('permission.force_delete')
+                                    <a href="" class="btn btn-danger btn-sm btn-force-delete-{{ $val->id }}"
+                                        onclick="event.preventDefault(); forceDelete({{ $val->id }})"><i
+                                            class="fa-solid fa-remove"></i> Force Delete</a>
+                                    <form id="force-delete-form-{{ $val->id }}" style="display: none"
+                                        action="{{ route('permissions.force-delete', Crypt::encryptString($val->id)) }}"
+                                        method="POST">
+                                        @method('DELETE')
+                                        @csrf
+                                    </form>
+                                @endcan
+                            @else
+                                {{-- edit button --}}
+                                @can('permission.edit')
+                                    <a href="{{ route('permissions.edit', Crypt::encryptString($val->id)) }}"
+                                        class="btn btn-outline-warning btn-sm"><i class="fa-solid fa-pencil"></i> Edit</a>
+                                @endcan
+                                {{-- delete button --}}
+                                @can('permission.delete')
+                                    <a href="" class="btn btn-outline-danger btn-sm btn-delete-{{ $val->id }}"
+                                        onclick="event.preventDefault(); confirmDelete({{ $val->id }})"><i
+                                            class="fa-solid fa-trash"></i> Delete</a>
+                                    <form id="delete-form-{{ $val->id }}" style="display: none"
+                                        action="{{ route('permissions.destroy', Crypt::encryptString($val->id)) }}" method="POST">
+                                        @method('DELETE')
+                                        @csrf
+                                    </form>
+                                @endcan
+                            @endif
+
+                        </td>
+                        </tr>
+                        @endforeach
+                        </tbody>
                         </table>
-                        {{ $permissions->links() }}
+                        {{ $permissions->withQueryString()->links() }}
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+        </div>
 
-    @push('scripts')
-    <script>
-        confirmDelete = (id) => {
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "You won't be able to revert this!'",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, delete it!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    document.getElementById('delete-form-' + id).submit();
-                }
-    
-            })
-        }
-    </script>
-    @endpush
-</x-app-layout>
+        @push('scripts')
+            <script>
+               
+            </script>
+        @endpush
+    </x-app-layout>

@@ -8,6 +8,10 @@ use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvi
 use Illuminate\Support\Facades\Event;
 use App\Models\User;
 use App\Observers\UserObserver;
+use Spatie\Permission\Models\Role;
+use App\Observers\RoleObserver;
+use Spatie\Permission\Models\Permission;
+use App\Observers\PermissionObserver;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -29,7 +33,9 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        User::observe(UserObserver::class); // Use Here
+        User::observe(UserObserver::class);
+        Role::observe(RoleObserver::class);
+        Permission::observe(PermissionObserver::class);
     }
 
     /**
