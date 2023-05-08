@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Lib\Webspice;
+use App\Models\Option;
 use Illuminate\Http\Request;
 use App\Models\Question;
 use Exception;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\QuestionExport;
 use Illuminate\Support\Facades\Cache;
 
 class QuestionController extends Controller
@@ -30,23 +33,47 @@ class QuestionController extends Controller
         #permission verfy
         $this->webspice->permissionVerify('question.view');
         // $questions = Cache::remember('questions-page-' . request('page', 1), 60*60, function () use($request) {
+
+        $fileTag = '';
+
+        if ($request->get('status') == 'archived') {
+            $fileTag = 'Archived ';
+            $query = $this->questions->orderBy('deleted_at', 'desc');
+            $query->onlyTrashed();
+        } else {
             $query = $this->questions->orderBy('created_at', 'desc');
-            if ($request->search_status != null) {
-                $query->where('status', $request->search_status);
+        }
+        if ($request->search_status != null) {
+            $query->where('status', $request->search_status);
+        }
+
+        $searchText = $request->search_text;
+        if ($searchText != null) {
+            // $query = $query->search($request->search_text); // search by value
+            $query->where(function ($query) use ($searchText) {
+                $query->where('value', 'LIKE', '%' . $searchText . '%')
+                    ->orWhere('value_bangla', 'LIKE', '%' . $searchText . '%');
+            });
+        }
+        $query->with('option');
+        if (in_array($type=$request->submit_btn, array('export', 'csv', 'pdf'))) {
+            $title = $fileTag . 'Question List';
+            // $this->export($request->submit_btn,$query,$title);
+            $fileName = str_replace(' ', '_', strtolower($title));
+            if ($type == 'csv') {
+                return Excel::download(new QuestionExport($query->get(), $title), $fileName . '_' . time() . '.csv', \Maatwebsite\Excel\Excel::CSV);
             }
-            $searchText = $request->search_text;
-            if ($searchText != null) {
-                // $query = $query->search($request->search_text); // search by value
-                $query->where(function ($query) use ($searchText) {
-                    $query->where('value', 'LIKE', '%' . $searchText . '%')
-                        ->orWhere('value_bangla', 'LIKE', '%' . $searchText . '%');
-                });
-            }
-            // return $query->paginate(5);
-            $questions = $query->paginate(5);
+            return Excel::download(new QuestionExport($query->get(), $title), $fileName . '_' . time() . '.xlsx');
+        }
+
+        $questions = $query->paginate(5);
         // });
-   
+
         return view('question.index', compact('questions'));
+    }
+
+    public function export(String $type, $query, String $title)
+    {
     }
 
     /**
@@ -54,9 +81,20 @@ class QuestionController extends Controller
      */
     public function create()
     {
+
         #permission verfy
         $this->webspice->permissionVerify('question.create');
-        return view('question.create');
+        if (!Cache::has('active-respondent-options')) {
+            $respondents = Option::where(['option_group_name' => 'respondent', 'status' => 1])->get();
+            Cache::forever('active-respondent-options', $respondents);
+        } else {
+            // $respondents = Cache::get('respondent-options')->where('status',1);
+            $respondents = Cache::get('active-respondent-options');
+        }
+
+        return view('question.create', [
+            'respondents' => $respondents
+        ]);
     }
 
     /**
@@ -69,31 +107,28 @@ class QuestionController extends Controller
 
         $request->validate(
             [
-                'value' => 'required|regex:/^[a-zA-Z0-9._ ]+$/u|min:3|max:1000|unique:questions',
+                'value' => 'required|min:3|max:1000|unique:questions',
+                'respondent_id' => 'required',
+                'input_method' => 'required',
             ],
             [
-                'value.required' => 'Value field is required.'
+                'value.required' => 'Value field is required.',
+                'respondent_id.required' => 'Respondent field is required.',
+                'input_method.required' => 'Input method field is required.',
             ]
         );
 
         $data = array(
             'value' => $request->value,
             'value_bangla' => $request->value_bangla,
+            'respondent_id' => $request->respondent_id,
+            'input_method' => $request->input_method,
             'created_at' => $this->webspice->now('datetime24'),
             'created_by' => $this->webspice->getUserId(),
         );
 
-
         try {
-            $question = $this->questions->create($data);
-            if ($question) {
-                $this->webspice->log($this->tableName, $question->id, "INSERTED");
-                # Cache Update
-                $this->webspice->forgetCache($this->tableName);
-                $this->webspice->insertOrFail('success');
-            } else {
-                $this->webspice->insertOrFail('error');
-            }
+            $this->questions->create($data);
         } catch (Exception $e) {
             $this->webspice->insertOrFail('error', $e->getMessage());
         }
@@ -121,8 +156,16 @@ class QuestionController extends Controller
         $id = $this->webspice->encryptDecrypt('decrypt', $id);
 
         $questionInfo = $this->questions->find($id);
+        if (!Cache::has('active-respondent-options')) {
+            $respondents = Option::where(['option_group_name' => 'respondent', 'status' => 1])->get();
+            Cache::forever('active-respondent-options', $respondents);
+        } else {
+            // $respondents = Cache::get('respondent-options')->where('status',1);
+            $respondents = Cache::get('active-respondent-options');
+        }
         return view('question.edit', [
             'questionInfo' => $questionInfo,
+            'respondents' => $respondents
         ]);
     }
 
@@ -139,32 +182,26 @@ class QuestionController extends Controller
 
         $request->validate(
             [
-                'value' => 'required|regex:/^[a-zA-Z0-9._ ]+$/u|min:3|max:1000|unique:questions,value,' . $id,
+                'value' => 'required|min:3|max:1000|unique:questions,value,' . $id,
+                'respondent_id' => 'required',
+                'input_method' => 'required',
             ],
             [
                 'value.required' => 'Value field is required.',
+                'respondent_id.required' => 'Respondent field is required.',
+                'input_method.required' => 'Input method field is required.',
                 'value.unique' => 'This value has already been taken for another record.'
             ]
         );
-
-        $question = $this->questions->find($id);
-
-        $question->value = $request->value;
-        $question->value_bangla = $request->value_bangla;
-        $question->updated_at = $this->webspice->now('datetime24');
-        $question->updated_by = $this->webspice->getUserId();
         try {
-            $result = $question->save();
-            if ($result) {
-                #Log
-                $this->webspice->log($this->tableName, $id, "UPDATED");
-                # Cache Update
-                $this->webspice->forgetCache($this->tableName);
-                #Message
-                $this->webspice->updateOrFail('success');
-            } else {
-                $this->webspice->updateOrFail('error');
-            }
+            $question = $this->questions->find($id);
+            $question->value = $request->value;
+            $question->value_bangla = $request->value_bangla;
+            $question->respondent_id = $request->respondent_id;
+            $question->input_method = $request->input_method;
+            $question->updated_at = $this->webspice->now('datetime24');
+            $question->updated_by = $this->webspice->getUserId();
+            $question->save();
         } catch (Exception $e) {
             $this->webspice->updateOrFail('error', $e->getMessage());
         }
@@ -180,22 +217,59 @@ class QuestionController extends Controller
         # permission verfy
         $this->webspice->permissionVerify('question.delete');
 
-        $id = $this->webspice->encryptDecrypt('decrypt', $id);
-        $question = $this->questions->find($id);
         try {
+            $id = $this->webspice->encryptDecrypt('decrypt', $id);
+            $question = $this->questions->findOrFail($id);
             if (!is_null($question)) {
-                $result = $question->delete();
-            }
-            if ($result) {
-                # Log
-                $this->webspice->log($this->tableName, $id, "DELETED");
-                $this->webspice->deleteOrFail('success');
-            } else {
-                $this->webspice->deleteOrFail('error');
+                $question->delete();
             }
         } catch (Exception $e) {
-            $this->webspice->deleteOrFail('error', $e->getMessage());
+            $this->webspice->message('error', $e->getMessage());
         }
         return back();
+    }
+
+
+    public function forceDelete($id)
+    {
+        #permission verfy
+        $this->webspice->permissionVerify('question.force_delete');
+        try {
+            #decrypt value
+            $id = $this->webspice->encryptDecrypt('decrypt', $id);
+            $permission = Question::withTrashed()->findOrFail($id);
+            $permission->forceDelete();
+        } catch (Exception $e) {
+            $this->webspice->message('error', $e->getMessage());
+        }
+        return redirect()->back();
+    }
+    public function restore($id)
+    {
+        #permission verfy
+        $this->webspice->permissionVerify('question.restore');
+        try {
+            $id = $this->webspice->encryptDecrypt('decrypt', $id);
+            $permission = Question::withTrashed()->findOrFail($id);
+            $permission->restore();
+        } catch (Exception $e) {
+            $this->webspice->message('error', $e->getMessage());
+        }
+        return redirect()->route('questions.index');
+    }
+
+    public function restoreAll()
+    {
+        #permission verfy
+        $this->webspice->permissionVerify('question.restore');
+        try {
+            $permissions = Question::onlyTrashed()->get();
+            foreach ($permissions as $permission) {
+                $permission->restore();
+            }
+        } catch (Exception $e) {
+            $this->webspice->message('error', $e->getMessage());
+        }
+        return redirect()->route('questions.index');
     }
 }

@@ -24,6 +24,7 @@ return new class extends Migration
             $table->foreign('qustion_category_id')->references('id')->on('options')->onDelete('cascade');
             $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('cascade');
+            $table->softDeletes();
         });
     }
 

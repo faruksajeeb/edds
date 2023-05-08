@@ -5,24 +5,24 @@ namespace App\Http\Controllers;
 use App\Lib\Webspice;
 use App\Models\Question;
 use Illuminate\Http\Request;
-use App\Models\Answer;
+use App\Models\SubQuestion;
 use Exception;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\AnswerExport;
+use App\Exports\SubQuestionExport;
 use Illuminate\Support\Facades\Cache;
 
-class AnswerController extends Controller
+class SubQuestionController extends Controller
 {
     public $webspice;
     public $tableName;
-    protected $answers;
+    protected $sub_questions;
 
 
-    public function __construct(Answer $answers, Webspice $webspice)
+    public function __construct(SubQuestion $sub_questions, Webspice $webspice)
     {
         $this->webspice = $webspice;
-        $this->answers = $answers;
-        $this->tableName = 'answers';
+        $this->sub_questions = $sub_questions;
+        $this->tableName = 'sub_questions';
         $this->middleware(function ($request, $next) {
             return $next($request);
         });
@@ -31,17 +31,17 @@ class AnswerController extends Controller
     public function index(Request $request)
     {
         #permission verfy
-        $this->webspice->permissionVerify('answer.view');
-        // $answers = Cache::remember('questions-page-' . request('page', 1), 60*60, function () use($request) {
+        $this->webspice->permissionVerify('sub_question.view');
+        // $sub_questions = Cache::remember('questions-page-' . request('page', 1), 60*60, function () use($request) {
 
         $fileTag = '';
 
         if ($request->get('status') == 'archived') {
             $fileTag = 'Archived ';
-            $query = $this->answers->orderBy('deleted_at', 'desc');
+            $query = $this->sub_questions->orderBy('deleted_at', 'desc');
             $query->onlyTrashed();
         } else {
-            $query = $this->answers->orderBy('created_at', 'desc');
+            $query = $this->sub_questions->orderBy('created_at', 'desc');
         }
         if ($request->search_status != null) {
             $query->where('status', $request->search_status);
@@ -59,19 +59,19 @@ class AnswerController extends Controller
         $query->with('question');
         # Export
         if (in_array($type=$request->submit_btn, array('export', 'csv', 'pdf'))) {
-            $title = $fileTag . 'Answer List';
+            $title = $fileTag . 'SubQuestion List';
             // $this->export($request->submit_btn,$query,$title);
             $fileName = str_replace(' ', '_', strtolower($title));
             if ($type == 'csv') {
-                return Excel::download(new AnswerExport($query->get(), $title), $fileName . '_' . time() . '.csv', \Maatwebsite\Excel\Excel::CSV);
+                return Excel::download(new SubQuestionExport($query->get(), $title), $fileName . '_' . time() . '.csv', \Maatwebsite\Excel\Excel::CSV);
             }
-            return Excel::download(new AnswerExport($query->get(), $title), $fileName . '_' . time() . '.xlsx');
+            return Excel::download(new SubQuestionExport($query->get(), $title), $fileName . '_' . time() . '.xlsx');
         }
 
-        $answers = $query->paginate(5);
+        $sub_questions = $query->paginate(5);
         // });
 
-        return view('answer.index', compact('answers'));
+        return view('sub_question.index', compact('sub_questions'));
     }
 
     public function export(String $type, $query, String $title)
@@ -85,16 +85,16 @@ class AnswerController extends Controller
     {
 
         #permission verfy
-        $this->webspice->permissionVerify('answer.create');
+        $this->webspice->permissionVerify('sub_question.create');
         if (!Cache::has('active-questions')) {
             $questions = Question::where(['status' => 1])->get();
             Cache::forever('active-questions', $questions);
         } else {
-            // $questions = Cache::get('questions')->where('status',1);
+            // $questions = Cache::get('sub_questions')->where('status',1);
             $questions = Cache::get('active-questions');
         }
 
-        return view('answer.create', [
+        return view('sub_question.create', [
             'questions' => $questions
         ]);
     }
@@ -105,11 +105,11 @@ class AnswerController extends Controller
     public function store(Request $request)
     {
         #permission verfy
-        $this->webspice->permissionVerify('answer.create');
+        $this->webspice->permissionVerify('sub_question.create');
 
         $request->validate(
             [
-                'value' => 'required|min:3|max:1000|unique:answers',
+                'value' => 'required|min:3|max:1000|unique:sub_questions',
                 'question_id' => 'required',
             ],
             [
@@ -127,7 +127,7 @@ class AnswerController extends Controller
         );
 
         try {
-            $this->answers->create($data);
+            $this->sub_questions->create($data);
         } catch (Exception $e) {
             $this->webspice->insertOrFail('error', $e->getMessage());
         }
@@ -150,20 +150,20 @@ class AnswerController extends Controller
     public function edit(string $id)
     {
         # permission verfy
-        $this->webspice->permissionVerify('answer.edit');
+        $this->webspice->permissionVerify('sub_question.edit');
         # decrypt value
         $id = $this->webspice->encryptDecrypt('decrypt', $id);
 
-        $answerInfo = $this->answers->find($id);
+        $sub_questionInfo = $this->sub_questions->find($id);
         if (!Cache::has('active-questions')) {
             $questions = Question::where(['status' => 1])->get();
             Cache::forever('active-questions', $questions);
         } else {
-            // $questions = Cache::get('questions')->where('status',1);
+            // $questions = Cache::get('sub_questions')->where('status',1);
             $questions = Cache::get('active-questions');
         }
-        return view('answer.edit', [
-            'answerInfo' => $answerInfo,
+        return view('sub_question.edit', [
+            'sub_questionInfo' => $sub_questionInfo,
             'questions' => $questions
         ]);
     }
@@ -174,14 +174,14 @@ class AnswerController extends Controller
     public function update(Request $request, string $id)
     {
         # permission verfy
-        $this->webspice->permissionVerify('answer.edit');
+        $this->webspice->permissionVerify('sub_question.edit');
 
         # decrypt value
         $id = $this->webspice->encryptDecrypt('decrypt', $id);
 
         $request->validate(
             [
-                'value' => 'required|min:3|max:1000|unique:answers,value,' . $id,
+                'value' => 'required|min:3|max:1000|unique:sub_questions,value,' . $id,
                 'question_id' => 'required',
             ],
             [
@@ -191,18 +191,18 @@ class AnswerController extends Controller
             ]
         );
         try {
-            $answer = $this->answers->find($id);
-            $answer->value = $request->value;
-            $answer->value_bangla = $request->value_bangla;
-            $answer->question_id = $request->question_id;
-            $answer->updated_at = $this->webspice->now('datetime24');
-            $answer->updated_by = $this->webspice->getUserId();
-            $answer->save();
+            $question = $this->sub_questions->find($id);
+            $question->value = $request->value;
+            $question->value_bangla = $request->value_bangla;
+            $question->question_id = $request->question_id;
+            $question->updated_at = $this->webspice->now('datetime24');
+            $question->updated_by = $this->webspice->getUserId();
+            $question->save();
         } catch (Exception $e) {
             $this->webspice->updateOrFail('error', $e->getMessage());
         }
 
-        return redirect('answers');
+        return redirect('sub_questions');
     }
 
     /**
@@ -211,13 +211,13 @@ class AnswerController extends Controller
     public function destroy(string $id)
     {
         # permission verfy
-        $this->webspice->permissionVerify('answer.delete');
+        $this->webspice->permissionVerify('sub_question.delete');
 
         try {
             $id = $this->webspice->encryptDecrypt('decrypt', $id);
-            $answer = $this->answers->findOrFail($id);
-            if (!is_null($answer)) {
-                $answer->delete();
+            $question = $this->sub_questions->findOrFail($id);
+            if (!is_null($question)) {
+                $question->delete();
             }
         } catch (Exception $e) {
             $this->webspice->message('error', $e->getMessage());
@@ -229,11 +229,11 @@ class AnswerController extends Controller
     public function forceDelete($id)
     {
         #permission verfy
-        $this->webspice->permissionVerify('answer.force_delete');
+        $this->webspice->permissionVerify('sub_question.force_delete');
         try {
             #decrypt value
             $id = $this->webspice->encryptDecrypt('decrypt', $id);
-            $permission = Answer::withTrashed()->findOrFail($id);
+            $permission = SubQuestion::withTrashed()->findOrFail($id);
             $permission->forceDelete();
         } catch (Exception $e) {
             $this->webspice->message('error', $e->getMessage());
@@ -243,29 +243,29 @@ class AnswerController extends Controller
     public function restore($id)
     {
         #permission verfy
-        $this->webspice->permissionVerify('answer.restore');
+        $this->webspice->permissionVerify('sub_question.restore');
         try {
             $id = $this->webspice->encryptDecrypt('decrypt', $id);
-            $permission = Answer::withTrashed()->findOrFail($id);
+            $permission = SubQuestion::withTrashed()->findOrFail($id);
             $permission->restore();
         } catch (Exception $e) {
             $this->webspice->message('error', $e->getMessage());
         }
-        return redirect()->route('answers.index');
+        return redirect()->route('sub_questions.index');
     }
 
     public function restoreAll()
     {
         #permission verfy
-        $this->webspice->permissionVerify('answer.restore');
+        $this->webspice->permissionVerify('sub_question.restore');
         try {
-            $permissions = Answer::onlyTrashed()->get();
+            $permissions = SubQuestion::onlyTrashed()->get();
             foreach ($permissions as $permission) {
                 $permission->restore();
             }
         } catch (Exception $e) {
             $this->webspice->message('error', $e->getMessage());
         }
-        return redirect()->route('answers.index');
+        return redirect()->route('sub_questions.index');
     }
 }

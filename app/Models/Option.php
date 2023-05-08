@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Option extends Model
 {
-    use HasFactory;
+    use HasFactory,SoftDeletes;
+
     public $fillable=[
         'id',
         'option_group_name',
@@ -18,4 +20,6 @@ class Option extends Model
         'updated_by',
         'status'
     ];
+
+    protected $dates = ['deleted_at'];
 }

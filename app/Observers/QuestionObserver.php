@@ -3,23 +3,51 @@
 namespace App\Observers;
 
 use App\Models\Question;
+use App\Lib\Webspice;
 
 class QuestionObserver
 {
+    protected $webspice;
+
+    public function __construct(Webspice $webspice)
+    {
+        $this->webspice = $webspice;
+    }
+
+    public function cacheClear()
+    {
+        $this->webspice->forgetCache('questions');
+    }
     /**
      * Handle the Question "created" event.
      */
     public function created(Question $question): void
     {
-        //
+        #Log
+        $this->webspice->log('questions', $question->id, "INSERTED");
+        # Cache Update
+        $this->cacheClear();
+        #Message
+        $this->webspice->message('insert_success');
     }
+
 
     /**
      * Handle the Question "updated" event.
      */
     public function updated(Question $question): void
     {
-        //
+        #Log
+        $this->webspice->log('questions', $question->id, "UPDATED");
+        # Cache Update
+        $this->cacheClear();
+        #Message
+        $this->webspice->message('update_success');
+
+        // $question->updated_at = $this->webspice->now('datetime24');
+        // $question->updated_by = $this->webspice->getQuestionId();
+        // $question->save();
+
     }
 
     /**
@@ -27,22 +55,36 @@ class QuestionObserver
      */
     public function deleted(Question $question): void
     {
-        //
+        #Log
+        $this->webspice->log('questions', $question->id, "DELETED");
+        # Cache Update
+        $this->cacheClear();
+        #Message
+        $this->webspice->message('delete_success');
     }
 
-    /**
-     * Handle the Question "restored" event.
-     */
+    
     public function restored(Question $question): void
     {
-        //
+        #Log
+        $this->webspice->log('questions', $question->id, "RESTORED");
+        # Cache Update
+        $this->cacheClear();
+        #Message
+        $this->webspice->message('restore_success');
+
+        // $question->deleted_by = NULL;
+        // $question->save();
     }
 
-    /**
-     * Handle the Question "force deleted" event.
-     */
+   
     public function forceDeleted(Question $question): void
     {
-        //
+        #Log
+        $this->webspice->log('questions', $question->id, "FORCE DELETED");
+        # Cache Update
+        $this->cacheClear();
+        #Message
+        $this->webspice->message('force_delete_success');
     }
 }

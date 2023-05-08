@@ -261,8 +261,7 @@ class PermissionController extends Controller
         } catch (Exception $e) {
             $this->webspice->message('error', $e->getMessage());
         }
-        // return redirect()->route('permissions.index', ['status' => 'archived'])->withSuccess(__('User restored successfully.'));
-        return redirect()->route('permissions.index');
+       return redirect()->route('permissions.index');
     }
 
     public function restoreAll()
@@ -278,7 +277,6 @@ class PermissionController extends Controller
             $this->webspice->message('error', $e->getMessage());
         }
         return redirect()->route('permissions.index');
-        // return redirect()->route('permissions.index')->withSuccess(__('All roles restored successfully.'));
     }
 
     public function clearPermissionCache()

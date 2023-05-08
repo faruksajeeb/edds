@@ -146,6 +146,8 @@ class Options extends Component
                 Webspice::log($this->tableName, $this->ids, 'INSERT');
                 # Cache Update
                 Cache::forget($this->tableName);
+                Cache::forget($this->option_group.'-options');
+                Cache::forget('active-'.$this->option_group.'-options');
                 $this->emit('success', 'inserted');
             }
         } catch (\Exception $e) {
@@ -191,7 +193,8 @@ class Options extends Component
             # Write Log
             Webspice::log($this->tableName, $this->ids, 'UPDATE');
             # Cache Update
-            Cache::forget($this->tableName);
+            Cache::forget($this->option_group.'-options');
+            Cache::forget('active-'.$this->option_group.'-options');
             # reset form
             $this->resetInputFields();
             # Return Message
@@ -207,11 +210,14 @@ class Options extends Component
     {
         try {
             $id = Crypt::decryptString($id);
-            Option::where('id', $id)->delete();
+            $option = Option::where('id', $id);
+            $option->delete();
             # Write Log
             Webspice::log($this->tableName, $id, 'DELETE');
             # Cache Update
             Cache::forget($this->tableName);
+            Cache::forget($this->option_group_name.'-options');
+            Cache::forget('active-'.$this->option_group_name.'-options');
             # Success message
             $this->emit('success', 'deleted');
         } catch (\Exception $e) {

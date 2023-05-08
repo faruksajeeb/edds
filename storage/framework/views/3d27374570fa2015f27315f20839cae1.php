@@ -64,9 +64,19 @@
                                     <a href="<?php echo e(url('questions')); ?>" class="nav-link px-2"><i class="fa-solid fa-question"></i> <span class="d-sm-inline ps-1 mb-1"> Questions</span></a>
                                 </li>
                             <?php endif; ?>
+                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('sub_question.view')): ?>
+                            <li class="<?php echo e(Route::is('sub_question.index') ? 'active' : ''); ?>">
+                                <a href="<?php echo e(url('sub_questions')); ?>" class="nav-link px-2"><i class="fa-solid fa-question"></i> <span class="d-sm-inline ps-1 mb-1"> Sub Questions</span></a>
+                            </li>
+                        <?php endif; ?>
                             <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('answer.view')): ?>
                                 <li class="<?php echo e(Route::is('answer.index') ? 'active' : ''); ?>">
                                     <a href="<?php echo e(url('answers')); ?>" class="nav-link px-2"><i class="fa-regular fa-comment"></i><span class="d-sm-inline ps-1 mb-1"> Answers</span></a>
+                                </li>
+                            <?php endif; ?>
+                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('sub_answer.view')): ?>
+                                <li class="<?php echo e(Route::is('sub_answer.index') ? 'active' : ''); ?>">
+                                    <a href="<?php echo e(url('sub_answers')); ?>" class="nav-link px-2"><i class="fa-regular fa-comment"></i><span class="d-sm-inline ps-1 mb-1"> Sub Answers</span></a>
                                 </li>
                             <?php endif; ?>
                         </ul>

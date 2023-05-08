@@ -105,7 +105,7 @@ class OptionGroup extends Component
 
         # Validate form data
         $validator = $this->validate([
-            'option_group_name' => 'required|unique:option_groups,option_group_name|min:3|max:100'
+            'option_group_name' => 'required||regex:[a-z_0-9]|unique:option_groups,option_group_name|min:3|max:100'
         ]);
         try {
             # Save form data
@@ -156,7 +156,7 @@ class OptionGroup extends Component
     {
         # Validate form data
         $validator = $this->validate([
-            'option_group_name' => 'min:3|max:100|required|unique:option_groups,option_group_name,' . $this->ids,
+            'option_group_name' => 'required|regex:[a-z_0-9]|min:3|max:100|unique:option_groups,option_group_name,' . $this->ids,
         ]);
         try {
             $this->flag = 1;

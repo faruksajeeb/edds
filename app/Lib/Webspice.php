@@ -20,10 +20,9 @@ class Webspice
 	public $emailFrom = 'dev4nns@gmail.com';
 	public $adminEmail = 'ofsajeeb@gmail.com';
 	public $emailFromName = "EDDS ADMIN";
-	
+
 	public function settings()
 	{
-
 	}
 
 	static function test()
@@ -32,7 +31,7 @@ class Webspice
 		return 'Hello! Im from webspice.';
 	}
 
-	static function log(string $table, int $id, string $action)
+	static function log(string $table, $id, string $action)
 	{
 		$currentTime = Carbon::now("Asia/Dhaka");
 		$userId = Auth::user()->id;
@@ -56,29 +55,30 @@ class Webspice
 			abort(403, 'SORRY! unauthorized access!');
 		}
 	}
-	public function message(string $type, string $message = null){
+	public function message(string $type, string $message = null)
+	{
 		switch ($type) {
 			case 'insert_success':
-				Session::flash('success','Data Inserted Successfully.');
-			  break;
+				Session::flash('success', 'Data Inserted Successfully.');
+				break;
 			case 'update_success':
-			  Session::flash('success','Data Updated Successfully.');
-			  break;
+				Session::flash('success', 'Data Updated Successfully.');
+				break;
 			case 'delete_success':
-				Session::flash('success','Data Deleted Successfully.');
-			  break;			
+				Session::flash('success', 'Data Deleted Successfully.');
+				break;
 			case 'restore_success':
-				Session::flash('success','Data Restored Successfully.');
-			  break;			
+				Session::flash('success', 'Data Restored Successfully.');
+				break;
 			case 'force_delete_success':
-			  Session::flash('success','Data force deleted successfully.');
-			  break;
+				Session::flash('success', 'Data force deleted successfully.');
+				break;
 			case 'error':
-				Session::flash('error','Operation Failed. '. $message);
-				break;			
+				Session::flash('error', 'Operation Failed. ' . $message);
+				break;
 			default:
-				Session::flash('error','We could not execute your request. Something went wrong.');
-		  }
+				Session::flash('error', 'We could not execute your request. Something went wrong.');
+		}
 	}
 
 	public function insertOrFail(string $type, string $message = null)
@@ -280,8 +280,8 @@ class Webspice
 				$status = 1;
 				$text = 'activated';
 			}
-
-			$res = DB::table($request->table)->where('id', $id)->update([
+			$effectedRow = DB::table($request->table)->where('id', $id)->first();
+			DB::table($request->table)->where('id', $id)->update([
 				'status' => $status,
 				'updated_by' => $this->getUserId(),
 				'updated_at' =>  $this->now("datetime24")
@@ -291,49 +291,58 @@ class Webspice
 				'changed_value' => $status,
 				'message' => "Status $text successfully."
 			];
+			if ($queryStatus['status'] == 'success') {
+				# log
+				$this->log($request->table, $id, $text);
+				$this->forgetCache($request->table);
+				if ($request->table == 'options') {
+					$this->forgetCache('active-' . $effectedRow->option_group_name . '-options');
+					$this->forgetCache('inactive-' . $effectedRow->option_group_name . '-options');
+				} else {
+					$this->forgetCache('active-' . $request->table);
+					$this->forgetCache('inactive-' . $request->table);
+				}
+
+				# Update chace 
+				//  $cache = Redis::get($request->table);
+				// if (!isset($cache)) {
+				// 	$cache = DB::table($request->table)->get();
+				// 	Redis::set($request->table, json_encode($cache));
+				// 	$cache = Redis::get($request->table);
+				// }
+				// $cache = Cache::get($request->table);
+
+				// if (!isset($cache)) {
+				// 	$cache = DB::table($request->table)->get();
+				// 	Cache::set($request->table, json_encode($cache));
+				// 	$cache = Cache::get($request->table);
+				// }
+
+				// $cacheData = collect(json_decode($cache));
+				// $data = $cacheData->where('id', $id)->first();
+				// $data->status = $status;
+				// $data->updated_by = $this->getUserId();
+				// $data->updated_at = $this->now("datetime24");
+				// $index = $cacheData->search($data);
+				// $cacheData[$index] = $data;
+				// Redis::set($request->table, json_encode($cacheData));
+				// Cache::set($request->table, json_encode($cacheData));
+				//dd(Cache::get($request->table));
+			}
 		} catch (Exception $e) {
 			$queryStatus = [
 				'status' => 'not_success',
 				'message' => 'SORRY! Status has not changed.' . $e->getMessage()
 			];
 		}
-		if ($queryStatus['status'] == 'success') {
-			# log
-			$this->log($request->table, $id, $text);
-
-			# Update chace 
-			//  $cache = Redis::get($request->table);
-			// if (!isset($cache)) {
-			// 	$cache = DB::table($request->table)->get();
-			// 	Redis::set($request->table, json_encode($cache));
-			// 	$cache = Redis::get($request->table);
-			// }
-			$cache = Cache::get($request->table);
-
-			if (!isset($cache)) {
-				$cache = DB::table($request->table)->get();
-				Cache::set($request->table, json_encode($cache));
-				$cache = Cache::get($request->table);
-			}
-
-			$cacheData = collect(json_decode($cache));
-			$data = $cacheData->where('id', $id)->first();
-			$data->status = $status;
-			$data->updated_by = $this->getUserId();
-			$data->updated_at = $this->now("datetime24");
-			$index = $cacheData->search($data);
-			$cacheData[$index] = $data;
-			// Redis::set($request->table, json_encode($cacheData));
-			Cache::set($request->table, json_encode($cacheData));
-			//dd(Cache::get($request->table));
-		}
 
 		return response()->json($queryStatus);
 	}
 
-	function forgetCache($tableName)
+	# Remove Cache	
+	function forgetCache($cacheName)
 	{
-		Cache::forget($tableName);
+		Cache::forget($cacheName);
 	}
 
 	function static_exchange_status($status)
@@ -551,13 +560,14 @@ class Webspice
 		return Auth::user()->id;
 	}
 
-	public function sendEmail(string $to,string $cc=null,string $subject,array $data=null,string $template){
+	public function sendEmail(string $to, string $cc = null, string $subject, array $data = null, string $template)
+	{
 		# Send Mail
 		$to = 'ofsajeeb@gmail.com'; # please comment this line on production
-        // Mail::send($template, $data, function ($email) use($to,$subject){
-        //     $email->to($to, 'Concern');
+		// Mail::send($template, $data, function ($email) use($to,$subject){
+		//     $email->to($to, 'Concern');
 		// 	$email->subject($subject);
-        //     $email->from($this->emailFrom, $this->emailFromName);
-        // });
+		//     $email->from($this->emailFrom, $this->emailFromName);
+		// });
 	}
 }

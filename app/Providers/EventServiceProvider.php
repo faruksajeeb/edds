@@ -12,6 +12,14 @@ use Spatie\Permission\Models\Role;
 use App\Observers\RoleObserver;
 use Spatie\Permission\Models\Permission;
 use App\Observers\PermissionObserver;
+use App\Models\Question;
+use App\Observers\QuestionObserver;
+use App\Models\SubQuestion;
+use App\Observers\SubQuestionObserver;
+use App\Models\Answer;
+use App\Observers\AnswerObserver;
+use App\Models\SubAnswer;
+use App\Observers\SubAnswerObserver;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -36,6 +44,10 @@ class EventServiceProvider extends ServiceProvider
         User::observe(UserObserver::class);
         Role::observe(RoleObserver::class);
         Permission::observe(PermissionObserver::class);
+        Question::observe(QuestionObserver::class);
+        SubQuestion::observe(SubQuestionObserver::class);
+        Answer::observe(AnswerObserver::class);
+        SubAnswer::observe(SubAnswerObserver::class);
     }
 
     /**

@@ -52,21 +52,13 @@
                                 {{-- @if ($loggedUser && $loggedUser->can('option_group.export')) --}}
                                 <a class="btn btn-sm btn-success float-end" wire:click.prevent="render('excelExport')"><i
                                         class="fa-solid fa-download"></i> Export</a>
-                                {{-- <a class="btn btn-sm btn-danger float-end mx-1" wire:click.prevent="render('pdfExport')"><i
-                                        class="fa-solid fa-download"></i> PDF</a> --}}
-                                {{-- @endif --}}
-                                {{-- @if ($loggedUser && $loggedUser->can('option_group.create')) --}}
-                                <!-- Button trigger modal -->
-                                <button type="button" class="btn btn-sm btn-outline-primary float-end me-1"
+                              
+                                {{-- <button type="button" class="btn btn-sm btn-outline-primary float-end me-1"
                                     data-bs-toggle="modal" data-bs-target="#addPaymentDeduction"
                                     wire:click="resetInputFields()">
                                     <i class="fa-solid fa-plus"></i> Create New
-                                </button>
-                                {{-- <a href="{{ route('users.create') }}" class="btn btn-xs btn-outline-primary float-end"
-                                    name="create_new" type="button">
-                                    <i class="fa-solid fa-plus"></i> Create New
-                                </a> --}}
-                                {{-- @endif --}}
+                                </button> --}}
+                              
                             </div>
                         </div>
                         <div class="row">
@@ -112,19 +104,16 @@
                                         <td>{{ $val->created_at }}</td>
                                         <td>{{ $val->updated_at }}</td>
                                         <td>
-                                            <button class="btn btn-sm btn-success me-1 py-1 mt-1 "
+                                            {{-- <button class="btn btn-sm btn-success me-1 py-1 mt-1 "
                                                 wire:click.prevent="edit('{{ Crypt::encryptString($val->id) }}')"
-                                                data-bs-toggle="modal" {{-- wire:click.prevent="edit({{ '553453453453454535SDD' }})" data-bs-toggle="modal" --}} {{-- wire:click.prevent="edit({{$val->id}})" data-bs-toggle="modal" --}}
+                                                data-bs-toggle="modal" 
                                                 data-bs-target="#editModel" title="Edit"><i
                                                     class="fa-solid fa-file-pen"></i></button>
 
                                             <button class="btn btn-sm btn-danger py-1 mt-1 del_btn"
-                                            
-                                                {{-- wire:click.prevent="$emit('triggerDelete',{{ $val->id }})" --}}
                                                 wire:click.prevent="$emit('triggerDelete','{{ Crypt::encryptString($val->id) }}')"
-                                                {{-- wire:click.prevent="destroy('{{ Crypt::encryptString($val->id) }}')" --}}
-                                                title="Delete"><i class="fa-solid fa-trash-can"></i></button>
-                                        </td>
+                                                title="Delete"><i class="fa-solid fa-trash-can"></i></button> --}}
+                                        </td> 
                                     </tr>
                                 @endforeach
                             </tbody>
