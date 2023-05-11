@@ -233,8 +233,8 @@ class SubQuestionController extends Controller
         try {
             #decrypt value
             $id = $this->webspice->encryptDecrypt('decrypt', $id);
-            $permission = SubQuestion::withTrashed()->findOrFail($id);
-            $permission->forceDelete();
+            $sub_question = SubQuestion::withTrashed()->findOrFail($id);
+            $sub_question->forceDelete();
         } catch (Exception $e) {
             $this->webspice->message('error', $e->getMessage());
         }
@@ -246,8 +246,8 @@ class SubQuestionController extends Controller
         $this->webspice->permissionVerify('sub_question.restore');
         try {
             $id = $this->webspice->encryptDecrypt('decrypt', $id);
-            $permission = SubQuestion::withTrashed()->findOrFail($id);
-            $permission->restore();
+            $sub_question = SubQuestion::withTrashed()->findOrFail($id);
+            $sub_question->restore();
         } catch (Exception $e) {
             $this->webspice->message('error', $e->getMessage());
         }
@@ -259,9 +259,9 @@ class SubQuestionController extends Controller
         #permission verfy
         $this->webspice->permissionVerify('sub_question.restore');
         try {
-            $permissions = SubQuestion::onlyTrashed()->get();
-            foreach ($permissions as $permission) {
-                $permission->restore();
+            $sub_questions = SubQuestion::onlyTrashed()->get();
+            foreach ($sub_questions as $sub_question) {
+                $sub_question->restore();
             }
         } catch (Exception $e) {
             $this->webspice->message('error', $e->getMessage());

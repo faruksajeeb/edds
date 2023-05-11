@@ -233,8 +233,8 @@ class SubAnswerController extends Controller
         try {
             #decrypt value
             $id = $this->webspice->encryptDecrypt('decrypt', $id);
-            $permission = SubAnswer::withTrashed()->findOrFail($id);
-            $permission->forceDelete();
+            $sub_answer = SubAnswer::withTrashed()->findOrFail($id);
+            $sub_answer->forceDelete();
         } catch (Exception $e) {
             $this->webspice->message('error', $e->getMessage());
         }
@@ -246,8 +246,8 @@ class SubAnswerController extends Controller
         $this->webspice->permissionVerify('sub_answer.restore');
         try {
             $id = $this->webspice->encryptDecrypt('decrypt', $id);
-            $permission = SubAnswer::withTrashed()->findOrFail($id);
-            $permission->restore();
+            $sub_answer = SubAnswer::withTrashed()->findOrFail($id);
+            $sub_answer->restore();
         } catch (Exception $e) {
             $this->webspice->message('error', $e->getMessage());
         }
@@ -259,9 +259,9 @@ class SubAnswerController extends Controller
         #permission verfy
         $this->webspice->permissionVerify('sub_answer.restore');
         try {
-            $permissions = SubAnswer::onlyTrashed()->get();
-            foreach ($permissions as $permission) {
-                $permission->restore();
+            $sub_answers = SubAnswer::onlyTrashed()->get();
+            foreach ($sub_answers as $sub_answer) {
+                $sub_answer->restore();
             }
         } catch (Exception $e) {
             $this->webspice->message('error', $e->getMessage());

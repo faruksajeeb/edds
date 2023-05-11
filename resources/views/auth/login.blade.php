@@ -38,7 +38,7 @@
                     @endforeach
                 @endif
 
-                <form method="POST" action="{{ route('login') }}">
+                <form method="POST" action="{{ route('login') }}" class="needs-validation" novalidate>
                     @csrf
 
                     <div class="form-group">
@@ -69,7 +69,7 @@
                             </a>
                         @endif
 
-                        <x-primary-button class="ms-3 btn btn-success">
+                        <x-primary-button class="ms-3 btn btn-success btn-submit">
                             {{ __('Log in') }}
                         </x-primary-button>
                     </div>
@@ -93,6 +93,9 @@
                     if (!form.checkValidity()) {
                         event.preventDefault()
                         event.stopPropagation()
+                    }else{
+                        $('.btn-submit').prop('disabled', true);
+                        $('.btn-submit').html('Logging...');
                     }
                     form.classList.add('was-validated')
                 }, false)

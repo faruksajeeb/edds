@@ -10,6 +10,9 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        return view('dashboard', []);
+        $labels=['jan','feb','april','may','jun','july'];
+        $data=[65, 59, 80, 81, 56, 55, 40];
+
+        return view('dashboard', compact('labels','data'));
     }
 }

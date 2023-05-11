@@ -37,7 +37,7 @@
                             @else
                                 <a href="{{ url('/users') }}">Users</a>
                             @endif
-                            @if (request()->get('status') == 'archived')
+                            @if ((request()->get('status') == 'archived') && ($users->total() >0))
                                 @can('user.restore')
                                     <div class="float-end">
                                         <a href="" class="btn btn-primary btn-sm btn-restore-all"

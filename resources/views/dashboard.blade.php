@@ -4,10 +4,10 @@
     </x-slot>
     @push('style')
         <style>
-.card-box .card .numbers{
-    font-size:405px!important;
-}
-            </style>
+            .card-box .card .numbers {
+                font-size: 405px !important;
+            }
+        </style>
     @endpush
     @can('dashboard.view')
         {{-- <div class="card-box p-1">
@@ -77,10 +77,12 @@
                     </select>
                 </div>
                 <div class="col-md-3">
-                    <input type="text" name="date_from" id="date_from" placeholder="Date From" class="datepicker form-control" required/>
+                    <input type="text" name="date_from" id="date_from" placeholder="Date From"
+                        class="datepicker form-control" required />
                 </div>
                 <div class="col-md-3">
-                    <input type="text" name="date_to" id="date_to" placeholder="Date To" class="datepicker form-control" required/>
+                    <input type="text" name="date_to" id="date_to" placeholder="Date To"
+                        class="datepicker form-control" required />
                 </div>
                 <div class="col-md-3">
                     <button class="form-control btn btn-secondary">Generate</button>
@@ -89,7 +91,7 @@
         </form>
         <div class="row chart_report mx-1 my-3">
             <div class="col-md-12 chart_container h-100 bg-white">
-
+                <canvas id="myChart" height="120px"></canvas>
             </div>
         </div>
         {{-- <div class="row align-items-md-stretch">
@@ -171,8 +173,57 @@
                     </div>
                 </div>
             </div>
-        </div> --}}      
-        
-        
+        </div> --}}
+        @push('scripts')
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script type="text/javascript">
+             var labels =  {{ Js::from($labels) }};
+             var users =  {{ Js::from($data) }};
+  
+                const data = {
+                    labels: labels,
+                    datasets: [{
+                        label: 'My First dataset',
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(255, 159, 64, 0.2)',
+                            'rgba(255, 205, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(201, 203, 207, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgb(255, 99, 132)',
+                            'rgb(255, 159, 64)',
+                            'rgb(255, 205, 86)',
+                            'rgb(75, 192, 192)',
+                            'rgb(54, 162, 235)',
+                            'rgb(153, 102, 255)',
+                            'rgb(201, 203, 207)'
+                        ],
+                        borderWidth: 1,
+                        data: users
+                    }]
+                };
+
+                const config = {
+                    type: 'bar',
+                    data: data,
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                };
+
+                const myChart = new Chart(
+                    document.getElementById('myChart'),
+                    config
+                );
+            </script>
+        @endpush
     @endcan
 </x-app-layout>

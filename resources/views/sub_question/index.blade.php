@@ -34,7 +34,7 @@
                             @else
                                 <a href="{{ url('/sub_questions') }}">Sub Questions</a>
                             @endif
-                            @if (request()->get('status') == 'archived')
+                            @if ( (request()->get('status') == 'archived') && ($sub_questions->total() >0))
                                 @can('sub_question.restore')
                                     <div class="float-end">
                                         <a href="" class="btn btn-primary btn-sm btn-restore-all"

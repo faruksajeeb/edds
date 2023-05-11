@@ -42,7 +42,7 @@
                             <?php else: ?>
                                 <a href="<?php echo e(url('/questions')); ?>">Questions</a>
                             <?php endif; ?>
-                            <?php if(request()->get('status') == 'archived'): ?>
+                            <?php if((request()->get('status') == 'archived') && ($questions->total() >0)): ?>
                                 <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('question.restore')): ?>
                                     <div class="float-end">
                                         <a href="" class="btn btn-primary btn-sm btn-restore-all"
@@ -223,4 +223,4 @@
 <?php $component = $__componentOriginal9ac128a9029c0e4701924bd2d73d7f54; ?>
 <?php unset($__componentOriginal9ac128a9029c0e4701924bd2d73d7f54); ?>
 <?php endif; ?>
-<?php /**PATH C:\xampp8.1.6\htdocs\laravel\edds\resources\views/question/index.blade.php ENDPATH**/ ?>
+<?php /**PATH /var/www/html/edds/resources/views/question/index.blade.php ENDPATH**/ ?>

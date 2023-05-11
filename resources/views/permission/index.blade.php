@@ -34,7 +34,7 @@
                             @else
                                 <a href="{{ url('/permissions') }}">Permissions</a>
                             @endif
-                            @if (request()->get('status') == 'archived')
+                            @if ((request()->get('status') == 'archived') && ($permissions->total() >0))
                                 @can('user.restore')
                                     <div class="float-end">
                                         <a href="" class="btn btn-primary btn-sm btn-restore-all"

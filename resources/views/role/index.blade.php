@@ -30,7 +30,7 @@
                             @else
                                 <a href="{{ url('/roles') }}">Roles</a>
                             @endif
-                            @if (request()->get('status') == 'archived')
+                            @if ((request()->get('status') == 'archived') && ($roles->total() >0))
                                 @can('role.restore')
                                     <div class="float-end">
                                         <a href="" class="btn btn-primary btn-sm btn-restore-all"

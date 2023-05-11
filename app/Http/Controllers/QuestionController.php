@@ -67,8 +67,7 @@ class QuestionController extends Controller
         }
 
         $questions = $query->paginate(5);
-        // });
-
+        // });     
         return view('question.index', compact('questions'));
     }
 
@@ -237,8 +236,8 @@ class QuestionController extends Controller
         try {
             #decrypt value
             $id = $this->webspice->encryptDecrypt('decrypt', $id);
-            $permission = Question::withTrashed()->findOrFail($id);
-            $permission->forceDelete();
+            $question = Question::withTrashed()->findOrFail($id);
+            $question->forceDelete();
         } catch (Exception $e) {
             $this->webspice->message('error', $e->getMessage());
         }
@@ -250,8 +249,8 @@ class QuestionController extends Controller
         $this->webspice->permissionVerify('question.restore');
         try {
             $id = $this->webspice->encryptDecrypt('decrypt', $id);
-            $permission = Question::withTrashed()->findOrFail($id);
-            $permission->restore();
+            $question = Question::withTrashed()->findOrFail($id);
+            $question->restore();
         } catch (Exception $e) {
             $this->webspice->message('error', $e->getMessage());
         }
@@ -263,9 +262,9 @@ class QuestionController extends Controller
         #permission verfy
         $this->webspice->permissionVerify('question.restore');
         try {
-            $permissions = Question::onlyTrashed()->get();
-            foreach ($permissions as $permission) {
-                $permission->restore();
+            $questions = Question::onlyTrashed()->get();
+            foreach ($questions as $question) {
+                $question->restore();
             }
         } catch (Exception $e) {
             $this->webspice->message('error', $e->getMessage());

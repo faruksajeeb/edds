@@ -132,7 +132,7 @@
                                         <td>{{ $val->updated_at }}</td>
                                         <td>
                                             <div class="form-check form-switch">
-                                                @if (request()->get('status') == 'archived')
+                                                @if ((request()->get('status') == 'archived') && ($answers->total() >0))
                                                     <span class="badge bg-secondary">Archived</span>
                                                 @else
                                                     @can('answer.edit')

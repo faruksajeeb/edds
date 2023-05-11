@@ -34,7 +34,7 @@
                             @else
                                 <a href="{{ url('/sub_answers') }}">Sub Answer</a>
                             @endif
-                            @if (request()->get('status') == 'archived')
+                            @if ((request()->get('status') == 'archived') && ($sub_answers->total() >0))
                                 @can('sub_answer.restore')
                                     <div class="float-end">
                                         <a href="" class="btn btn-primary btn-sm btn-restore-all"
@@ -101,7 +101,7 @@
                                         <a href="{{ route('sub_answers.create') }}"
                                             class="btn btn-xs btn-outline-primary float-end" name="create_new"
                                             type="button">
-                                            <i class="fa-solid fa-plus"></i> Create Sub Question
+                                            <i class="fa-solid fa-plus"></i> Create Sub Answer
                                         </a>
                                     @endcan
                                 </div>

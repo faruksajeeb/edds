@@ -54,8 +54,8 @@ return [
     |
     */
 
-    //'asset_url' => null,
-    'asset_url' => 'http://localhost/laravel/edds',
+    // 'asset_url' => null,
+    'asset_url' => 'public',
 
     /*
     |--------------------------------------------------------------------------
