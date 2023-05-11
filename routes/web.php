@@ -14,6 +14,7 @@ use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\SubQuestionController;
 use App\Http\Controllers\AnswerController;
 use App\Http\Controllers\SubAnswerController;
+use App\Http\Controllers\UserResponseController;
 
 use App\Http\Livewire\Backend\OptionGroup;
 use App\Http\Livewire\Backend\Options;
@@ -55,6 +56,7 @@ Route::middleware('auth')->group(function () {
             'sub_questions' => SubQuestionController::class,
             'answers' => AnswerController::class,
             'sub_answers' => SubAnswerController::class,
+            'user_responses' => UserResponseController::class,
         ]);
         Route::match(['get', 'put'], 'company-setting', [SettingController::class, 'companySetting'])->name('company-setting');
         Route::match(['get', 'put'], 'basic-setting', [SettingController::class, 'basicSetting'])->name('basic-setting');
@@ -138,6 +140,16 @@ Route::middleware('auth')->group(function () {
         Route::post('/{sub_answer}/restore', [SubAnswerController::class, 'restore'])->name('restore');
         Route::delete('/{sub_answer}/force-delete', [SubAnswerController::class, 'forceDelete'])->name('force-delete');
         Route::post('/restore-all', [SubAnswerController::class, 'restoreAll'])->name('restore-all');
+    });
+
+    # Sub Answer
+    Route::group([
+        'prefix' => '/user_responses',
+        'as' => 'user_responses.',
+    ], function () {
+        Route::post('/{user_response}/restore', [UserResponseController::class, 'restore'])->name('restore');
+        Route::delete('/{user_response}/force-delete', [UserResponseController::class, 'forceDelete'])->name('force-delete');
+        Route::post('/restore-all', [UserResponseController::class, 'restoreAll'])->name('restore-all');
     });
 
     # Report

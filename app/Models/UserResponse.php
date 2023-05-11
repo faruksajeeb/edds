@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class UserResponse extends Model
 {
-    use HasFactory;
+    use HasFactory,SoftDeletes;
     
     protected $fillable = [
         'full_name',
@@ -39,4 +41,12 @@ class UserResponse extends Model
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
+
+    
+    protected $dates = ['deleted_at'];
+
+    public function respondent() : BelongsTo
+    {
+        return $this->belongsTo(Option::class,'respondent_id','id')->withTrashed();
+    }
 }

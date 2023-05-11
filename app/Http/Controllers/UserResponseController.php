@@ -43,20 +43,21 @@ class UserResponseController extends Controller
         } else {
             $query = $this->user_responses->orderBy('created_at', 'desc');
         }
-        if ($request->search_status != null) {
-            $query->where('status', $request->search_status);
+        if ($request->search_respodent != null) {
+            $query->where('respondent_id', $request->search_respodent);
         }
 
         $searchText = $request->search_text;
         if ($searchText != null) {
             // $query = $query->search($request->search_text); // search by value
             $query->where(function ($query) use ($searchText) {
-                $query->where('value', 'LIKE', '%' . $searchText . '%')
-                    ->orWhere('value_bangla', 'LIKE', '%' . $searchText . '%');
+                $query->where('full_name', 'LIKE', '%' . $searchText . '%')
+                    ->orWhere('email', 'LIKE', '%' . $searchText . '%')
+                    ->orWhere('mobile_no', 'LIKE', '%' . $searchText . '%');
             });
         }
-        $query->with('option');
-        if (in_array($type=$request->submit_btn, array('export', 'csv', 'pdf'))) {
+        $query->with('respondent');
+        if (in_array($type = $request->submit_btn, array('export', 'csv', 'pdf'))) {
             $title = $fileTag . 'User Response List';
             // $this->export($request->submit_btn,$query,$title);
             $fileName = str_replace(' ', '_', strtolower($title));
@@ -64,11 +65,21 @@ class UserResponseController extends Controller
                 return Excel::download(new UserResponseExport($query->get(), $title), $fileName . '_' . time() . '.csv', \Maatwebsite\Excel\Excel::CSV);
             }
             return Excel::download(new UserResponseExport($query->get(), $title), $fileName . '_' . time() . '.xlsx');
+            //return redirect()->back();
+           
         }
 
-        $user_responses = $query->paginate(5);
-        // });     
-        return view('user_response.index', compact('responses'));
+        $user_responses = $query->paginate(10);
+        // });    
+
+        if (!Cache::has('active-respondent-options')) {
+            $respondents = Option::where(['option_group_name' => 'respondent', 'status' => 1])->get();
+            Cache::forever('active-respondent-options', $respondents);
+        } else {
+            // $respondents = Cache::get('respondent-options')->where('status',1);
+            $respondents = Cache::get('active-respondent-options');
+        }
+        return view('user_response.index', compact('user_responses','respondents'));
     }
 
     public function export(String $type, $query, String $title)
@@ -254,7 +265,7 @@ class UserResponseController extends Controller
         } catch (Exception $e) {
             $this->webspice->message('error', $e->getMessage());
         }
-        return redirect()->route('responses.index');
+        return redirect()->route('user_responses.index');
     }
 
     public function restoreAll()
@@ -269,6 +280,6 @@ class UserResponseController extends Controller
         } catch (Exception $e) {
             $this->webspice->message('error', $e->getMessage());
         }
-        return redirect()->route('responses.index');
+        return redirect()->route('user_responses.index');
     }
 }

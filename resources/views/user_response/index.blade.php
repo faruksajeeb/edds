@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="title">
-        Questions
+        User Responses
     </x-slot>
     <div class="row">
         <div class="col-md-12">
@@ -11,17 +11,17 @@
                             <h5 class="card-title py-1"><i class="fa fa-table"></i>
                                 @if (request()->get('status') == 'archived')
                                     Archived
-                                @endif Questions
+                                @endif User Responses
                             </h5>
                         </div>
                         <div class="col-md-4">
                             <nav aria-label="breadcrumb" class="float-end">
                                 <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="#">Question & Answer</a></li>
+                                    <li class="breadcrumb-item"><a href="#">Response</a></li>
                                     <li class="breadcrumb-item " aria-current="page">
                                         @if (request()->get('status') == 'archived')
                                             Archived
-                                        @endif Questions
+                                        @endif User Responses
                                     </li>
                                 </ol>
                             </nav>
@@ -30,17 +30,17 @@
                     <div class="row">
                         <div class="col-md-12">
                             @if (request()->get('status') != 'archived')
-                                <a href="{{ url('/questions?status=archived') }}">Archived Questions</a>
+                                <a href="{{ url('/user_responses?status=archived') }}">Archived User Responses</a>
                             @else
-                                <a href="{{ url('/questions') }}">Questions</a>
+                                <a href="{{ url('/user_responses') }}">User Responses</a>
                             @endif
-                            @if ((request()->get('status') == 'archived') && ($questions->total() >0))
-                                @can('question.restore')
+                            @if ((request()->get('status') == 'archived') && ($user_responses->total() >0))
+                                @can('user_response.restore')
                                     <div class="float-end">
                                         <a href="" class="btn btn-primary btn-sm btn-restore-all"
                                             onclick="event.preventDefault(); restoreAllConfirmation()"><i
                                                 class="fa-solid fa-trash-arrow-up"></i> Restore All</a>
-                                        <form id="restore-all-form" action="{{ route('questions.restore-all') }}"
+                                        <form id="restore-all-form" action="{{ route('user_responses.restore-all') }}"
                                             style="display:inline" method="POST">
                                             @method('POST')
                                             @csrf
@@ -59,12 +59,11 @@
                                 value="{{ request()->get('status') == 'archived' ? 'archived' : '' }}">
                             <div class="row">
                                 <div class="col-md-3 col-sm-12">
-                                    <select name="search_status" class="form-select" id="search_status">
-                                        <option value="">Select Status</option>
-                                        <option value="1">Active
-                                        </option>
-                                        <option value="-1">Inactive
-                                        </option>
+                                    <select name="search_respodent" class="form-select" id="search_respodent">
+                                        <option value="">Select respondent</option>
+                                        @foreach ($respondents as $val)                                    
+                                            <option value="{{$val->id}}" {{ $val->id==old('responden_id')?'selected':''}}>{{$val->option_value}}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                                 <div class="col-md-6 col-sm-12 px-0">
@@ -72,23 +71,23 @@
                                         <input type="text" name="search_text" value="" class="form-control"
                                             placeholder="Search by text">
                                         <div class="input-group-append">
-                                            <button class="btn btn-secondary mx-1" name="submit_btn" type="submit"
+                                            <button class="btn btn-secondary mx-1 filter_btn" name="submit_btn" type="submit"
                                                 value="search">
-                                                <i class="fa fa-search"></i> Search
+                                                <i class="fa fa-search"></i> Filter
                                             </button>
-                                            <a href='{{ request()->get('status') == 'archived' ? url('/questions?status=archived') : url('/questions') }}'
-                                                class="btn btn-xs btn-primary me-1"><i class="fa fa-refresh"></i></a>
-                                            @can('question.export')
+                                            <a href='{{ request()->get('status') == 'archived' ? url('/user_responses?status=archived') : url('/user_responses') }}'
+                                                class="btn btn-xs btn-primary me-1 refresh_btn"><i class="fa fa-refresh"></i></a>
+                                            @can('user_response.export')
                                                 {{-- <button class="btn btn-xs btn-danger float-end " name="submit_btn"
                                                 value="pdf" type="submit">
                                                 <i class="fa-solid fa-download"></i> PDF
                                             </button> --}}
-                                                <button class="btn btn-xs btn-info float-end me-1" name="submit_btn"
+                                                <button class="btn btn-xs btn-info float-end me-1 export_btn" name="submit_btn"
                                                     value="csv" type="submit">
                                                     <i class="fa-solid fa-download"></i> CSV
                                                 </button>
 
-                                                <button class="btn btn-xs btn-success float-end me-1" name="submit_btn"
+                                                <button class="btn btn-xs btn-success float-end me-1 export_btn" name="submit_btn"
                                                     value="export" type="submit">
                                                     <i class="fa-solid fa-download"></i> Export
                                                 </button>
@@ -97,12 +96,12 @@
                                     </div>
                                 </div>
                                 <div class="col-md-3 col-sm-12">
-                                    @can('question.create')
-                                        <a href="{{ route('questions.create') }}"
+                                    @can('user_response.create')
+                                        {{-- <a href="{{ route('user_responses.create') }}"
                                             class="btn btn-xs btn-outline-primary float-end" name="create_new"
                                             type="button">
-                                            <i class="fa-solid fa-plus"></i> Create Question
-                                        </a>
+                                            <i class="fa-solid fa-plus"></i> Create Response
+                                        </a> --}}
                                     @endcan
                                 </div>
 
@@ -112,64 +111,47 @@
                             <thead>
                                 <tr>
                                     <th>Sl No.</th>
-                                    <th>Value</th>
-                                    <th>Value Bangla</th>
+                                    <th>User Name</th>
+                                    <th>Email</th>
+                                    <th>Mobile</th>
+                                    <th>Gender</th>
                                     <th>Respondent</th>
-                                    <th>Input Method</th>
-                                    {{-- <th>Created At</th>
-                                    <th>Updated At</th> --}}
-                                    <th>Status</th>
+                                    <th>Response At</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($questions as $index => $val)
+                                @foreach ($user_responses as $index => $val)
                                     <tr>
-                                        <td>{{ $index + $questions->firstItem() }}</td>
-                                        <td>{{ $val->value }}</td>
-                                        <td>{{ $val->value_bangla }}</td>
-                                        <td>{{ $val->option ? $val->option->option_value : '' }}</td>
-                                        <td>{{ $val->input_method }}</td>
-                                        {{-- <td>{{ $val->created_at }}</td>
-                                        <td>{{ $val->updated_at }}</td> --}}
-                                        <td>
-                                            <div class="form-check form-switch">
-                                                @if (request()->get('status') == 'archived')
-                                                    <span class="badge bg-secondary">Archived</span>
-                                                @else
-                                                    @can('question.edit')
-                                                        <input class="form-check-input active_inactive_btn "
-                                                            status="{{ $val->status }}"
-                                                            {{ $val->status == -1 ? '' : '' }} table="questions"
-                                                            type="checkbox" id="row_{{ $val->id }}"
-                                                            value="{{ Crypt::encryptString($val->id) }}"
-                                                            {{ $val->status == 1 ? 'checked' : '' }}
-                                                            style="cursor:pointer">
-                                                    @endif
-                                    @endif
-                        </div>
-                        </td>
+                                        <td>{{ $index + $user_responses->firstItem() }}</td>
+                                        <td>{{ $val->full_name }}</td>
+                                        <td>{{ $val->email }}</td>
+                                        <td>{{ $val->mobile_no }}</td>
+                                        <td>{{ $val->gender }}</td>
+                                        <td>{{ isset($val->respondent) ? $val->respondent->option_value : '' }}</td>
+                                      
+                                        <td>{{ $val->created_at }}</td>
                         <td class="text-nowrap">
                             @if (request()->get('status') == 'archived')
                                 {{-- restore button --}}
-                                @can('question.restore')
+                                @can('user_response.restore')
                                     <a href="" class="btn btn-primary btn-sm btn-restore-{{ $val->id }}"
                                         onclick="event.preventDefault(); restoreConfirmation({{ $val->id }})"><i
                                             class="fa-solid fa-trash-arrow-up"></i> Restore</a>
                                     <form id="restore-form-{{ $val->id }}"
-                                        action="{{ route('questions.restore', Crypt::encryptString($val->id)) }}"
+                                        action="{{ route('user_responses.restore', Crypt::encryptString($val->id)) }}"
                                         method="POST" style="display: none">
                                         @method('POST')
                                         @csrf
                                     </form>
                                 @endcan
                                 {{-- force delete button --}}
-                                @can('question.force_delete')
+                                @can('user_response.force_delete')
                                     <a href="" class="btn btn-danger btn-sm btn-force-delete-{{ $val->id }}"
                                         onclick="event.preventDefault(); forceDelete({{ $val->id }})"><i
                                             class="fa-solid fa-remove"></i> Force Delete</a>
                                     <form id="force-delete-form-{{ $val->id }}" style="display: none"
-                                        action="{{ route('questions.force-delete', Crypt::encryptString($val->id)) }}"
+                                        action="{{ route('user_responses.force-delete', Crypt::encryptString($val->id)) }}"
                                         method="POST">
                                         @method('DELETE')
                                         @csrf
@@ -177,19 +159,19 @@
                                 @endcan
                             @else
                                 {{-- edit button --}}
-                                @can('question.edit')
+                                @can('user_response.edit')
                                     @if ($val->status == 1)
-                                        <a href="{{ route('questions.edit', Crypt::encryptString($val->id)) }}"
+                                        <a href="{{ route('user_responses.edit', Crypt::encryptString($val->id)) }}"
                                             class="btn btn-outline-warning btn-sm"><i class="fa-solid fa-pencil"></i> Edit</a>
                                     @endif
                                 @endcan
                                 {{-- delete button --}}
-                                @can('question.delete')
+                                @can('user_response.delete')
                                     <a href="" class="btn btn-outline-danger btn-sm btn-delete-{{ $val->id }}"
                                         onclick="event.preventDefault(); confirmDelete({{ $val->id }})"><i
                                             class="fa-solid fa-trash"></i> Delete</a>
                                     <form id="delete-form-{{ $val->id }}" style="display: none"
-                                        action="{{ route('questions.destroy', Crypt::encryptString($val->id)) }}"
+                                        action="{{ route('user_responses.destroy', Crypt::encryptString($val->id)) }}"
                                         method="POST">
                                         @method('DELETE')
                                         @csrf
@@ -202,7 +184,7 @@
                         @endforeach
                         </tbody>
                         </table>
-                        {{ $questions->withQueryString()->links() }}
+                        {{ $user_responses->withQueryString()->links() }}
                     </div>
                 </div>
             </div>

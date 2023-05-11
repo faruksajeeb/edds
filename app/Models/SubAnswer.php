@@ -30,6 +30,6 @@ class SubAnswer extends Model
     
     public function answer() : BelongsTo
     {
-        return $this->belongsTo(Answer::class,'answer_id','id');
+        return $this->belongsTo(Answer::class,'answer_id','id')->withTrashed();
     }
 }

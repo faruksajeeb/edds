@@ -20,6 +20,8 @@ use App\Models\Answer;
 use App\Observers\AnswerObserver;
 use App\Models\SubAnswer;
 use App\Observers\SubAnswerObserver;
+use App\Models\UserResponse;
+use App\Observers\UserResponseObserver;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -48,6 +50,7 @@ class EventServiceProvider extends ServiceProvider
         SubQuestion::observe(SubQuestionObserver::class);
         Answer::observe(AnswerObserver::class);
         SubAnswer::observe(SubAnswerObserver::class);
+        UserResponse::observe(UserResponseObserver::class);
     }
 
     /**

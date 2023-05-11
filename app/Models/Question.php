@@ -28,7 +28,7 @@ class Question extends Model
 
     public function option() : BelongsTo
     {
-        return $this->belongsTo(Option::class,'respondent_id','id');
+        return $this->belongsTo(Option::class,'respondent_id','id')->withTrashed();
     }
 
 

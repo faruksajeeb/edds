@@ -179,6 +179,7 @@
         //         return true;
         //     })
         // });
+        
         $(document).on('click', ".active_inactive_btn", function() {
             // var status;
             // if ($(this).is(':checked')) {
@@ -328,6 +329,24 @@
 
             })
         }
+
+        $(document).on('click', ".export_btn", function() {
+            // $('.export_btn').html(
+            //             '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Exporting...'
+            //         );
+        });
+        $(document).on('click', ".filter_btn", function() {
+            // processing('Exporting...');
+            $('.filter_btn').html(
+                        '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Filtering...'
+                    );
+        });
+        $(document).on('click', ".refresh_btn", function() {
+            // processing('Exporting...');
+            $('.refresh_btn').html(
+                        '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Refreshing...'
+                    );
+        });
 
         let processing = (val)=> {
             Swal.fire({
