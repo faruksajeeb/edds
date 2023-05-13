@@ -49,4 +49,8 @@ class UserResponse extends Model
     {
         return $this->belongsTo(Option::class,'respondent_id','id')->withTrashed();
     }
+
+    public function userResponseDetail(){
+        return $this->hasMany(UserResponseDetail::class);
+    }
 }

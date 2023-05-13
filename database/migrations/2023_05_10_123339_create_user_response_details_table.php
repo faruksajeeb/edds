@@ -13,8 +13,13 @@ return new class extends Migration
     {
         Schema::create('user_response_details', function (Blueprint $table) {
             $table->id();
+            $table->bigInteger('response_id')->unsigned();
+            $table->bigInteger('question_id')->unsigned();
+            $table->string('response');
             $table->timestamps();
             $table->softDeletes();
+            $table->foreign('response_id')->references('id')->on('user_responses')->onDelete('cascade');
+            $table->foreign('question_id')->references('id')->on('questions')->onDelete('cascade');
         });
     }
 

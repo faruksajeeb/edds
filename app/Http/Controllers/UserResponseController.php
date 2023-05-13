@@ -10,6 +10,8 @@ use Exception;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\UserResponseExport;
 use Illuminate\Support\Facades\Cache;
+use Spatie\SimpleExcel\SimpleExcelWriter;
+
 
 class UserResponseController extends Controller
 {
@@ -58,15 +60,9 @@ class UserResponseController extends Controller
         }
         $query->with('respondent');
         if (in_array($type = $request->submit_btn, array('export', 'csv', 'pdf'))) {
-            $title = $fileTag . 'User Response List';
-            // $this->export($request->submit_btn,$query,$title);
-            $fileName = str_replace(' ', '_', strtolower($title));
-            if ($type == 'csv') {
-                return Excel::download(new UserResponseExport($query->get(), $title), $fileName . '_' . time() . '.csv', \Maatwebsite\Excel\Excel::CSV);
-            }
-            return Excel::download(new UserResponseExport($query->get(), $title), $fileName . '_' . time() . '.xlsx');
-            //return redirect()->back();
-           
+            $title = $fileTag . 'User Response List';            
+            // dd($fileName);
+            $this->export($title,$type,$query);                     
         }
 
         $user_responses = $query->paginate(10);
@@ -82,10 +78,42 @@ class UserResponseController extends Controller
         return view('user_response.index', compact('user_responses','respondents'));
     }
 
-    public function export(String $type, $query, String $title)
-    {
-    }
+    
 
+    public function export(string $title,string $type,object $query){
+        ini_set('max_execution_time', 30*60); //30 min
+        ini_set('memory_limit', '2048M');
+
+        $type = ($type=='export')? 'xlsx' : $type;        
+        $fileName = str_replace(' ', '_', strtolower($title)).'_'.date('Y_m_d_h_s_i').'.'.$type;
+
+		$writer = SimpleExcelWriter::streamDownload($fileName);
+		$writer->addHeader([$title]);
+		$writer->addHeader(['#','Full Name', 'Email','Mobile No.','Respondent','Response At']);
+        $i = 0;
+        foreach ($query->lazy(1000) as $val) 
+        {
+            //$writer->addRow($val->toArray()); // for all fields
+            $writer->addRow([
+				$i+1,
+				$val->full_name,
+				$val->email,
+				$val->mobile_no,
+				isset($val->respondent->option_value) ? $val->respondent->option_value : '',
+				"$val->created_at",
+				// $this->webspice->date_excel_to_real($val->created_at),
+			]);
+            
+            if ($i % 1000 === 0) {
+                flush(); // Flush the buffer ery 1000 rows
+				// break;
+            }
+            $i++;
+        }
+
+        return $writer->toBrowser();
+    }
+    
     /**
      * Show the form for creating a new resource.
      */

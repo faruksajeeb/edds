@@ -82,10 +82,10 @@
                                                 value="pdf" type="submit">
                                                 <i class="fa-solid fa-download"></i> PDF
                                             </button> --}}
-                                                <button class="btn btn-xs btn-info float-end me-1 export_btn" name="submit_btn"
+                                                {{-- <button class="btn btn-xs btn-info float-end me-1 export_btn" name="submit_btn"
                                                     value="csv" type="submit">
                                                     <i class="fa-solid fa-download"></i> CSV
-                                                </button>
+                                                </button> --}}
 
                                                 <button class="btn btn-xs btn-success float-end me-1 export_btn" name="submit_btn"
                                                     value="export" type="submit">
@@ -161,10 +161,20 @@
                                 {{-- edit button --}}
                                 @can('user_response.edit')
                                     @if ($val->status == 1)
-                                        <a href="{{ route('user_responses.edit', Crypt::encryptString($val->id)) }}"
-                                            class="btn btn-outline-warning btn-sm"><i class="fa-solid fa-pencil"></i> Edit</a>
+                                        {{-- <a href="{{ route('user_responses.edit', Crypt::encryptString($val->id)) }}"
+                                            class="btn btn-outline-warning btn-sm"><i class="fa-solid fa-pencil"></i> Edit</a> --}}
                                     @endif
                                 @endcan
+                                 {{-- edit button --}}
+                                 @can('user_response.verify')
+                                 {{-- @if ($val->status == 1) --}}
+                                     <a href=""
+                                         class="btn btn-outline-success btn-sm"><i class="fas fa-check"></i> Verify</a>
+                                 {{-- @endif --}}
+                             @endcan
+                             <button class="btn btn-sm btn-secondary me-1 mt-1" data-bs-toggle="modal" data-bs-target="#detailModal" 
+                                            wire:click.prevent="orderDetail('{{ Crypt::encryptString($val->id) }}')">
+                                                <i class="fa-solid fa-magnifying-glass-plus"></i></button>
                                 {{-- delete button --}}
                                 @can('user_response.delete')
                                     <a href="" class="btn btn-outline-danger btn-sm btn-delete-{{ $val->id }}"

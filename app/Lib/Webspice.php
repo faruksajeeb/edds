@@ -555,6 +555,8 @@ class Webspice
 		}
 	}
 
+	
+
 	public function getUserId(): int
 	{
 		return Auth::user()->id;
@@ -570,4 +572,23 @@ class Webspice
 		//     $email->from($this->emailFrom, $this->emailFromName);
 		// });
 	}
+
+	function date_excel_to_real($dateValue = 0, $format = "d-m-Y")
+	{
+		# dd(strlen(trim($dateValue)));
+		if (strlen(trim($dateValue)) == 5) {
+			$unix_val = ($dateValue - 25569) * 86400;
+			$date = gmdate($format, $unix_val);
+		} else {
+			$date = date($format, strtotime($dateValue));
+		}
+
+		if (date('Y-m-d', strtotime($date)) == '1970-01-01') {
+			return 0;
+		}
+
+		return $date;
+	}
+
+	
 }

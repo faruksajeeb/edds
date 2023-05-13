@@ -87,10 +87,7 @@
                                                 class="btn btn-xs btn-primary me-1 refresh_btn"><i class="fa fa-refresh"></i></a>
                                             <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('user_response.export')): ?>
                                                 
-                                                <button class="btn btn-xs btn-info float-end me-1 export_btn" name="submit_btn"
-                                                    value="csv" type="submit">
-                                                    <i class="fa-solid fa-download"></i> CSV
-                                                </button>
+                                                
 
                                                 <button class="btn btn-xs btn-success float-end me-1 export_btn" name="submit_btn"
                                                     value="export" type="submit">
@@ -162,10 +159,19 @@
                                 
                                 <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('user_response.edit')): ?>
                                     <?php if($val->status == 1): ?>
-                                        <a href="<?php echo e(route('user_responses.edit', Crypt::encryptString($val->id))); ?>"
-                                            class="btn btn-outline-warning btn-sm"><i class="fa-solid fa-pencil"></i> Edit</a>
+                                        
                                     <?php endif; ?>
                                 <?php endif; ?>
+                                 
+                                 <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('user_response.verify')): ?>
+                                 
+                                     <a href=""
+                                         class="btn btn-outline-success btn-sm"><i class="fas fa-check"></i> Verify</a>
+                                 
+                             <?php endif; ?>
+                             <button class="btn btn-sm btn-secondary me-1 mt-1" data-bs-toggle="modal" data-bs-target="#detailModal" 
+                                            wire:click.prevent="orderDetail('<?php echo e(Crypt::encryptString($val->id)); ?>')">
+                                                <i class="fa-solid fa-magnifying-glass-plus"></i></button>
                                 
                                 <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('user_response.delete')): ?>
                                     <a href="" class="btn btn-outline-danger btn-sm btn-delete-<?php echo e($val->id); ?>"

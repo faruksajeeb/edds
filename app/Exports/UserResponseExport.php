@@ -20,7 +20,7 @@ class UserResponseExport implements FromArray, WithHeadings, Responsable, Should
     public $title;
     public function __construct(object $objData,String $title)
     {
-        ini_set('max_execution_time', 10*60);
+        ini_set('max_execution_time', 30*60); // 30 min
         ini_set('memory_limit', '2048M');
         $this->data = $objData->toArray();
         $this->title =$title;
