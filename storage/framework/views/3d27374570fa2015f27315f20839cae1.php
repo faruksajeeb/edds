@@ -27,22 +27,42 @@
                         </a>
                         <ul class="collapse nav flex-column ms-3 ps-3 <?php echo e(Route::is('users.index') || Route::is('users.create') || Route::is('roles.index') || Route::is('roles.create') ? 'show' : ''); ?>"
                             id="master_submenu1" data-bs-parent="#menu">
+                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('option_group.view')): ?>
                             <li class="<?php echo e(Route::is('option-groups') ? 'active' : ''); ?>">
                                 <a href="<?php echo e(url('option-groups')); ?>" class="nav-link px-2"> <span class="d-sm-inline"><i
                                             class="fa-solid fa-table"></i> Option Groups</span></a>
                             </li>
+                            <?php endif; ?>
+                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('option.view')): ?>
                             <li class="<?php echo e(Route::is('options') ? 'active' : ''); ?>">
                                 <a href="<?php echo e(url('options')); ?>" class="nav-link px-2"> <span class="d-sm-inline"><i
                                             class="fa-solid fa-table"></i> Options</span></a>
                             </li>
+                            <?php endif; ?>
+                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('category.view')): ?>
                             <li class="<?php echo e(Route::is('categories') ? 'active' : ''); ?>">
                                 <a href="<?php echo e(route('categories')); ?>" class="nav-link px-2"> <span class="d-sm-inline"><i
                                             class="fa-solid fa-table"></i> Categories</span></a>
                             </li>
+                            <?php endif; ?>
+                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('sub_category.view')): ?>
                             <li class="<?php echo e(Route::is('subcategories') ? 'active' : ''); ?>">
                                 <a href="<?php echo e(route('subcategories')); ?>" class="nav-link px-2"> <span
                                         class="d-sm-inline"><i class="fa-solid fa-table"></i> Subcategories</span></a>
                             </li>
+                            <?php endif; ?>
+                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('area.view')): ?>
+                            <li class="<?php echo e(Route::is('areas') ? 'active' : ''); ?>">
+                                <a href="<?php echo e(url('areas')); ?>" class="nav-link px-2"> <span
+                                        class="d-sm-inline"><i class="fa-solid fa-table"></i> Areas</span></a>
+                            </li>
+                            <?php endif; ?>
+                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('market.view')): ?>
+                            <li class="<?php echo e(Route::is('markets') ? 'active' : ''); ?>">
+                                <a href="<?php echo e(url('markets')); ?>" class="nav-link px-2"> <span
+                                        class="d-sm-inline"><i class="fa-solid fa-table"></i> Markets</span></a>
+                            </li>
+                            <?php endif; ?>
                         </ul>
                     </li>
                 <?php endif; ?>

@@ -27,22 +27,42 @@
                         </a>
                         <ul class="collapse nav flex-column ms-3 ps-3 {{ Route::is('users.index') || Route::is('users.create') || Route::is('roles.index') || Route::is('roles.create') ? 'show' : '' }}"
                             id="master_submenu1" data-bs-parent="#menu">
+                            @can('option_group.view')
                             <li class="{{ Route::is('option-groups') ? 'active' : '' }}">
                                 <a href="{{ url('option-groups') }}" class="nav-link px-2"> <span class="d-sm-inline"><i
                                             class="fa-solid fa-table"></i> Option Groups</span></a>
                             </li>
+                            @endcan
+                            @can('option.view')
                             <li class="{{ Route::is('options') ? 'active' : '' }}">
                                 <a href="{{ url('options') }}" class="nav-link px-2"> <span class="d-sm-inline"><i
                                             class="fa-solid fa-table"></i> Options</span></a>
                             </li>
+                            @endcan
+                            @can('category.view')
                             <li class="{{ Route::is('categories') ? 'active' : '' }}">
                                 <a href="{{ route('categories') }}" class="nav-link px-2"> <span class="d-sm-inline"><i
                                             class="fa-solid fa-table"></i> Categories</span></a>
                             </li>
+                            @endcan
+                            @can('sub_category.view')
                             <li class="{{ Route::is('subcategories') ? 'active' : '' }}">
                                 <a href="{{ route('subcategories') }}" class="nav-link px-2"> <span
                                         class="d-sm-inline"><i class="fa-solid fa-table"></i> Subcategories</span></a>
                             </li>
+                            @endcan
+                            @can('area.view')
+                            <li class="{{ Route::is('areas') ? 'active' : '' }}">
+                                <a href="{{ url('areas') }}" class="nav-link px-2"> <span
+                                        class="d-sm-inline"><i class="fa-solid fa-table"></i> Areas</span></a>
+                            </li>
+                            @endcan
+                            @can('market.view')
+                            <li class="{{ Route::is('markets') ? 'active' : '' }}">
+                                <a href="{{ url('markets') }}" class="nav-link px-2"> <span
+                                        class="d-sm-inline"><i class="fa-solid fa-table"></i> Markets</span></a>
+                            </li>
+                            @endcan
                         </ul>
                     </li>
                 @endif

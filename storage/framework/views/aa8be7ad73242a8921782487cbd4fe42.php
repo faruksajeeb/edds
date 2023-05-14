@@ -42,7 +42,7 @@
                             <?php else: ?>
                                 <a href="<?php echo e(url('/user_responses')); ?>">User Responses</a>
                             <?php endif; ?>
-                            <?php if((request()->get('status') == 'archived') && ($user_responses->total() >0)): ?>
+                            <?php if(request()->get('status') == 'archived' && $user_responses->total() > 0): ?>
                                 <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('user_response.restore')): ?>
                                     <div class="float-end">
                                         <a href="" class="btn btn-primary btn-sm btn-restore-all"
@@ -69,8 +69,10 @@
                                 <div class="col-md-3 col-sm-12">
                                     <select name="search_respodent" class="form-select" id="search_respodent">
                                         <option value="">Select respondent</option>
-                                        <?php $__currentLoopData = $respondents; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $val): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>                                    
-                                            <option value="<?php echo e($val->id); ?>" <?php echo e($val->id==old('responden_id')?'selected':''); ?>><?php echo e($val->option_value); ?></option>
+                                        <?php $__currentLoopData = $respondents; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $val): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <option value="<?php echo e($val->id); ?>"
+                                                <?php echo e($val->id == old('responden_id') ? 'selected' : ''); ?>>
+                                                <?php echo e($val->option_value); ?></option>
                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </select>
                                 </div>
@@ -79,18 +81,19 @@
                                         <input type="text" name="search_text" value="" class="form-control"
                                             placeholder="Search by text">
                                         <div class="input-group-append">
-                                            <button class="btn btn-secondary mx-1 filter_btn" name="submit_btn" type="submit"
-                                                value="search">
+                                            <button class="btn btn-secondary mx-1 filter_btn" name="submit_btn"
+                                                type="submit" value="search">
                                                 <i class="fa fa-search"></i> Filter
                                             </button>
                                             <a href='<?php echo e(request()->get('status') == 'archived' ? url('/user_responses?status=archived') : url('/user_responses')); ?>'
-                                                class="btn btn-xs btn-primary me-1 refresh_btn"><i class="fa fa-refresh"></i></a>
+                                                class="btn btn-xs btn-primary me-1 refresh_btn"><i
+                                                    class="fa fa-refresh"></i></a>
                                             <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('user_response.export')): ?>
                                                 
                                                 
 
-                                                <button class="btn btn-xs btn-success float-end me-1 export_btn" name="submit_btn"
-                                                    value="export" type="submit">
+                                                <button class="btn btn-xs btn-success float-end me-1 export_btn"
+                                                    name="submit_btn" value="export" type="submit">
                                                     <i class="fa-solid fa-download"></i> Export
                                                 </button>
                                             <?php endif; ?>
@@ -122,74 +125,84 @@
                                 <?php $__currentLoopData = $user_responses; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $val): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                     <tr>
                                         <td><?php echo e($index + $user_responses->firstItem()); ?></td>
-                                        <td><?php echo e($val->full_name); ?></td>
-                                        <td><?php echo e($val->email); ?></td>
-                                        <td><?php echo e($val->mobile_no); ?></td>
-                                        <td><?php echo e($val->gender); ?></td>
-                                        <td><?php echo e(isset($val->respondent) ? $val->respondent->option_value : ''); ?></td>
-                                      
-                                        <td><?php echo e($val->created_at); ?></td>
-                        <td class="text-nowrap">
-                            <?php if(request()->get('status') == 'archived'): ?>
-                                
-                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('user_response.restore')): ?>
-                                    <a href="" class="btn btn-primary btn-sm btn-restore-<?php echo e($val->id); ?>"
-                                        onclick="event.preventDefault(); restoreConfirmation(<?php echo e($val->id); ?>)"><i
-                                            class="fa-solid fa-trash-arrow-up"></i> Restore</a>
-                                    <form id="restore-form-<?php echo e($val->id); ?>"
-                                        action="<?php echo e(route('user_responses.restore', Crypt::encryptString($val->id))); ?>"
-                                        method="POST" style="display: none">
-                                        <?php echo method_field('POST'); ?>
-                                        <?php echo csrf_field(); ?>
-                                    </form>
-                                <?php endif; ?>
-                                
-                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('user_response.force_delete')): ?>
-                                    <a href="" class="btn btn-danger btn-sm btn-force-delete-<?php echo e($val->id); ?>"
-                                        onclick="event.preventDefault(); forceDelete(<?php echo e($val->id); ?>)"><i
-                                            class="fa-solid fa-remove"></i> Force Delete</a>
-                                    <form id="force-delete-form-<?php echo e($val->id); ?>" style="display: none"
-                                        action="<?php echo e(route('user_responses.force-delete', Crypt::encryptString($val->id))); ?>"
-                                        method="POST">
-                                        <?php echo method_field('DELETE'); ?>
-                                        <?php echo csrf_field(); ?>
-                                    </form>
-                                <?php endif; ?>
-                            <?php else: ?>
-                                
-                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('user_response.edit')): ?>
-                                    <?php if($val->status == 1): ?>
-                                        
-                                    <?php endif; ?>
-                                <?php endif; ?>
-                                 
-                                 <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('user_response.verify')): ?>
-                                 
-                                     <a href=""
-                                         class="btn btn-outline-success btn-sm"><i class="fas fa-check"></i> Verify</a>
-                                 
-                             <?php endif; ?>
-                             <button class="btn btn-sm btn-secondary me-1 mt-1" data-bs-toggle="modal" data-bs-target="#detailModal" 
-                                            wire:click.prevent="orderDetail('<?php echo e(Crypt::encryptString($val->id)); ?>')">
-                                                <i class="fa-solid fa-magnifying-glass-plus"></i></button>
-                                
-                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('user_response.delete')): ?>
-                                    <a href="" class="btn btn-outline-danger btn-sm btn-delete-<?php echo e($val->id); ?>"
-                                        onclick="event.preventDefault(); confirmDelete(<?php echo e($val->id); ?>)"><i
-                                            class="fa-solid fa-trash"></i> Delete</a>
-                                    <form id="delete-form-<?php echo e($val->id); ?>" style="display: none"
-                                        action="<?php echo e(route('user_responses.destroy', Crypt::encryptString($val->id))); ?>"
-                                        method="POST">
-                                        <?php echo method_field('DELETE'); ?>
-                                        <?php echo csrf_field(); ?>
-                                    </form>
-                                <?php endif; ?>
-                            <?php endif; ?>
+                                        <td><?php echo e(isset($val->registered_user) ? $val->registered_user->full_name : ''); ?>
 
-                        </td>
-                        </tr>
-                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                        </tbody>
+                                        </td>
+                                        <td><?php echo e(isset($val->registered_user) ? $val->registered_user->email : ''); ?></td>
+                                        <td><?php echo e(isset($val->registered_user) ? $val->registered_user->mobile_no : ''); ?>
+
+                                        </td>
+                                        <td><?php echo e($val->registered_user->gender); ?></td>
+                                        <td><?php echo e(isset($val->registered_user->respondent) ? $val->registered_user->respondent->option_value : ''); ?>
+
+                                        </td>
+
+                                        <td><?php echo e($val->created_at); ?></td>
+                                        <td class="text-nowrap">
+                                            <?php if(request()->get('status') == 'archived'): ?>
+                                                
+                                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('user_response.restore')): ?>
+                                                    <a href=""
+                                                        class="btn btn-primary btn-sm btn-restore-<?php echo e($val->id); ?>"
+                                                        onclick="event.preventDefault(); restoreConfirmation(<?php echo e($val->id); ?>)"><i
+                                                            class="fa-solid fa-trash-arrow-up"></i> Restore</a>
+                                                    <form id="restore-form-<?php echo e($val->id); ?>"
+                                                        action="<?php echo e(route('user_responses.restore', Crypt::encryptString($val->id))); ?>"
+                                                        method="POST" style="display: none">
+                                                        <?php echo method_field('POST'); ?>
+                                                        <?php echo csrf_field(); ?>
+                                                    </form>
+                                                <?php endif; ?>
+                                                
+                                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('user_response.force_delete')): ?>
+                                                    <a href=""
+                                                        class="btn btn-danger btn-sm btn-force-delete-<?php echo e($val->id); ?>"
+                                                        onclick="event.preventDefault(); forceDelete(<?php echo e($val->id); ?>)"><i
+                                                            class="fa-solid fa-remove"></i> Force Delete</a>
+                                                    <form id="force-delete-form-<?php echo e($val->id); ?>" style="display: none"
+                                                        action="<?php echo e(route('user_responses.force-delete', Crypt::encryptString($val->id))); ?>"
+                                                        method="POST">
+                                                        <?php echo method_field('DELETE'); ?>
+                                                        <?php echo csrf_field(); ?>
+                                                    </form>
+                                                <?php endif; ?>
+                                            <?php else: ?>
+                                                
+                                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('user_response.edit')): ?>
+                                                    <?php if($val->status == 1): ?>
+                                                        
+                                                    <?php endif; ?>
+                                                <?php endif; ?>
+                                                
+                                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('user_response.verify')): ?>
+                                                    
+                                                    <a href="" class="btn btn-outline-success btn-sm"><i
+                                                            class="fas fa-check"></i> Verify</a>
+                                                    
+                                                <?php endif; ?>
+                                                <button class="btn btn-sm btn-secondary me-1 mt-1"
+                                                    data-bs-toggle="modal" data-bs-target="#details-modal-<?php echo e($val->id); ?>">
+                                                    <i class="fa-solid fa-magnifying-glass-plus"></i></button>
+                                                    
+                                                
+                                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('user_response.delete')): ?>
+                                                    <a href=""
+                                                        class="btn btn-outline-danger btn-sm btn-delete-<?php echo e($val->id); ?>"
+                                                        onclick="event.preventDefault(); confirmDelete(<?php echo e($val->id); ?>)"><i
+                                                            class="fa-solid fa-trash"></i> Delete</a>
+                                                    <form id="delete-form-<?php echo e($val->id); ?>" style="display: none"
+                                                        action="<?php echo e(route('user_responses.destroy', Crypt::encryptString($val->id))); ?>"
+                                                        method="POST">
+                                                        <?php echo method_field('DELETE'); ?>
+                                                        <?php echo csrf_field(); ?>
+                                                    </form>
+                                                <?php endif; ?>
+                                            <?php endif; ?>
+
+                                        </td>
+                                    </tr>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                            </tbody>
                         </table>
                         <?php echo e($user_responses->withQueryString()->links()); ?>
 
@@ -197,12 +210,14 @@
                 </div>
             </div>
         </div>
-        </div>
-
-        <?php $__env->startPush('scripts'); ?>
-            <script></script>
-        <?php $__env->stopPush(); ?>
-     <?php echo $__env->renderComponent(); ?>
+    </div>
+    <?php echo $__env->make('user_response.detail', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+    <?php $__env->startPush('scripts'); ?>
+        <script>
+ 
+        </script>
+    <?php $__env->stopPush(); ?>
+ <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__componentOriginal9ac128a9029c0e4701924bd2d73d7f54)): ?>
 <?php $component = $__componentOriginal9ac128a9029c0e4701924bd2d73d7f54; ?>

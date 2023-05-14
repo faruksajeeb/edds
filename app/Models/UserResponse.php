@@ -12,17 +12,10 @@ class UserResponse extends Model
     use HasFactory,SoftDeletes;
     
     protected $fillable = [
-        'full_name',
-        'email',
-        'division_id',
-        'division_id',
-        'district_id',
-        'thana_id',
+        'registered_user_id',
         'area_id',
         'market_id',
-        'respondent_id',
-        'mobile_no',
-        'gender'
+        'created_at',
     ];
 
     /**
@@ -45,12 +38,12 @@ class UserResponse extends Model
     
     protected $dates = ['deleted_at'];
 
-    public function respondent() : BelongsTo
+    public function registered_user() : BelongsTo
     {
-        return $this->belongsTo(Option::class,'respondent_id','id')->withTrashed();
+        return $this->belongsTo(RegisteredUser::class,'registered_user_id','id')->withTrashed();
     }
 
-    public function userResponseDetail(){
-        return $this->hasMany(UserResponseDetail::class);
+    public function userResponseDetails(){
+        return $this->hasMany(UserResponseDetail::class,'response_id','id');
     }
 }

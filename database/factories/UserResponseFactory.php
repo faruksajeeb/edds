@@ -17,16 +17,16 @@ class UserResponseFactory extends Factory
     public function definition(): array
     {
         return [
-            'full_name' => fake()->name(),
-            'email' => fake()->unique()->safeEmail(),
-            'division_id' => fake()->numberBetween($min = 1, $max = 8),
-            'district_id' => fake()->numberBetween($min = 1, $max = 64),
-            'thana_id' => fake()->numberBetween($min = 1, $max = 495),
-            'area_id' => fake()->numberBetween($min = 1, $max = 50),
-            'market_id' => fake()->numberBetween($min = 1, $max = 100),
-            'respondent_id' =>fake()->numberBetween($min = 1, $max = 3),
-            'mobile_no' => fake()->phoneNumber(),
-            'gender' => fake()->randomElement(['male' ,'female', 'common']),
+            // 'full_name' => fake()->name(),
+            // 'email' => fake()->unique()->safeEmail(),
+            'registered_user_id' => fake()->numberBetween($min = 1, $max = 500),
+            // 'district_id' => fake()->numberBetween($min = 1, $max = 64),
+            // 'thana_id' => fake()->numberBetween($min = 1, $max = 495),
+            'area_id' => fake()->numberBetween($min = 1, $max = 10),
+            'market_id' => fake()->numberBetween($min = 1, $max = 50),
+            // 'respondent_id' =>fake()->numberBetween($min = 1, $max = 3),
+            // 'mobile_no' => fake()->phoneNumber(),
+             'created_at' => fake()->date('Y-m-d H:i:s'),
         ];
     }
 }

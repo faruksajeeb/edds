@@ -58,14 +58,14 @@ class UserResponseController extends Controller
                     ->orWhere('mobile_no', 'LIKE', '%' . $searchText . '%');
             });
         }
-        $query->with('respondent');
+        $query->with('registered_user');
         if (in_array($type = $request->submit_btn, array('export', 'csv', 'pdf'))) {
-            $title = $fileTag . 'User Response List';            
+            $title = $fileTag . 'User Response List';
             // dd($fileName);
-            $this->export($title,$type,$query);                     
+            $this->export($title, $type, $query);
         }
 
-        $user_responses = $query->paginate(10);
+        $user_responses = $query->paginate(5);
         // });    
 
         if (!Cache::has('active-respondent-options')) {
@@ -75,45 +75,43 @@ class UserResponseController extends Controller
             // $respondents = Cache::get('respondent-options')->where('status',1);
             $respondents = Cache::get('active-respondent-options');
         }
-        return view('user_response.index', compact('user_responses','respondents'));
+        return view('user_response.index', compact('user_responses', 'respondents'));
     }
 
-    
-
-    public function export(string $title,string $type,object $query){
-        ini_set('max_execution_time', 30*60); //30 min
+    public function export(string $title, string $type, object $query)
+    {
+        ini_set('max_execution_time', 30 * 60); //30 min
         ini_set('memory_limit', '2048M');
 
-        $type = ($type=='export')? 'xlsx' : $type;        
-        $fileName = str_replace(' ', '_', strtolower($title)).'_'.date('Y_m_d_h_s_i').'.'.$type;
+        $type = ($type == 'export') ? 'xlsx' : $type;
+        $fileName = str_replace(' ', '_', strtolower($title)) . '_' . date('Y_m_d_h_s_i') . '.' . $type;
 
-		$writer = SimpleExcelWriter::streamDownload($fileName);
-		$writer->addHeader([$title]);
-		$writer->addHeader(['#','Full Name', 'Email','Mobile No.','Respondent','Response At']);
+        $writer = SimpleExcelWriter::streamDownload($fileName);
+        $writer->addHeader([$title]);
+        $writer->addHeader(['#', 'Full Name', 'Email', 'Mobile No.', 'Respondent', 'Response At']);
         $i = 0;
-        foreach ($query->lazy(1000) as $val) 
-        {
+        foreach ($query->lazy(1000) as $val) {
             //$writer->addRow($val->toArray()); // for all fields
             $writer->addRow([
-				$i+1,
-				$val->full_name,
-				$val->email,
-				$val->mobile_no,
-				isset($val->respondent->option_value) ? $val->respondent->option_value : '',
-				"$val->created_at",
-				// $this->webspice->date_excel_to_real($val->created_at),
-			]);
-            
+                $i + 1,
+                $val->full_name,
+                $val->email,
+                $val->mobile_no,
+                isset($val->respondent->option_value) ? $val->respondent->option_value : '',
+                "$val->created_at",
+                // $this->webspice->date_excel_to_real($val->created_at),
+            ]);
+
             if ($i % 1000 === 0) {
                 flush(); // Flush the buffer ery 1000 rows
-				// break;
+                // break;
             }
             $i++;
         }
 
         return $writer->toBrowser();
     }
-    
+
     /**
      * Show the form for creating a new resource.
      */
@@ -180,7 +178,9 @@ class UserResponseController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $id = $this->webspice->encryptDecrypt('decrypt', $id);
+        $user_response = UserResponse::find($id);
+        view('user_response.index', compact('user_response'));
     }
 
     /**

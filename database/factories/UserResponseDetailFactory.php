@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\UserReponseDetail>
  */
-class UserReponseDetailFactory extends Factory
+class UserResponseDetailFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -17,7 +17,10 @@ class UserReponseDetailFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'response_id' => fake()->numberBetween($min = 1, $max = 1000),
+            'question_id' => fake()->numberBetween($min = 3, $max = 5),
+            // 'sub_question_id' => fake()->numberBetween($min = 1, $max = 3),
+            'response' => fake()->numberBetween($min = 1, $max = 50),
         ];
     }
 }

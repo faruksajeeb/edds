@@ -15,11 +15,12 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('response_id')->unsigned();
             $table->bigInteger('question_id')->unsigned();
+            $table->bigInteger('sub_question_id')->unsigned();
             $table->string('response');
-            $table->timestamps();
-            $table->softDeletes();
+            
             $table->foreign('response_id')->references('id')->on('user_responses')->onDelete('cascade');
             $table->foreign('question_id')->references('id')->on('questions')->onDelete('cascade');
+            $table->foreign('sub_question_id')->references('id')->on('sub_questions')->onDelete('cascade');
         });
     }
 

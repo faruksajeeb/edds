@@ -23,6 +23,14 @@ use App\Observers\SubAnswerObserver;
 use App\Models\UserResponse;
 use App\Observers\UserResponseObserver;
 
+use App\Models\Area;
+use App\Observers\AreaObserver;
+
+use App\Models\Market;
+use App\Observers\MarketObserver;
+
+
+
 class EventServiceProvider extends ServiceProvider
 {
     /**
@@ -51,6 +59,8 @@ class EventServiceProvider extends ServiceProvider
         Answer::observe(AnswerObserver::class);
         SubAnswer::observe(SubAnswerObserver::class);
         UserResponse::observe(UserResponseObserver::class);
+        Area::observe(AreaObserver::class);
+        Market::observe(MarketObserver::class);
     }
 
     /**
