@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('questions', function (Blueprint $table) {
             $table->id();
-            $table->integer('qustion_category_id')->unsigned();
+            $table->integer('category_id')->unsigned();
             $table->string('value')->unique();
             $table->string('value_bangla')->nullable();
             $table->string('input_method')->nullable();
@@ -21,7 +21,7 @@ return new class extends Migration
             $table->bigInteger('created_by')->unsigned();
             $table->bigInteger('updated_by')->unsigned()->nullable();
             $table->timestamps();
-            $table->foreign('qustion_category_id')->references('id')->on('options')->onDelete('cascade');
+            $table->foreign('category_id')->references('id')->on('options')->onDelete('cascade');
             $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('cascade');
             $table->softDeletes();

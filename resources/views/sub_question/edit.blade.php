@@ -71,7 +71,24 @@
                             <textarea name='value_bangla' id='value_bangla' class="form-control @error('value_bangla') is-invalid @enderror"
                                 placeholder="Enter question value in bangla" rows="3">{{ old('value_bangla',$sub_questionInfo->value_bangla) }}</textarea>
                         </div>
-                       
+                        <div class="form-group my-1">
+                            <label for="" class="@if ($errors->has('value_bangla')) has-error @endif fw-bold">Input Method *</label>
+                            <select name="input_method" id="input_method" class="form-select" required>
+                                <option value="">--select input method--</option>
+                                <option value="textbox" {{ (old('input_method',$sub_questionInfo->input_method)=='textbox') ? 'selected':''}}>Text Box</option>
+                                <option value="selectbox" {{ (old('input_method',$sub_questionInfo->input_method)=='selectbox') ? 'selected':''}}>Select Box</option>
+                                <option value="checkbox" {{ (old('input_method',$sub_questionInfo->input_method)=='checkbox') ? 'selected':''}}>Checkbox</option>
+                            </select>
+                            @if ($errors->has('input_method'))
+                                @error('input_method')
+                                    <div class="alert alert-danger">{{ $message }}</div>
+                                @enderror
+                            @else
+                                <div class="invalid-feedback">
+                                    Please select input method.
+                                </div>
+                            @endif
+                        </div>
                         <br />
                         <div class="form-group">
                             <button type="submit" name="submit-btn" class="btn btn-lg btn-success btn-submit">Save Changes</button>

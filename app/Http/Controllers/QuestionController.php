@@ -83,16 +83,16 @@ class QuestionController extends Controller
 
         #permission verfy
         $this->webspice->permissionVerify('question.create');
-        if (!Cache::has('active-respondent-options')) {
-            $respondents = Option::where(['option_group_name' => 'respondent', 'status' => 1])->get();
-            Cache::forever('active-respondent-options', $respondents);
+        if (!Cache::has('active-categories-options')) {
+            $categories = Option::where(['option_group_name' => 'category', 'status' => 1])->get();
+            Cache::forever('active-categories-options', $categories);
         } else {
-            // $respondents = Cache::get('respondent-options')->where('status',1);
-            $respondents = Cache::get('active-respondent-options');
+            // $categories = Cache::get('categories-options')->where('status',1);
+            $categories = Cache::get('active-categories-options');
         }
 
         return view('question.create', [
-            'respondents' => $respondents
+            'categories' => $categories
         ]);
     }
 
@@ -107,20 +107,18 @@ class QuestionController extends Controller
         $request->validate(
             [
                 'value' => 'required|min:3|max:1000|unique:questions',
-                'respondent_id' => 'required',
-                'input_method' => 'required',
+                'category_id' => 'required',
             ],
             [
                 'value.required' => 'Value field is required.',
-                'respondent_id.required' => 'Respondent field is required.',
-                'input_method.required' => 'Input method field is required.',
+                'category_id.required' => 'Respondent field is required.',
             ]
         );
 
         $data = array(
             'value' => $request->value,
             'value_bangla' => $request->value_bangla,
-            'respondent_id' => $request->respondent_id,
+            'category_id' => $request->category_id,
             'input_method' => $request->input_method,
             'created_at' => $this->webspice->now('datetime24'),
             'created_by' => $this->webspice->getUserId(),
@@ -155,16 +153,16 @@ class QuestionController extends Controller
         $id = $this->webspice->encryptDecrypt('decrypt', $id);
 
         $questionInfo = $this->questions->find($id);
-        if (!Cache::has('active-respondent-options')) {
-            $respondents = Option::where(['option_group_name' => 'respondent', 'status' => 1])->get();
-            Cache::forever('active-respondent-options', $respondents);
+        if (!Cache::has('active-categories-options')) {
+            $categories = Option::where(['option_group_name' => 'category', 'status' => 1])->get();
+            Cache::forever('active-categories-options', $categories);
         } else {
-            // $respondents = Cache::get('respondent-options')->where('status',1);
-            $respondents = Cache::get('active-respondent-options');
+            // $categories = Cache::get('categories-options')->where('status',1);
+            $categories = Cache::get('active-categories-options');
         }
         return view('question.edit', [
             'questionInfo' => $questionInfo,
-            'respondents' => $respondents
+            'categories' => $categories
         ]);
     }
 
@@ -182,13 +180,11 @@ class QuestionController extends Controller
         $request->validate(
             [
                 'value' => 'required|min:3|max:1000|unique:questions,value,' . $id,
-                'respondent_id' => 'required',
-                'input_method' => 'required',
+                'category_id' => 'required',
             ],
             [
                 'value.required' => 'Value field is required.',
-                'respondent_id.required' => 'Respondent field is required.',
-                'input_method.required' => 'Input method field is required.',
+                'category_id.required' => 'Respondent field is required.',
                 'value.unique' => 'This value has already been taken for another record.'
             ]
         );
@@ -196,7 +192,7 @@ class QuestionController extends Controller
             $question = $this->questions->find($id);
             $question->value = $request->value;
             $question->value_bangla = $request->value_bangla;
-            $question->respondent_id = $request->respondent_id;
+            $question->category_id = $request->category_id;
             $question->input_method = $request->input_method;
             $question->updated_at = $this->webspice->now('datetime24');
             $question->updated_by = $this->webspice->getUserId();

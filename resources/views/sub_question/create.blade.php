@@ -19,7 +19,8 @@
                             <nav aria-label="breadcrumb" class="float-end">
                                 <ol class="breadcrumb">
                                     <li class="breadcrumb-item"><a href="#">Question & Answer</a></li>
-                                    <li class="breadcrumb-item"><a href="{{ url('sub_questions') }}">Sub Questions</a></li>
+                                    <li class="breadcrumb-item"><a href="{{ url('sub_questions') }}">Sub Questions</a>
+                                    </li>
                                     <li class="breadcrumb-item " aria-current="page">Create</li>
                                 </ol>
                             </nav>
@@ -36,7 +37,8 @@
                             <select name="question_id" id="question_id" class="form-select" required>
                                 <option value="">--select question--</option>
                                 @foreach ($questions as $val)
-                                    <option value="{{ $val->id }}" {{ $val->id==old('question_id')?'selected':''}}>{{ $val->value }}</option>
+                                    <option value="{{ $val->id }}"
+                                        {{ $val->id == old('question_id') ? 'selected' : '' }}>{{ $val->value }}</option>
                                 @endforeach
                             </select>
                             @if ($errors->has('question_id'))
@@ -72,6 +74,29 @@
                                 placeholder="Enter question value in bangla" rows="3">{{ old('value_bangla') }}</textarea>
                         </div>
 
+                        <div class="form-group my-1">
+                            <label for=""
+                                class="@if ($errors->has('value_bangla')) has-error @endif fw-bold">Input Method
+                                *</label>
+                            <select name="input_method" id="input_method" class="form-select" required>
+                                <option value="">--select input method--</option>
+                                <option value="textbox" {{ old('input_method') == 'textbox' ? 'selected' : '' }}>Text Box
+                                </option>
+                                <option value="selectbox" {{ old('input_method') == 'selectbox' ? 'selected' : '' }}>Select
+                                    Box</option>
+                                <option value="checkbox" {{ old('input_method') == 'checkbox' ? 'selected' : '' }}>Checkbox
+                                </option>
+                            </select>
+                            @if ($errors->has('input_method'))
+                                @error('input_method')
+                                    <div class="alert alert-danger">{{ $message }}</div>
+                                @enderror
+                            @else
+                                <div class="invalid-feedback">
+                                    Please select input method.
+                                </div>
+                            @endif
+                        </div>
                         <br />
                         <div class="form-group">
                             <button type="submit" name="submit-btn"

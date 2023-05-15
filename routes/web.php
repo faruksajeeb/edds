@@ -21,7 +21,7 @@ use App\Http\Controllers\MarketController;
 use App\Http\Livewire\Backend\OptionGroup;
 use App\Http\Livewire\Backend\Options;
 use App\Http\Livewire\Backend\CategoryComponent;
-use App\Http\Livewire\Backend\SubcategoryComponent;
+use App\Http\Livewire\Backend\SubCategoryComponent;
 
 use App\Http\Livewire\Frontend\Home;
 
@@ -47,7 +47,7 @@ Route::middleware('auth')->group(function () {
     Route::get('option-groups', OptionGroup::class)->name('option-groups');
     Route::get('options', Options::class)->name('options');
     Route::get('categories', CategoryComponent::class)->name('categories');
-    Route::get('subcategories', SubcategoryComponent::class)->name('subcategories');
+    Route::get('sub_categories', SubCategoryComponent::class)->name('sub_categories');
 
     Route::group(['middleware' => ['role:superadmin|developer']], function () { //user & role only created by superadmin
         Route::resources([

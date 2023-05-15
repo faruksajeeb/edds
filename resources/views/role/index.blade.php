@@ -103,10 +103,10 @@
                                 <tr>
                                     <th>Sl No.</th>
                                     <th>Name</th>
-                                    <th>Permissions</th>
+                                    <th style="min-width:500px">Permissions</th>
                                     <th>Guard Name</th>
-                                    <th>Created At</th>
-                                    <th>Updated At</th>
+                                    {{-- <th>Created At</th>
+                                    <th>Updated At</th> --}}
                                     <th>Status</th>
                                     <th>Action</th>
                                 </tr>
@@ -123,8 +123,8 @@
                                             @endforeach
                                         </td>
                                         <td>{{ $val->guard_name }}</td>
-                                        <td>{{ $val->created_at }}</td>
-                                        <td>{{ $val->updated_at }}</td>
+                                        {{-- <td>{{ $val->created_at }}</td>
+                                        <td>{{ $val->updated_at }}</td> --}}
                                         <td class="text-end">
                                             <div class="form-check form-switch">
                                                 @if (request()->get('status') == 'archived')

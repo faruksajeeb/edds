@@ -14,6 +14,7 @@ class SubQuestion extends Model
         'value',
         'value_bangla',
         'question_id',
+        'input_method',
         'created_by',
         'updated_by',
         'status'

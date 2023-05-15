@@ -17,8 +17,12 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('css/bootstrap.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('css/style.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('plugins/font-awesome/css/all.min.css') }}">
-   <style>
-   
+    <style>
+        .disabledAnchor {
+            pointer-events: none !important;
+            cursor: default;
+            color: #CCC;
+        }
     </style>
     @stack('styles')
 </head>
@@ -45,11 +49,29 @@
                         <label for="">Email *:</label>
                         <input type="email" class="form-control " name="email" value="{{ old('email') }}" required
                             autofocus />
+                        @if ($errors->has('email'))
+                            @error('email')
+                                <div class="alert alert-danger">{{ $message }}</div>
+                            @enderror
+                        @else
+                            <div class="invalid-feedback">
+                                Please enter a valid email.
+                            </div>
+                        @endif
                     </div>
                     <div class="form-group mt-2">
                         <label for="">Password *:</label>
                         <input type="password" class="form-control " type="password" name="password" required
                             autocomplete="current-password" />
+                        @if ($errors->has('password'))
+                            @error('password')
+                                <div class="alert alert-danger">{{ $message }}</div>
+                            @enderror
+                        @else
+                            <div class="invalid-feedback">
+                                Please enter password.
+                            </div>
+                        @endif
                     </div>
                     <!-- Remember Me -->
                     <div class="block mt-4">
@@ -68,10 +90,7 @@
                                 {{ __('Forgot your password?') }}
                             </a>
                         @endif
-
-                        <x-primary-button class="ms-3 btn btn-success btn-submit">
-                            {{ __('Log in') }}
-                        </x-primary-button>
+                        <button type="submit" name="submit-btn" class="btn btn-lg btn-success btn-login mx-3" id='btn-login'>Log in</button>
                     </div>
                 </form>
             </div>
@@ -80,6 +99,8 @@
 </body>
 <!-- Session Status -->
 <x-auth-session-status class="mb-4" :status="session('status')" />
+
+<script src="{{ asset('js/jquery-3.6.1.min.js') }}"></script>
 <script>
     // Example starter JavaScript for disabling form submissions if there are invalid fields
     (function() {
@@ -93,18 +114,23 @@
                     if (!form.checkValidity()) {
                         event.preventDefault()
                         event.stopPropagation()
-                    }else{
-                        $('.btn-submit').prop('disabled', true);
-                        $('.btn-submit').html('Logging...');
+                    } else {
+                        // alert(77);
+                        $('#btn-login').addClass('disabledAnchor');
+                        $('#btn-login').prop('disabled', true);
+                        $('#btn-login').html(
+                            '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Logging...'
+                        );
                     }
                     form.classList.add('was-validated')
                 }, false)
             })
     })();
-
 </script>
 
 @stack('scripts')
+
+
 
 </body>
 

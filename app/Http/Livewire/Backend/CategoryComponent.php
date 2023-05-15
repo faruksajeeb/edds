@@ -122,8 +122,6 @@ class CategoryComponent extends Component
 
         # Validate form data
         $this->validate([
-            'image' => 'required',
-            'is_popular' => 'required',
             'name' =>  [
                 'required',
                 Rule::unique('categories')->ignore($this->ids, 'id')->where(function ($query) {
@@ -136,26 +134,17 @@ class CategoryComponent extends Component
             $this->flag = 1;
             $category = new Category();
             $category->name = $this->name;
-            $category->is_popular = $this->is_popular;
             $category->slug = Str::slug($this->name,'-');
             $category->created_by = Auth::user()->id;
             $imageName = '';
             if ($this->image != NULL) {
                 #custom file name        
                 $imageName = Carbon::now()->timestamp . "-product." . $this->image->extension();
+                $category->image = $imageName;
+                $this->image->storeAs('categories', $imageName);
             }
-            # Upload Image
-            // $destinationPath = 'frontend-assets/imgs/products';
-            // if (File::exists(public_path($destinationPath . '/' . $existingRecord->website_favicon))) {
-            //     File::delete(public_path($destinationPath . '/' . $existingRecord->website_favicon));
-            // }            
-            // $this->image->storeAs('products',$imageName);
-            $category->image = $imageName;
-            // if($this->image->move($destinationPath, $imageName)){
-            if ($this->image->storeAs('categories', $imageName)) {
-                $category->save();
-            }
-
+          
+            $category->save();
             if ($category->id) {
                 # Reset form
                 $this->resetInputFields();
@@ -189,7 +178,6 @@ class CategoryComponent extends Component
       
         # Validate form data
         $this->validate([
-            'is_popular' => 'required',
             'name' =>  [
                 'required',
                 Rule::unique($this->tableName)->ignore($this->ids,'id')->where(function ($query) {
@@ -203,7 +191,6 @@ class CategoryComponent extends Component
             $this->flag = 1;
             $data = Category::find($this->ids);
             $data->name = $this->name;
-            $data->is_popular = $this->is_popular;
             $data->slug = Str::slug($this->name,'-');
             $data->updated_by = Auth::user()->id;
             if ($this->new_image) {

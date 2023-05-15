@@ -17,12 +17,13 @@ return new class extends Migration
             $table->id();
             $table->string('name')->unique();
             $table->string('slug')->unique();
-            $table->string('image');
-            $table->boolean('is_popular')->default(0);      
+            $table->string('image')->nullable();
+            $table->boolean('is_popular')->default(0)->nullable();    
             $table->boolean('status')->default(1);           
             $table->bigInteger('created_by')->unsigned();
             $table->bigInteger('updated_by')->unsigned()->nullable();
             $table->timestamps();
+            $table->softDeletes();
             $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('cascade');
         });

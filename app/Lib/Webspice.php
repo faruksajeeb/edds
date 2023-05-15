@@ -338,11 +338,24 @@ class Webspice
 
 		return response()->json($queryStatus);
 	}
+    
+	public function hasCache($cacheName){
+		return Cache::has($cacheName);
+	}
 
+	public function createCache($cacheName,$data){
+		Cache::forever($cacheName, $data);
+	}
+
+	public function getCache($cacheName){
+		return Cache::get($cacheName);
+	}
 	# Remove Cache	
 	function forgetCache($cacheName)
 	{
 		Cache::forget($cacheName);
+		Cache::forget('active-'.$cacheName);
+		Cache::forget('inactive-'.$cacheName);
 	}
 
 	function static_exchange_status($status)

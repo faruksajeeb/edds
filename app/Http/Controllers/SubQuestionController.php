@@ -68,7 +68,7 @@ class SubQuestionController extends Controller
             return Excel::download(new SubQuestionExport($query->get(), $title), $fileName . '_' . time() . '.xlsx');
         }
 
-        $sub_questions = $query->paginate(5);
+        $sub_questions = $query->paginate(10);
         // });
 
         return view('sub_question.index', compact('sub_questions'));
@@ -111,6 +111,7 @@ class SubQuestionController extends Controller
             [
                 'value' => 'required|min:3|max:1000|unique:sub_questions',
                 'question_id' => 'required',
+                'input_method' => 'required',
             ],
             [
                 'value.required' => 'Value field is required.',
@@ -122,6 +123,7 @@ class SubQuestionController extends Controller
             'value' => $request->value,
             'value_bangla' => $request->value_bangla,
             'question_id' => $request->question_id,
+            'input_method' => $request->input_method,
             'created_at' => $this->webspice->now('datetime24'),
             'created_by' => $this->webspice->getUserId(),
         );
@@ -183,10 +185,13 @@ class SubQuestionController extends Controller
             [
                 'value' => 'required|min:3|max:1000|unique:sub_questions,value,' . $id,
                 'question_id' => 'required',
+                'input_method' => 'required',
+                'input_method.required' => 'Input method field is required.',
             ],
             [
                 'value.required' => 'Value field is required.',
                 'question_id.required' => 'Question field is required.',
+                'input_method.required' => 'Input method field is required.',
                 'value.unique' => 'This value has already been taken for another record.'
             ]
         );
@@ -195,6 +200,7 @@ class SubQuestionController extends Controller
             $question->value = $request->value;
             $question->value_bangla = $request->value_bangla;
             $question->question_id = $request->question_id;
+            $question->input_method = $request->input_method;
             $question->updated_at = $this->webspice->now('datetime24');
             $question->updated_by = $this->webspice->getUserId();
             $question->save();

@@ -25,7 +25,7 @@
                             <span class="ms-1 d-sm-inline title ">Master</span>
                             <i class="icon fa-solid fa-angle-right text-right"></i>
                         </a>
-                        <ul class="collapse nav flex-column ms-3 ps-3 {{ Route::is('users.index') || Route::is('users.create') || Route::is('roles.index') || Route::is('roles.create') ? 'show' : '' }}"
+                        <ul class="collapse nav flex-column ms-3 ps-3 {{ Route::is('options') || Route::is('option_groups') || Route::is('categories') || Route::is('sub_categories') || Route::is('areas.index') || Route::is('markets.index') ? 'show' : '' }}"
                             id="master_submenu1" data-bs-parent="#menu">
                             @can('option_group.view')
                             <li class="{{ Route::is('option-groups') ? 'active' : '' }}">
@@ -46,19 +46,19 @@
                             </li>
                             @endcan
                             @can('sub_category.view')
-                            <li class="{{ Route::is('subcategories') ? 'active' : '' }}">
-                                <a href="{{ route('subcategories') }}" class="nav-link px-2"> <span
-                                        class="d-sm-inline"><i class="fa-solid fa-table"></i> Subcategories</span></a>
+                            <li class="{{ Route::is('sub_categories') ? 'active' : '' }}">
+                                <a href="{{ route('sub_categories') }}" class="nav-link px-2"> <span
+                                        class="d-sm-inline"><i class="fa-solid fa-table"></i> Sub Categories</span></a>
                             </li>
                             @endcan
                             @can('area.view')
-                            <li class="{{ Route::is('areas') ? 'active' : '' }}">
+                            <li class="{{ Route::is('areas.index') ? 'active' : '' }}">
                                 <a href="{{ url('areas') }}" class="nav-link px-2"> <span
                                         class="d-sm-inline"><i class="fa-solid fa-table"></i> Areas</span></a>
                             </li>
                             @endcan
                             @can('market.view')
-                            <li class="{{ Route::is('markets') ? 'active' : '' }}">
+                            <li class="{{ Route::is('markets.index') ? 'active' : '' }}">
                                 <a href="{{ url('markets') }}" class="nav-link px-2"> <span
                                         class="d-sm-inline"><i class="fa-solid fa-table"></i> Markets</span></a>
                             </li>

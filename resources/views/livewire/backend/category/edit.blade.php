@@ -47,20 +47,6 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row my-1">
-                        <div class="col-md-12">
-                            <label for="">Popular: <span class="text-danger">*</span></label>
-                            <select name="is_popular" wire:model='is_popular' placeholder='Select a is_popular'
-                                class="form-select   is_popular  @error('is_popular') is-invalid @enderror" required>
-                                <option value=""> Select Popular </option>
-                                <option value="1"> Yes</option>
-                                <option value="0"> No</option>
-                            </select>
-                            @error('is_popular')
-                            <div class="invalid-feedback error_msg">{{ $message }}</div>
-                        @enderror
-                        </div>
-                    </div>
                     
                 </div>
                 <div class="modal-footer">

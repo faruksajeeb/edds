@@ -36,9 +36,9 @@
                     <div class="form-group row">
                         <label for="option-group" class="form-label">Subcategory Name:</label>
                         <div class="col-12">
-                            <input type="text" name="subcategory_name" id="subcategory_name" wire:model="subcategory_name"
+                            <input type="text" name="sub_category_name" id="sub_category_name" wire:model="sub_category_name"
                                 class="form-control form-control-lg name" placeholder="Enter Subcategory Name">
-                            @error('subcategory_name')
+                            @error('sub_category_name')
                                 <span class="error text-danger">{{ $message }}</span>
                             @enderror
                         </div>

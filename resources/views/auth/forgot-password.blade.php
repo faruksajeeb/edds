@@ -47,21 +47,30 @@
                 <!-- Session Status -->
                 <x-auth-session-status class="mb-4" :status="session('status')" />
 
-                <form method="POST" action="{{ route('password.email') }}">
+                <form method="POST" action="{{ route('password.email') }}" class="needs-validation" novalidate>
                     @csrf
 
                     <!-- Email Address -->
                     <div class="form-group">
                         <label for="email">Email</label>
-                        <input id="email" class="form-control" type="email" name="email" placeholder="Enter valid user email"
-                        :value="old('email')" required autofocus />
-                        <x-input-error :messages="$errors->get('email')" class="mt-2" />
+                        <input id="email" class="form-control" type="email" name="email"
+                            placeholder="Enter valid user email" :value="old('email')" required autofocus />
+                        {{-- <x-input-error :messages="$errors->get('email')" class="mt-2" /> --}}
+                        @if ($errors->has('email'))
+                            @error('email')
+                                <div class="alert alert-danger">{{ $message }}</div>
+                            @enderror
+                        @else
+                            <div class="invalid-feedback">
+                                Please enter a registered email.
+                            </div>
+                        @endif
                     </div>
 
                     <div class="flex items-center justify-end mt-4">
-                        <x-primary-button class="btn btn-primary">
-                            {{ __('Email Password Reset Link') }}
-                        </x-primary-button>
+                        <button class="btn btn-primary btn-submit" type="submit" name="btn-submit">
+                           {{ __('Email Password Reset Link') }}
+                        </button>
                     </div>
                 </form>
             </div>
@@ -70,6 +79,8 @@
 </body>
 <!-- Session Status -->
 <x-auth-session-status class="mb-4" :status="session('status')" />
+
+<script src="{{ asset('js/jquery-3.6.1.min.js') }}"></script>
 <script>
     // Example starter JavaScript for disabling form submissions if there are invalid fields
     (function() {
@@ -83,6 +94,13 @@
                     if (!form.checkValidity()) {
                         event.preventDefault()
                         event.stopPropagation()
+                    } else {
+                        // alert(77);
+                        $('.btn-submit').addClass('disabledAnchor');
+                        $('.btn-submit').prop('disabled', true);
+                        $('.btn-submit').html(
+                            '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Link Sending...'
+                        );
                     }
                     form.classList.add('was-validated')
                 }, false)

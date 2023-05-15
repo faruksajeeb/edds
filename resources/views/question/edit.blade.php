@@ -32,15 +32,15 @@
                         @method('PUT')
                         @csrf
                         <div class="form-group my-1">
-                            <label for="" class="@if ($errors->has('value_bangla')) has-error @endif fw-bold">Type Of  *</label>
-                            <select name="respondent_id" id="respondent_id" class="form-select" required>
-                                <option value="">--select respondent--</option>
-                                @foreach ($respondents as $val)                                    
-                                    <option value="{{$val->id}}" {{ ($val->id==old('respondent_id',$questionInfo->respondent_id)) ?'selected':''}}>{{$val->option_value}}</option>
+                            <label for="" class="@if ($errors->has('value_bangla')) has-error @endif fw-bold">Type Of Category *</label>
+                            <select name="category_id" id="category_id" class="form-select" required>
+                                <option value="">--select category--</option>
+                                @foreach ($categories as $val)                                    
+                                    <option value="{{$val->id}}" {{ ($val->id==old('category_id',$questionInfo->category_id)) ?'selected':''}}>{{$val->option_value}}</option>
                                 @endforeach
                             </select>
-                            @if ($errors->has('respondent_id'))
-                                @error('respondent_id')
+                            @if ($errors->has('category_id'))
+                                @error('category_id')
                                     <div class="alert alert-danger">{{ $message }}</div>
                                 @enderror
                             @else
@@ -70,26 +70,8 @@
                                 Bangla</label><br />
                             <textarea name='value_bangla' id='value_bangla' class="form-control @error('value_bangla') is-invalid @enderror"
                                 placeholder="Enter question value in bangla" rows="3">{{ old('value_bangla',$questionInfo->value_bangla) }}</textarea>
-                        </div>
-                        
-                        <div class="form-group my-1">
-                            <label for="" class="@if ($errors->has('value_bangla')) has-error @endif fw-bold">Input Method *</label>
-                            <select name="input_method" id="input_method" class="form-select" required>
-                                <option value="">--select input method--</option>
-                                <option value="textbox" {{ (old('input_method',$questionInfo->input_method)=='textbox') ? 'selected':''}}>Text Box</option>
-                                <option value="selectbox" {{ (old('input_method',$questionInfo->input_method)=='selectbox') ? 'selected':''}}>Select Box</option>
-                                <option value="checkbox" {{ (old('input_method',$questionInfo->input_method)=='checkbox') ? 'selected':''}}>Checkbox</option>
-                            </select>
-                            @if ($errors->has('input_method'))
-                                @error('input_method')
-                                    <div class="alert alert-danger">{{ $message }}</div>
-                                @enderror
-                            @else
-                                <div class="invalid-feedback">
-                                    Please select input method.
-                                </div>
-                            @endif
-                        </div>
+                        </div>                      
+                       
                         <br />
                         <div class="form-group">
                             <button type="submit" name="submit-btn" class="btn btn-lg btn-success btn-submit">Save Changes</button>

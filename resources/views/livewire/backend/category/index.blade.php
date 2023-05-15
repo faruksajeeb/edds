@@ -97,7 +97,6 @@
                                     <th>Image</th>
                                     <th>Category Name</th>
                                     <th>Slug</th>
-                                    <th>Is Popular</th>
                                     <th>Status</th>
                                     <th>Created At</th>
                                     <th>Updated At</th>
@@ -111,7 +110,6 @@
                                         <td><img src="{{asset('frontend-assets/imgs/categories')}}/{{ $val->image }}" width="50" /></td>
                                         <td>{{ $val->name }}</td>
                                         <td>{{ str_replace('_', ' ', $val->slug) }}</td>
-                                        <td>{{ $val->is_popular==1 ? 'Yes':'No' }}</td>
                                         <td>
                                             <div class="form-check form-switch">
                                                 <input class="form-check-input active_inactive_btn "

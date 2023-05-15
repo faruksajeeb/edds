@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Category extends Model
 {
-    use HasFactory;
+    use HasFactory,SoftDeletes;
     public $fillable=[
         'id',
         'name',
@@ -19,4 +20,9 @@ class Category extends Model
         'updated_by',
         'status'
     ];
+
+        
+    protected $dates = ['deleted_at'];
+
+    
 }

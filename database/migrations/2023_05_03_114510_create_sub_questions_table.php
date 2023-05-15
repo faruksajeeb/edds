@@ -16,6 +16,7 @@ return new class extends Migration
             $table->bigInteger('question_id')->unsigned();
             $table->string('value');
             $table->string('value_bangla')->nullable();
+            $table->string('input_method');
             $table->tinyInteger('status')->default(1);
             $table->bigInteger('created_by')->unsigned();
             $table->bigInteger('updated_by')->unsigned()->nullable();

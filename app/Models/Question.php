@@ -13,7 +13,7 @@ class Question extends Model
     public $fillable = [
         'value',
         'value_bangla',
-        'respondent_id',
+        'category_id',
         'created_by',
         'updated_by',
         'status'
@@ -28,7 +28,7 @@ class Question extends Model
 
     public function option() : BelongsTo
     {
-        return $this->belongsTo(Option::class,'respondent_id','id')->withTrashed();
+        return $this->belongsTo(Option::class,'category_id','id')->withTrashed();
     }
 
 

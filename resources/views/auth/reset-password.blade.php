@@ -68,7 +68,7 @@
                     </div>
 
                     <div class="flex items-center justify-end mt-4">
-                        <x-primary-button class="btn btn-success">
+                        <x-primary-button class="btn btn-success btn-submit" type="submit">
                             {{ __('Reset Password') }}
                         </x-primary-button>
                     </div>
@@ -79,6 +79,8 @@
 </body>
 <!-- Session Status -->
 <x-auth-session-status class="mb-4" :status="session('status')" />
+
+<script src="{{ asset('js/jquery-3.6.1.min.js') }}"></script>
 <script>
     // Example starter JavaScript for disabling form submissions if there are invalid fields
     (function() {
@@ -92,12 +94,20 @@
                     if (!form.checkValidity()) {
                         event.preventDefault()
                         event.stopPropagation()
+                    } else {
+                        // alert(77);
+                        $('.btn-submit').addClass('disabledAnchor');
+                        $('.btn-submit').prop('disabled', true);
+                        $('.btn-submit').html(
+                            '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Resetting...'
+                        );
                     }
                     form.classList.add('was-validated')
                 }, false)
             })
     })();
 </script>
+
 
 @stack('scripts')
 

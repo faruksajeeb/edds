@@ -114,8 +114,7 @@
                                     <th>Sl No.</th>
                                     <th>Value</th>
                                     <th>Value Bangla</th>
-                                    <th>Respondent</th>
-                                    <th>Input Method</th>
+                                    <th>Category</th>
                                     {{-- <th>Created At</th>
                                     <th>Updated At</th> --}}
                                     <th>Status</th>
@@ -129,7 +128,7 @@
                                         <td>{{ $val->value }}</td>
                                         <td>{{ $val->value_bangla }}</td>
                                         <td>{{ $val->option ? $val->option->option_value : '' }}</td>
-                                        <td>{{ $val->input_method }}</td>
+                                    
                                         {{-- <td>{{ $val->created_at }}</td>
                                         <td>{{ $val->updated_at }}</td> --}}
                                         <td>

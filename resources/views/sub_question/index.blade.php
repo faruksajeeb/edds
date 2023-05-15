@@ -115,6 +115,7 @@
                                     <th>Value</th>
                                     <th>Value Bangla</th>
                                     <th>Question</th>
+                                    <th>Input Method</th>
                                     <th>Created At</th>
                                     <th>Updated At</th>
                                     <th>Status</th>
@@ -128,6 +129,7 @@
                                         <td>{{ $val->value }}</td>
                                         <td>{{ $val->value_bangla }}</td>
                                         <td>{{ isset($val->question) ? $val->question->value : '' }}</td>
+                                        <td>{{ $val->input_method }}</td>
                                         <td>{{ $val->created_at }}</td>
                                         <td>{{ $val->updated_at }}</td>
                                         <td>
