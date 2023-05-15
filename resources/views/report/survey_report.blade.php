@@ -4,7 +4,8 @@
     </x-slot>
     <div class="row">
         <div class="col-md-6 offset-md-3">
-            <form action="">
+            <form action="" method="POST" class="needs-validation" novalidate>
+                @csrf
                 <div class="card">
                     <div class="card-header">
                         <h3 class="text-center">Survey Report</h3>
@@ -650,31 +651,67 @@
                             </div>
                         </div>
                         <div class="row mb-2">
-                            <label for="thana" class="col-sm-3 col-form-label">Subcategory</label>
+                            <label for="thana" class="col-sm-3 col-form-label">Question</label>
                             <div class="col-sm-9">
                                 <select name="" id="" class="form-select">
-                                    <option value="">--select subcategory--</option>
-                                    @foreach ($sub_categories as $val)
-                                        <option value="{{ $val->id }}">{{ $val->sub_category_name }}</option>
+                                    <option value="">--select question--</option>
+                                    @foreach ($questions as $val)
+                                        <option value="{{ $val->id }}">{{ $val->value }}</option>
                                     @endforeach
                                 </select>
                             </div>
                         </div>
+
                         <div class="row mb-2">
-                            <label for="ate from" class="col-sm-3 col-form-label">Date From</label>
+                            <label for="thana" class="col-sm-3 col-form-label">Sub Question</label>
                             <div class="col-sm-9">
-                                <input type="text" class="datepicker form-control" name="date_from" />
+                                <select name="" id="" class="form-select">
+                                    <option value="">--select sub question--</option>
+                                    @foreach ($sub_questions as $val)
+                                        <option value="{{ $val->id }}">{{ $val->value }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row mb-2">
+                            <label for="ate from" class="col-sm-3 col-form-label">Date From *</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="datepicker form-control" value="{{ date('Y-m-01') }}" name="date_from" required />
+                                @if ($errors->has('date_from'))
+                                    @error('date_from')
+                                        <div class="alert alert-danger">{{ $message }}</div>
+                                    @enderror
+                                @else
+                                    <div class="invalid-feedback">
+                                        Please select date from.
+                                    </div>
+                                @endif
                             </div>
                         </div>
                         <div class="row mb-2">
-                            <label for="date to" class="col-sm-3 col-form-label">Date To</label>
+                            <label for="date to" class="col-sm-3 col-form-label">Date To *</label>
                             <div class="col-sm-9">
-                                <input type="text" class="datepicker form-control" name="date_from" />
+                                <input type="text" class="datepicker form-control" value="{{ date('Y-m-t') }}" name="date_to" required />
+                                @if ($errors->has('date_to'))
+                                    @error('date_to')
+                                        <div class="alert alert-danger">{{ $message }}</div>
+                                    @enderror
+                                @else
+                                    <div class="invalid-feedback">
+                                        Please select date to.
+                                    </div>
+                                @endif
                             </div>
                         </div>
                     </div>
-                    <div class="card-footer text-center">
-                        <button class="btn btn-lg btn-secondary">Generate Report</button>
+                    <div class="card-footer text-end">
+                        <button class="btn btn-md btn-info" type="submit" name='submit_btn' value="view"><i
+                                class="fas fa-search"></i> View</button>
+                        <button class="btn btn-md btn-danger" type="submit" name='submit_btn' value="pdf"><i
+                                class="fas fa-file"></i> PDF</button>
+                        <button class="btn btn-md btn-success" type="submit" name='submit_btn'
+                            value="export"><i class="fas fa-file-excel"></i> Export</button>
                     </div>
                 </div>
             </form>

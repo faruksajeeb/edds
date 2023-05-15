@@ -18,7 +18,7 @@ use Livewire\WithPagination;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
-class SubcategoryComponent extends Component
+class SubCategoryComponent extends Component
 {
     public $tableName = 'sub_categories';
     public $flag = 0;

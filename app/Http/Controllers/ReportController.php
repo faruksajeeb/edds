@@ -3,12 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Lib\Webspice;
-use App\Models\Category;
-use App\Models\SubCategory;
 use App\Models\Area;
 use App\Models\Market;
+use App\Models\Option;
+use App\Models\Question;
+use App\Models\SubQuestion;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\SurveyReportExport;
+use PDF;
 
 class ReportController extends Controller
 { 
@@ -22,8 +26,33 @@ class ReportController extends Controller
             return $next($request);
         });
     }
-    public function surveyReport(){
+    public function surveyReport(Request $request){
 
+        if($exportType = $request->submit_btn){
+            $records = [];
+            $data = array(
+                'report_format' => $exportType,
+                'date_from' => $request->date_from,
+                'date_from' => $request->date_from,
+                'records' => $records,
+            );
+            if($exportType=='pdf'){
+                # Generate PDF                
+                $pdf = PDF::loadView('report.survey_report_export', $data);
+                $pdf->set_paper('letter', 'landscape');
+                return $pdf->download('salary_statement_' . time() . '.pdf');
+
+            }else if($exportType=='export'){
+                 # Generate Excel
+               
+                 return Excel::download(new SurveyReportExport($data), 'salary_statement_' . time() . '.xlsx');
+
+            }else{
+                # view
+
+            }
+          
+        }
         # Cache Area
         $cacheName = 'active-areas';
         if (!$this->webspice->getCache($cacheName)) {
@@ -45,24 +74,30 @@ class ReportController extends Controller
         # Cache Category
         $cacheName = 'active-categories';
         if (!$this->webspice->getCache($cacheName)) {
-            $categories = Category::where(['status' => 1])->get();
+            $categories = Option::where(['option_group_name'=>'category','status' => 1])->get();
             $this->webspice->createCache($cacheName,$categories);
         } else {
             $categories = $this->webspice->getCache($cacheName);
         }
-        
-        # Cache Sub Category
-        $cacheName = 'active-sub_categories';
-        //$this->webspice->forgetCache($cacheName);
+
+        # Cache Questions
+        $cacheName = 'active-questions';
         if (!$this->webspice->getCache($cacheName)) {
-            $sub_categories = SubCategory::where(['status' => 1])->get();
-            $this->webspice->createCache($cacheName,$sub_categories);
+            $questions = Question::where(['status' => 1])->get();
+            $this->webspice->createCache($cacheName,$questions);
         } else {
-            $sub_categories = $this->webspice->getCache($cacheName);
-           
-            
+            $questions = $this->webspice->getCache($cacheName);
+        }
+
+        # Cache Sub Questions
+        $cacheName = 'active-sub_questions';
+        if (!$this->webspice->getCache($cacheName)) {
+            $sub_questions = SubQuestion::where(['status' => 1])->get();
+            $this->webspice->createCache($cacheName,$sub_questions);
+        } else {
+            $sub_questions = $this->webspice->getCache($cacheName);
         }
         
-        return view('report.survey_report',compact('areas','markets','categories','sub_categories'));
+        return view('report.survey_report',compact('areas','markets','categories','questions','sub_questions'));
     }
 }

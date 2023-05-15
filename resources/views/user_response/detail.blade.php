@@ -18,27 +18,24 @@
                     @if (isset($val))
                    <table class="table">
                         <tr>
-                            <td colspan="2">Response ID #: {{ $val->id }}</td>
-                            <td colspan="2" class="text-end">
-                                Status: {!! App\Lib\Webspice::textStatus($val->status) !!}
-                                @if ($val->status=='2')
-                                    <br>
-                                   Response Date: {{$val->created_at}}
-                                @elseif ($val->status=='1')
-                                <br>
-                                Response Date: {{$val->created_at}}
-                                @endif
+                            <td >Response ID #</td>
+                            <td >: {{ $val->id }}</td>
+                            <td  class="">
+                                
+                                   Response At
+                               
                             </td>
+                            <td>: {{$val->created_at}}</td>
                         </tr>
                         <tr>
                             <td>User Name</td>
-                            <td>{{ $val->full_name}}</td>
+                            <td>: {{  isset($val->registered_user)?$val->registered_user->full_name:''}}</td>
                             <td>Mobile</td>
-                            <td>{{ isset($val->registered_user)?$val->registered_user->mobile_no:''}}</td>
+                            <td>: {{ isset($val->registered_user)?$val->registered_user->mobile_no:''}}</td>
                         </tr>
                         <tr>
                             <td>Email</td>
-                            <td>{{isset($val->registered_user)?$val->registered_user->email:''}}</td>
+                            <td>: {{isset($val->registered_user)?$val->registered_user->email:''}}</td>
                             <td></td>
                             <td></td>
                         </tr>
@@ -59,7 +56,7 @@
                             ?>
                             <tr>
                                 <td>{{ isset($item->question)?$item->question->value:'' }}</td>
-                                <td>{{ isset($item->sub_question)?$item->sub_question->value:'' }}</td>
+                                <td>{{ isset($item->subQuestion)?$item->subQuestion->value:'' }}</td>
                                 <td>{{ $item->response }}</td>
                             </tr>
                             <?php endforeach; ?>

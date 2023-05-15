@@ -18,8 +18,8 @@ class UserResponseDetailFactory extends Factory
     {
         return [
             'response_id' => fake()->numberBetween($min = 1, $max = 1000),
-            'question_id' => fake()->numberBetween($min = 3, $max = 5),
-            // 'sub_question_id' => fake()->numberBetween($min = 1, $max = 3),
+            'question_id' => fake()->numberBetween($min = 3, $max = 3),
+            'sub_question_id' => fake()->numberBetween($min = 1, $max = 9),
             'response' => fake()->numberBetween($min = 1, $max = 50),
         ];
     }

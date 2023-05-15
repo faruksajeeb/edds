@@ -18,30 +18,24 @@
                     <?php if(isset($val)): ?>
                    <table class="table">
                         <tr>
-                            <td colspan="2">Response ID #: <?php echo e($val->id); ?></td>
-                            <td colspan="2" class="text-end">
-                                Status: <?php echo App\Lib\Webspice::textStatus($val->status); ?>
-
-                                <?php if($val->status=='2'): ?>
-                                    <br>
-                                   Response Date: <?php echo e($val->created_at); ?>
-
-                                <?php elseif($val->status=='1'): ?>
-                                <br>
-                                Response Date: <?php echo e($val->created_at); ?>
-
-                                <?php endif; ?>
+                            <td >Response ID #</td>
+                            <td >: <?php echo e($val->id); ?></td>
+                            <td  class="">
+                                
+                                   Response At
+                               
                             </td>
+                            <td>: <?php echo e($val->created_at); ?></td>
                         </tr>
                         <tr>
                             <td>User Name</td>
-                            <td><?php echo e($val->full_name); ?></td>
+                            <td>: <?php echo e(isset($val->registered_user)?$val->registered_user->full_name:''); ?></td>
                             <td>Mobile</td>
-                            <td><?php echo e(isset($val->registered_user)?$val->registered_user->mobile_no:''); ?></td>
+                            <td>: <?php echo e(isset($val->registered_user)?$val->registered_user->mobile_no:''); ?></td>
                         </tr>
                         <tr>
                             <td>Email</td>
-                            <td><?php echo e(isset($val->registered_user)?$val->registered_user->email:''); ?></td>
+                            <td>: <?php echo e(isset($val->registered_user)?$val->registered_user->email:''); ?></td>
                             <td></td>
                             <td></td>
                         </tr>
@@ -62,7 +56,7 @@
                             ?>
                             <tr>
                                 <td><?php echo e(isset($item->question)?$item->question->value:''); ?></td>
-                                <td><?php echo e(isset($item->sub_question)?$item->sub_question->value:''); ?></td>
+                                <td><?php echo e(isset($item->subQuestion)?$item->subQuestion->value:''); ?></td>
                                 <td><?php echo e($item->response); ?></td>
                             </tr>
                             <?php endforeach; ?>

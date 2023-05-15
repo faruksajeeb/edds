@@ -177,7 +177,7 @@ Route::middleware('auth')->group(function () {
     });
 
     # Report
-    Route::get('survey-report', [ReportController::class, 'surveyReport'])->name('survey-report');
+    Route::match(['get','post'],'survey-report', [ReportController::class, 'surveyReport'])->name('survey-report');
 });
 Route::get('/clear', function () {
     // Artisan::call('optimize:clear');

@@ -12,7 +12,8 @@
      <?php $__env->endSlot(); ?>
     <div class="row">
         <div class="col-md-6 offset-md-3">
-            <form action="">
+            <form action="" method="POST" class="needs-validation" novalidate>
+                <?php echo csrf_field(); ?>
                 <div class="card">
                     <div class="card-header">
                         <h3 class="text-center">Survey Report</h3>
@@ -658,31 +659,81 @@
                             </div>
                         </div>
                         <div class="row mb-2">
-                            <label for="thana" class="col-sm-3 col-form-label">Subcategory</label>
+                            <label for="thana" class="col-sm-3 col-form-label">Question</label>
                             <div class="col-sm-9">
                                 <select name="" id="" class="form-select">
-                                    <option value="">--select subcategory--</option>
-                                    <?php $__currentLoopData = $sub_categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $val): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                        <option value="<?php echo e($val->id); ?>"><?php echo e($val->sub_category_name); ?></option>
+                                    <option value="">--select question--</option>
+                                    <?php $__currentLoopData = $questions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $val): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <option value="<?php echo e($val->id); ?>"><?php echo e($val->value); ?></option>
                                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </select>
                             </div>
                         </div>
+
                         <div class="row mb-2">
-                            <label for="ate from" class="col-sm-3 col-form-label">Date From</label>
+                            <label for="thana" class="col-sm-3 col-form-label">Sub Question</label>
                             <div class="col-sm-9">
-                                <input type="text" class="datepicker form-control" name="date_from" />
+                                <select name="" id="" class="form-select">
+                                    <option value="">--select sub question--</option>
+                                    <?php $__currentLoopData = $sub_questions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $val): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <option value="<?php echo e($val->id); ?>"><?php echo e($val->value); ?></option>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row mb-2">
+                            <label for="ate from" class="col-sm-3 col-form-label">Date From *</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="datepicker form-control" value="<?php echo e(date('Y-m-01')); ?>" name="date_from" required />
+                                <?php if($errors->has('date_from')): ?>
+                                    <?php $__errorArgs = ['date_from'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                        <div class="alert alert-danger"><?php echo e($message); ?></div>
+                                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                                <?php else: ?>
+                                    <div class="invalid-feedback">
+                                        Please select date from.
+                                    </div>
+                                <?php endif; ?>
                             </div>
                         </div>
                         <div class="row mb-2">
-                            <label for="date to" class="col-sm-3 col-form-label">Date To</label>
+                            <label for="date to" class="col-sm-3 col-form-label">Date To *</label>
                             <div class="col-sm-9">
-                                <input type="text" class="datepicker form-control" name="date_from" />
+                                <input type="text" class="datepicker form-control" value="<?php echo e(date('Y-m-t')); ?>" name="date_to" required />
+                                <?php if($errors->has('date_to')): ?>
+                                    <?php $__errorArgs = ['date_to'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                        <div class="alert alert-danger"><?php echo e($message); ?></div>
+                                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                                <?php else: ?>
+                                    <div class="invalid-feedback">
+                                        Please select date to.
+                                    </div>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
-                    <div class="card-footer text-center">
-                        <button class="btn btn-lg btn-secondary">Generate Report</button>
+                    <div class="card-footer text-end">
+                        <button class="btn btn-md btn-info" type="submit" name='submit_btn' value="view"><i
+                                class="fas fa-search"></i> View</button>
+                        <button class="btn btn-md btn-danger" type="submit" name='submit_btn' value="pdf"><i
+                                class="fas fa-file"></i> PDF</button>
+                        <button class="btn btn-md btn-success" type="submit" name='submit_btn'
+                            value="export"><i class="fas fa-file-excel"></i> Export</button>
                     </div>
                 </div>
             </form>
