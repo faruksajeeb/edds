@@ -9,9 +9,11 @@ use App\Models\UserResponse;
 use Exception;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\UserResponseExport;
+use App\Models\Area;
+use App\Models\Market;
 use Illuminate\Support\Facades\Cache;
 use Spatie\SimpleExcel\SimpleExcelWriter;
-
+use Carbon\Carbon;
 
 class UserResponseController extends Controller
 {
@@ -45,37 +47,78 @@ class UserResponseController extends Controller
         } else {
             $query = $this->user_responses->orderBy('created_at', 'desc');
         }
-        if ($request->search_respodent != null) {
-            $query->where('respondent_id', $request->search_respodent);
+        $query->with('registered_user','area','market');
+       
+        # Start Filter Section        
+        $query->whereHas('registered_user', function ($query) use($request){
+            if($request->search_division != null){
+                $query->where('division', $request->search_division);
+            }
+            if($request->search_district != null){
+                $query->where('district', $request->search_district);
+            }
+            if($request->search_thana != null){
+                $query->where('thana', $request->search_thana);
+            }
+            if($request->search_respodent != null){
+                $query->where('respondent_type', $request->search_respodent);
+            }
+        });
+        if ($request->search_area != null) {
+            $query->where('area_id', $request->search_area);
         }
-
+        if ($request->search_market != null) {
+            $query->where('market_id', $request->search_market);
+        }
+        if ($request->search_status != null) {
+            $query->where('status', $request->search_status);
+        }
         $searchText = $request->search_text;
         if ($searchText != null) {
             // $query = $query->search($request->search_text); // search by value
-            $query->where(function ($query) use ($searchText) {
+            $query->whereHas('registered_user', function ($query) use($searchText){
                 $query->where('full_name', 'LIKE', '%' . $searchText . '%')
-                    ->orWhere('email', 'LIKE', '%' . $searchText . '%')
-                    ->orWhere('mobile_no', 'LIKE', '%' . $searchText . '%');
+                ->orWhere('email', 'LIKE', '%' . $searchText . '%')
+                ->orWhere('mobile_no', 'LIKE', '%' . $searchText . '%')
+                ->orWhere('response_date', 'LIKE', '%' . $searchText . '%')
+                ->orWhere('gender', 'LIKE', '%' . $searchText . '%');
             });
         }
-        $query->with('registered_user');
+        if(($request->date_from != null) && ($request->date_to !=null)){
+            $query->whereBetween('response_date',[$request->date_from,$request->date_to]);
+        }elseif($request->date_from != null){
+            $query->where('response_date','>=',$request->date_from);
+        }elseif($request->date_to != null){
+            $query->where('response_date','<=',$request->date_to);
+        }
+        # End Filter Section
+
+        # Export Section
         if (in_array($type = $request->submit_btn, array('export', 'csv', 'pdf'))) {
             $title = $fileTag . 'User Response List';
-            // dd($fileName);
             $this->export($title, $type, $query);
         }
 
         $user_responses = $query->paginate(5);
-        // });    
-
-        if (!Cache::has('active-respondent-options')) {
-            $respondents = Option::where(['option_group_name' => 'respondent', 'status' => 1])->get();
-            Cache::forever('active-respondent-options', $respondents);
+      
+        # Cache Area
+        $cacheName = 'active-areas';
+        if (!$this->webspice->getCache($cacheName)) {
+            $areas = Area::where(['status' => 1])->get();
+            $this->webspice->createCache($cacheName, $areas);
         } else {
-            // $respondents = Cache::get('respondent-options')->where('status',1);
-            $respondents = Cache::get('active-respondent-options');
+            $areas = $this->webspice->getCache($cacheName);
         }
-        return view('user_response.index', compact('user_responses', 'respondents'));
+
+        # Cache Market
+        $cacheName = 'active-markets';
+        if (!$this->webspice->getCache($cacheName)) {
+            $markets = Market::where(['status' => 1])->get();
+            $this->webspice->createCache($cacheName, $markets);
+        } else {
+            $markets = $this->webspice->getCache($cacheName);
+        }
+        return view('user_response.index', compact('user_responses', 'areas','markets'));
     }
 
     public function export(string $title, string $type, object $query)
@@ -88,17 +131,18 @@ class UserResponseController extends Controller
 
         $writer = SimpleExcelWriter::streamDownload($fileName);
         $writer->addHeader([$title]);
-        $writer->addHeader(['#', 'Full Name', 'Email', 'Mobile No.', 'Respondent', 'Response At']);
+        $writer->addHeader(['#', 'Response Date','Full Name', 'Email', 'Mobile No.', 'Respondent Type']);
         $i = 0;
         foreach ($query->lazy(1000) as $val) {
             //$writer->addRow($val->toArray()); // for all fields
             $writer->addRow([
                 $i + 1,
-                $val->full_name,
-                $val->email,
-                $val->mobile_no,
-                isset($val->respondent->option_value) ? $val->respondent->option_value : '',
-                "$val->created_at",
+                // Date::dateTimeToExcel($val->response_date),
+                "$val->response_date",
+                isset($val->registered_user->full_name) ? $val->registered_user->full_name : '',
+                isset($val->registered_user->email) ? $val->registered_user->email : '',
+                isset($val->registered_user->mobile_no) ? $val->registered_user->mobile_no : '',
+                isset($val->registered_user->respondent_type) ? $val->registered_user->respondent_type : ''
                 // $this->webspice->date_excel_to_real($val->created_at),
             ]);
 
@@ -282,6 +326,29 @@ class UserResponseController extends Controller
         }
         return redirect()->back();
     }
+    public function verify($id)
+    {
+      
+        #permission verify
+        $this->webspice->permissionVerify('user_response.verify');
+        try {
+            $id = $this->webspice->encryptDecrypt('decrypt', $id);
+            $user_response = UserResponse::findOrFail($id);
+            $user_response->status = 2; //verified 
+            $user_response->verified_at = $this->webspice->now('datetime24'); 
+            $user_response->verified_by = $this->webspice->getUserId(); 
+            $user_response->save();
+            # Log
+            $this->webspice->log('user_responses', $user_response->id, "FORCE DELETED");
+            # Cache Update
+            $this->webspice->forgetCache('user_responses');
+            // return redirect()->route('user_responses.index', ['status' => 'success'])->withSuccess(__('Data verified successfully.'));
+            return redirect()->back()->withSuccess(__('Data verified successfully.'));
+        } catch (Exception $e) {
+            $this->webspice->message('error', $e->getMessage());
+        }
+        return redirect()->route('user_responses.index');
+    }
     public function restore($id)
     {
         #permission verfy
@@ -293,7 +360,7 @@ class UserResponseController extends Controller
         } catch (Exception $e) {
             $this->webspice->message('error', $e->getMessage());
         }
-        return redirect()->route('user_responses.index');
+        return redirect()->back();
     }
 
     public function restoreAll()

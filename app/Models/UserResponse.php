@@ -42,8 +42,16 @@ class UserResponse extends Model
     {
         return $this->belongsTo(RegisteredUser::class,'registered_user_id','id')->withTrashed();
     }
+    public function area() : BelongsTo
+    {
+        return $this->belongsTo(Area::class,'area_id','id')->withTrashed();
+    }
+    public function market() : BelongsTo
+    {
+        return $this->belongsTo(Market::class,'market_id','id')->withTrashed();
+    }
 
     public function userResponseDetails(){
-        return $this->hasMany(UserResponseDetail::class,'response_id','id');
+        return $this->hasMany(UserResponseDetail::class,'response_id','id')->orderBy('question_id');
     }
 }

@@ -105,7 +105,36 @@ endif;
 unset($__errorArgs, $__bag); ?>"
                                 placeholder="Enter question value in bangla" rows="3"><?php echo e(old('value_bangla')); ?></textarea>
                         </div>
-                        
+                        <div class="form-group my-1">
+                            <label for=""
+                                class="<?php if($errors->has('value_bangla')): ?> has-error <?php endif; ?> fw-bold">Input Method
+                                *</label>
+                            <select name="input_method" id="input_method" class="form-select" required>
+                                <option value="">--select input method--</option>
+                                <option value="textbox" <?php echo e(old('input_method') == 'textbox' ? 'selected' : ''); ?>>Text Box
+                                </option>
+                                <option value="selectbox" <?php echo e(old('input_method') == 'selectbox' ? 'selected' : ''); ?>>Select
+                                    Box</option>
+                                <option value="checkbox" <?php echo e(old('input_method') == 'checkbox' ? 'selected' : ''); ?>>Checkbox
+                                </option>
+                            </select>
+                            <?php if($errors->has('input_method')): ?>
+                                <?php $__errorArgs = ['input_method'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                    <div class="alert alert-danger"><?php echo e($message); ?></div>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                            <?php else: ?>
+                                <div class="invalid-feedback">
+                                    Please select input method.
+                                </div>
+                            <?php endif; ?>
+                        </div>
                         <br />
                         <div class="form-group">
                             <button type="submit" name="submit-btn" class="btn btn-lg btn-success btn-submit">Save</button>

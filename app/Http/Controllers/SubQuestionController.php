@@ -111,11 +111,12 @@ class SubQuestionController extends Controller
             [
                 'value' => 'required|min:3|max:1000|unique:sub_questions',
                 'question_id' => 'required',
-                'input_method' => 'required',
+                // 'input_method' => 'required',
             ],
             [
                 'value.required' => 'Value field is required.',
                 'question_id.required' => 'Question field is required.',
+                // 'input_method.required' => 'Input method field is required.',
             ]
         );
 
@@ -185,8 +186,7 @@ class SubQuestionController extends Controller
             [
                 'value' => 'required|min:3|max:1000|unique:sub_questions,value,' . $id,
                 'question_id' => 'required',
-                'input_method' => 'required',
-                'input_method.required' => 'Input method field is required.',
+                // 'input_method' => 'required',
             ],
             [
                 'value.required' => 'Value field is required.',

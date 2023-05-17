@@ -30,21 +30,27 @@ class SurveyReportExport implements FromView, /*WithBackgroundColor, */ShouldAut
         $drawing = new Drawing();
         $drawing->setName('Logo');
         $drawing->setDescription('This is my logo');
-        $drawing->setPath(public_path('/img/logo/logo.png'));
+        $drawing->setPath(public_path('/logo.png'));
         $drawing->setHeight(60);        
-        $drawing->setCoordinates('H1');
+        $drawing->setCoordinates('A1');
         // $drawing->setOffsetX(150);
         $drawing->setOffsetY(5);
         return $drawing;
     }
     public function view(): View
-    {        
-        return view('report.salary_statement_export', [
+    {  if($this->data['report_type']=='question_wise'){
+            $view = 'report.question_wise_survey_report_export';
+        }else if($this->data['report_type']=='sub_question_wise'){
+            $view = 'report.survey_report_export';
+        }
+        return view($view, [
             'report_format' => $this->data['report_format'],
-            'vat_rate' => $this->data['vat_rate'],
-            'tax_rate' => $this->data['tax_rate'],
-            'payment_deduction_info' => $this->data['payment_deduction_info'],
-            'salary_statements' => $this->data['salary_statements']
+            'division' => $this->data['division'],
+            'district' => $this->data['district'],
+            'thana' => $this->data['thana'],
+            'date_from' => $this->data['date_from'],
+            'date_to' => $this->data['date_to'],
+            'records' => $this->data['records']
         ]);
     }
     use RegistersEventListeners;
@@ -54,7 +60,7 @@ class SurveyReportExport implements FromView, /*WithBackgroundColor, */ShouldAut
         $sheet = $event->sheet->getDelegate();
 
         // $sheet->getStyle('1')->getFont()->setSize(16);
-        $sheet->getStyle('A1:O2')->getFill()
+        $sheet->getStyle('A1:H2')->getFill()
             ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
             ->getStartColor()->setARGB('FFFFFF');
         // ...

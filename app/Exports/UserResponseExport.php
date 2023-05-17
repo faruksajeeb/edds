@@ -71,11 +71,11 @@ class UserResponseExport implements FromArray, WithHeadings, Responsable, Should
         return [
             [
                 "Sl No",
+                "Resonse Date",
                 "Full Name",
                 "Email",
                 "Mobile",
-                "Respondent",
-                "Response At"
+                "Respondent"
             ]
         ];
     }
@@ -89,11 +89,11 @@ class UserResponseExport implements FromArray, WithHeadings, Responsable, Should
         foreach ($this->data as $k=>$val) {
             $customArray[] = array(
                 $k+1,
-                $val['full_name'],
-                $val['email'],
-                $val['mobile_no'],
-                isset($val['respondent']['option_value']) ? $val['respondent']['option_value'] : '',
-                Date::dateTimeToExcel($val['created_at'])
+                Date::dateTimeToExcel($val['response_date']),
+                isset($val['registered_user']['full_name']) ? $val['registered_user']['full_name'] : '',
+                isset($val['registered_user']['email']) ? $val['registered_user']['email'] : '',
+                isset($val['registered_user']['mobile_no']) ? $val['registered_user']['mobile_no'] : '',
+                isset($val['registered_user']['respondent_type']) ? $val['registered_user']['respondent_type'] : ''
             );
         }
         return $customArray;

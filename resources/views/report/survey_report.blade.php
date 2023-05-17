@@ -14,7 +14,7 @@
                         <div class="row mb-2">
                             <label for="Division" class="col-sm-3 col-form-label">Division</label>
                             <div class="col-sm-9">
-                                <select name="" id="drpDivision" class="form-select">
+                                <select name="division" id="drpDivision" class="form-select">
                                     <option value="">--select division--</option>
                                     <option value="Dhaka">Dhaka</option>
                                     <option value="Chattogram">Chattogram</option>
@@ -30,7 +30,7 @@
                         <div class="row mb-2">
                             <label for="district" class="col-sm-3 col-form-label">DIstrict</label>
                             <div class="col-sm-9">
-                                <select name="" id="drpDistrict" class="form-select">
+                                <select name="district" id="drpDistrict" class="form-select">
                                     <option value="">--select district--</option>
                                     <option data-link="Dhaka" value="Dhaka">Dhaka</option>
                                     <option data-link="Dhaka" value="Faridpur">Faridpur</option>
@@ -102,7 +102,7 @@
                         <div class="row mb-2">
                             <label for="thana" class="col-sm-3 col-form-label">Thana</label>
                             <div class="col-sm-9">
-                                <select name="" id="drpUpazilla" class="form-select">
+                                <select name="thana" id="drpUpazilla" class="form-select">
                                     <option value="">--select thana--</option>
                                     <option data-link="Dhaka" value="Dhamrai">Dhamrai</option>
                                     <option data-link="Dhaka" value="Dohar">Dohar</option>
@@ -620,7 +620,7 @@
                         <div class="row mb-2">
                             <label for="thana" class="col-sm-3 col-form-label">Area</label>
                             <div class="col-sm-9">
-                                <select name="" id="" class="form-select">
+                                <select name="area_id" id="area_id" class="form-select">
                                     <option value="">--select area--</option>
                                     @foreach ($areas as $val)
                                         <option value="{{ $val->id }}">{{ $val->value }}</option>
@@ -631,7 +631,7 @@
                         <div class="row mb-2">
                             <label for="thana" class="col-sm-3 col-form-label">Market</label>
                             <div class="col-sm-9">
-                                <select name="" id="" class="form-select">
+                                <select name="market_id" id="market_id" class="form-select">
                                     <option value="">--select market--</option>
                                     @foreach ($markets as $val)
                                         <option value="{{ $val->id }}">{{ $val->value }}</option>
@@ -642,10 +642,10 @@
                         <div class="row mb-2">
                             <label for="thana" class="col-sm-3 col-form-label">Category</label>
                             <div class="col-sm-9">
-                                <select name="" id="" class="form-select">
+                                <select name="category_id" id="category_id" class="form-select">
                                     <option value="">--select category--</option>
                                     @foreach ($categories as $val)
-                                        <option value="{{ $val->id }}">{{ $val->name }}</option>
+                                        <option value="{{ $val->id }}">{{ $val->option_value }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -653,7 +653,7 @@
                         <div class="row mb-2">
                             <label for="thana" class="col-sm-3 col-form-label">Question</label>
                             <div class="col-sm-9">
-                                <select name="" id="" class="form-select">
+                                <select name="question_id" id="question_id" class="form-select">
                                     <option value="">--select question--</option>
                                     @foreach ($questions as $val)
                                         <option value="{{ $val->id }}">{{ $val->value }}</option>
@@ -665,7 +665,7 @@
                         <div class="row mb-2">
                             <label for="thana" class="col-sm-3 col-form-label">Sub Question</label>
                             <div class="col-sm-9">
-                                <select name="" id="" class="form-select">
+                                <select name="sub_question_id" id="sub_question_id" class="form-select">
                                     <option value="">--select sub question--</option>
                                     @foreach ($sub_questions as $val)
                                         <option value="{{ $val->id }}">{{ $val->value }}</option>
@@ -703,6 +703,16 @@
                                     </div>
                                 @endif
                             </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-md-6">
+                                <input type="radio" name="report_type" value="sub_question_wise" checked> Sub Question Wise
+                            </div>
+                            <div class="col-md-6">
+                                
+                                <input type="radio" name="report_type" value="question_wise"> Question Wise
+                            </div>
+
                         </div>
                     </div>
                     <div class="card-footer text-end">

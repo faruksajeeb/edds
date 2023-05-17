@@ -63,7 +63,7 @@ class UserResponseObserver
         $this->webspice->message('delete_success');
     }
 
-    
+
     public function restored(UserResponse $user_response): void
     {
         #Log
@@ -77,7 +77,7 @@ class UserResponseObserver
         // $user_response->save();
     }
 
-   
+
     public function forceDeleted(UserResponse $user_response): void
     {
         #Log
@@ -87,4 +87,6 @@ class UserResponseObserver
         #Message
         $this->webspice->message('force_delete_success');
     }
+
+   
 }

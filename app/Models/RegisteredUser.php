@@ -18,7 +18,7 @@ class RegisteredUser extends Model
         'division',
         'department',
         'district',
-        'respondent_id',
+        'respondent_type',
         'status'
     ];
 
@@ -31,8 +31,8 @@ class RegisteredUser extends Model
     protected $dates = ['deleted_at'];
 
     
-    public function respondent() : BelongsTo
-    {
-        return $this->belongsTo(Option::class,'respondent_id','id')->withTrashed();
-    }
+    // public function respondent() : BelongsTo
+    // {
+    //     return $this->belongsTo(Option::class,'respondent_id','id')->withTrashed();
+    // }
 }

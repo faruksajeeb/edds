@@ -4,12 +4,12 @@
         </div>
     </div>
     <div class="col-md-5 m-0 p-0 ">
-        <div class="search ">
+        {{-- <div class="search ">
             <label for="">
                 <input type="text" placeholder="Search here" class=" form-control" />
                 <i class="fa fa-solid fa-magnifying-glass"></i>
             </label>
-        </div>
+        </div> --}}
     </div>
     <div class="col-md-6 m-0 p-3 ">        
         <div class="dropdown user float-end">

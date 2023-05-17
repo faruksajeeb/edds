@@ -108,10 +108,12 @@ class QuestionController extends Controller
             [
                 'value' => 'required|min:3|max:1000|unique:questions',
                 'category_id' => 'required',
+                'input_method' => 'required',
             ],
             [
                 'value.required' => 'Value field is required.',
                 'category_id.required' => 'Respondent field is required.',
+                'input_method.required' => 'Input method field is required.',
             ]
         );
 
@@ -181,11 +183,13 @@ class QuestionController extends Controller
             [
                 'value' => 'required|min:3|max:1000|unique:questions,value,' . $id,
                 'category_id' => 'required',
+                'input_method' => 'required',
             ],
             [
                 'value.required' => 'Value field is required.',
                 'category_id.required' => 'Respondent field is required.',
-                'value.unique' => 'This value has already been taken for another record.'
+                'value.unique' => 'This value has already been taken for another record.',
+                'input_method.required' => 'Input method field is required.',
             ]
         );
         try {

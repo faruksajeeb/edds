@@ -73,6 +73,9 @@ class Webspice
 			case 'force_delete_success':
 				Session::flash('success', 'Data force deleted successfully.');
 				break;
+			case 'verify_success':
+				Session::flash('success', 'Data verified successfully.');
+				break;
 			case 'error':
 				Session::flash('error', 'Operation Failed. ' . $message);
 				break;
@@ -146,11 +149,14 @@ class Webspice
 		*/
 		$text = null;
 		switch ($status) {
-			case 1:
+			case 0:
 				$text = '<span class="badge bg-info">Pending</span>';
 				break;
+			case 1:
+				$text = '<span class="badge bg-info">Active</span>';
+				break;
 			case 2:
-				$text = '<span class="badge bg-success">Approved</span>';
+				$text = '<span class="badge bg-success">Verified</span>';
 				break;
 			case 3:
 				$text = '<span class="badge bg-success">Resolved</span>';
@@ -164,9 +170,9 @@ class Webspice
 			case 6:
 				$text = '<span class="badge bg-info">New</span>';
 				break;
-			case 7:
-				$text = '<span class="badge bg-success">Active</span>';
-				break;
+			// case 7:
+			// 	$text = '<span class="badge bg-success">Active</span>';
+			// 	break;
 			case 8:
 				$text = '<span class="badge bg-info">Initiated</span>';
 				break;
@@ -242,7 +248,7 @@ class Webspice
 				break;
 
 			case -1:
-				$text = '<span class="badge bg-danger">Deleted</span>';
+				$text = '<span class="badge bg-danger">Inactive</span>';
 				break;
 			case -2:
 				$text = '<span class="badge bg-danger">Declined</span>';
@@ -256,9 +262,9 @@ class Webspice
 			case -6:
 				$text = '<span class="badge bg-danger">Renewed</span>';
 				break;
-			case -7:
-				$text = '<span class="badge bg-danger">Inactive</span>';
-				break;
+			// case -7:
+			// 	$text = '<span class="badge bg-danger">Inactive</span>';
+			// 	break;
 			default:
 				$text = '<span class="badge bg-default">Unknown</span>';
 				break;

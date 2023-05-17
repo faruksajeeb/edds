@@ -151,6 +151,7 @@ Route::middleware('auth')->group(function () {
         'prefix' => '/user_responses',
         'as' => 'user_responses.',
     ], function () {
+        Route::put('/{user_response}/verify', [UserResponseController::class, 'verify'])->name('verify');
         Route::post('/{user_response}/restore', [UserResponseController::class, 'restore'])->name('restore');
         Route::delete('/{user_response}/force-delete', [UserResponseController::class, 'forceDelete'])->name('force-delete');
         Route::post('/restore-all', [UserResponseController::class, 'restoreAll'])->name('restore-all');
