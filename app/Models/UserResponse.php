@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Carbon\Carbon;
 
 class UserResponse extends Model
 {
@@ -37,6 +38,17 @@ class UserResponse extends Model
 
     
     protected $dates = ['deleted_at'];
+
+    public function setResponseDateAttribute($value)
+    {
+        $this->attributes['response_date']=Carbon::createFromFormat('d/m/Y',$value)->format('Y-m-d');
+    }
+    public function getResponseDateAttribute()
+    {
+        if ($this->attributes['response_date']!=null) {
+            return Carbon::createFromFormat('Y-m-d',$this->attributes['response_date'])->format('d/m/Y');
+        }
+    }
 
     public function registered_user() : BelongsTo
     {

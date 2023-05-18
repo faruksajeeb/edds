@@ -21,7 +21,7 @@
 <?php if($report_format == 'pdf'): ?>
     <div id="header" style="text-align:center">
         <img style="width:200px" src="<?php echo e(public_path('/logo.png')); ?>" alt="Logo" />
-        <h4 id="title" style="padding:5px;background-color:#e88923;color:#FFFFFF">Survey Report</h4>
+        <h4 id="title" style="padding:5px;background-color:#F5DEB3;color:#000000">Survey Report</h4>
     </div>
 <?php endif; ?>
 
@@ -34,7 +34,7 @@
                 </td>
             </tr>
             <tr>
-                <td colspan="7" style="text-align:center;padding:10px; font-weight:bold;">
+                <td colspan="7" style="text-align:center;padding:10px; font-weight:bold;background-color:#F5DEB3;color:#000000">
                     <h1>Survey Report</h1>
                 </td>
             </tr>
@@ -64,7 +64,7 @@
         </tr>
         <?php $__currentLoopData = $records; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
             <tr style="">
-                <td colspan="7" style="padding:15px;background-color: #C0C0C0;"><b>Category:
+                <td colspan="7" style="padding:15px;background-color: #F5DEB3;"><b># Category:
                         <?php echo e($category['category_name'] != '' ? $category['category_name'] : 'Not Assigned'); ?></b>
                 </td>
             </tr>
@@ -72,13 +72,13 @@
 
             <?php $__currentLoopData = $category['category_records']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $k => $question): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <tr style="">
-                    <td colspan="7" style="padding:15px;background-color: #C0C0C0;"><b>Question:
+                    <td colspan="7" style="padding:15px;background-color: #F5DEB3;"><b>## Question:
                             <?php echo e($question['question'] != '' ? $question['question'] : 'Not Assigned'); ?></b>
                     </td>
                 </tr>
                 <?php $__currentLoopData = $question['sub_records']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $k => $sub_question): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <tr style="">
-                        <td colspan="7" style="padding:15px;background-color: #C0C0C0;"><b>Sub Question:
+                        <td colspan="7" style="padding:15px;background-color: #F5DEB3;"><b>### Sub Question:
                                 <?php echo e($sub_question['sub_question'] != '' ? $sub_question['sub_question'] : 'Not Assigned'); ?></b>
                         </td>
                     </tr>
@@ -108,12 +108,16 @@
                             
                             <td style="text-align:center"><?php echo e($val->response); ?></td>
                         </tr>
-                        <?php
-                            $subQuestionTotal += $val->response;
+                        <?php                            
+                            if(is_numeric($val->response)){
+                                $subQuestionTotal += $val->response;
+                            }else{
+                                $subQuestionTotal ++;
+                            }
                         ?>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     <tr style="font-weight:bold">
-                        <td colspan="6"><?php echo e($sub_question['sub_question']); ?> Total</td>
+                        <td colspan="6">Total (<?php echo e($sub_question['sub_question']); ?> )</td>
                         <td style="text-align:center"><?php echo e($subQuestionTotal); ?></td>
                     </tr>
                     <tr>

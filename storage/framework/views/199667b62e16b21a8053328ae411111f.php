@@ -112,31 +112,37 @@
                         
                         <td style="text-align:left">
                             
-                                
-                                    <?php
-                                        $ResValue = '';
-                                    ?>
+
+                            <?php
+                                $ResValue = '';
+                            ?>
                             <?php $__currentLoopData = $subQuestions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $k => $Subval): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                           
-                                <?php                                    
-                                    $data = \App\Models\UserResponseDetail::select('sub_questions.value','user_response_details.response')
-                                    ->leftJoin('user_responses','user_responses.id','=','user_response_details.response_id')
-                                    ->leftJoin('sub_questions','sub_questions.id','=','user_response_details.sub_question_id')
-                                    ->where('user_response_details.question_id',$val->question_id)
-                                    ->where('user_response_details.sub_question_id',$Subval->id)
-                                    ->where('user_responses.id',$val->id)->first();
-             
-                                    $ResValue .= (isset($data))? $data->value.': '.$data->response.', ':'';
-                                    //   dd($data);
+                                <?php
+                                    $data = \App\Models\UserResponseDetail::select('sub_questions.value', 'user_response_details.response')
+                                        ->leftJoin('user_responses', 'user_responses.id', '=', 'user_response_details.response_id')
+                                        ->leftJoin('sub_questions', 'sub_questions.id', '=', 'user_response_details.sub_question_id')
+                                        ->where('user_response_details.question_id', $val->question_id)
+                                        ->where('user_response_details.sub_question_id', $Subval->id)
+                                        ->where('user_responses.id', $val->id)
+                                        ->first();
+                                    // $response = $data->response;
+                                    if ($data) {
+                                        // echo gettype((int) $data->response);
+                                        if (is_numeric($data->response)) {
+                                            $ResValue .= isset($data->response) ? $data->value . ': ' . $data->response . ', ' : '';
+                                        } else {
+                                            $ResValue .= isset($data->response) ? $data->response . ', ' : '';
+                                        }
+                                    }
+                                    
                                 ?>
-                                
                                 
                                 
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             <?php echo e($ResValue); ?>
 
+
                             
-                        
                         </td>
                     </tr>
                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>

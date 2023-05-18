@@ -21,7 +21,7 @@
 @if ($report_format == 'pdf')
     <div id="header" style="text-align:center">
         <img style="width:200px" src="{{ public_path('/logo.png') }}" alt="Logo" />
-        <h4 id="title" style="padding:5px;background-color:#e88923;color:#FFFFFF">Survey Report</h4>
+        <h4 id="title" style="padding:5px;background-color:#F5DEB3;color:#000000">Survey Report</h4>
     </div>
 @endif
 
@@ -34,7 +34,7 @@
                 </td>
             </tr>
             <tr>
-                <td colspan="7" style="text-align:center;padding:10px; font-weight:bold;">
+                <td colspan="7" style="text-align:center;padding:10px; font-weight:bold;background-color:#F5DEB3;color:#000000">
                     <h1>Survey Report</h1>
                 </td>
             </tr>
@@ -60,7 +60,7 @@
         </tr>
         @foreach ($records as $key => $category)
             <tr style="">
-                <td colspan="7" style="padding:15px;background-color: #C0C0C0;"><b>Category:
+                <td colspan="7" style="padding:15px;background-color: #F5DEB3;"><b># Category:
                         {{ $category['category_name'] != '' ? $category['category_name'] : 'Not Assigned' }}</b>
                 </td>
             </tr>
@@ -68,13 +68,13 @@
 
             @foreach ($category['category_records'] as $k => $question)
                 <tr style="">
-                    <td colspan="7" style="padding:15px;background-color: #C0C0C0;"><b>Question:
+                    <td colspan="7" style="padding:15px;background-color: #F5DEB3;"><b>## Question:
                             {{ $question['question'] != '' ? $question['question'] : 'Not Assigned' }}</b>
                     </td>
                 </tr>
                 @foreach ($question['sub_records'] as $k => $sub_question)
                     <tr style="">
-                        <td colspan="7" style="padding:15px;background-color: #C0C0C0;"><b>Sub Question:
+                        <td colspan="7" style="padding:15px;background-color: #F5DEB3;"><b>### Sub Question:
                                 {{ $sub_question['sub_question'] != '' ? $sub_question['sub_question'] : 'Not Assigned' }}</b>
                         </td>
                     </tr>
@@ -106,12 +106,16 @@
                             {{-- <td>{{ $val->sub_question }}</td> --}}
                             <td style="text-align:center">{{ $val->response }}</td>
                         </tr>
-                        @php
-                            $subQuestionTotal += $val->response;
+                        @php                            
+                            if(is_numeric($val->response)){
+                                $subQuestionTotal += $val->response;
+                            }else{
+                                $subQuestionTotal ++;
+                            }
                         @endphp
                     @endforeach
                     <tr style="font-weight:bold">
-                        <td colspan="6">{{ $sub_question['sub_question'] }} Total</td>
+                        <td colspan="6">Total ({{ $sub_question['sub_question'] }} )</td>
                         <td style="text-align:center">{{ $subQuestionTotal }}</td>
                     </tr>
                     <tr>

@@ -12,13 +12,12 @@
     <meta property="og:url" content="">
     <meta property="og:image" content="">
     <link rel="shortcut icon" type="image/x-icon" href="<?php echo e(asset('frontend-assets/imgs/theme/favicon.ico')); ?>">
-    <link rel="stylesheet" href="<?php echo e(asset('frontend-assets/css/main.css')); ?>">
-    <link rel="stylesheet" href="<?php echo e(asset('frontend-assets/css/custom.css')); ?>">
     <link rel="stylesheet" href="<?php echo e(asset('frontend-assets/css/font-awesome.min.css')); ?>">
     <script src="<?php echo e(asset('plugins/sweetalert2/sweetalert2.min.js')); ?>"></script>
     <link rel="stylesheet" href="<?php echo e(asset('plugins/sweetalert2/sweetalert2.min.css')); ?>">
-    <link href="<?php echo e(asset('frontend-assets/css/tailwind.min.css')); ?>" 
-          rel="stylesheet"> 
+    <link href="<?php echo e(asset('frontend-assets/css/tailwind.min.css')); ?>" rel="stylesheet">
+    <!-- Latest compiled and minified CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .pagination>li>a:focus,
         .pagination>li>a:hover,
@@ -30,7 +29,7 @@
             border-color: #ddd;
         }
     </style>
-      <?php echo $__env->yieldPushContent('styles'); ?>
+    <?php echo $__env->yieldPushContent('styles'); ?>
     <?php echo \Livewire\Livewire::styles(); ?>
 
 </head>
@@ -46,29 +45,9 @@
 
     
     <!-- Vendor JS-->
-    <script src="<?php echo e(asset('frontend-assets/js/vendor/modernizr-3.6.0.min.js')); ?>"></script>
-    <script src="<?php echo e(asset('frontend-assets/js/vendor/jquery-3.6.0.min.js')); ?>"></script>
-    <script src="<?php echo e(asset('frontend-assets/js/vendor/jquery-migrate-3.3.0.min.js')); ?>"></script>
-    <script src="<?php echo e(asset('frontend-assets/js/vendor/bootstrap.bundle.min.js')); ?>"></script>
-    <script src="<?php echo e(asset('frontend-assets/js/plugins/slick.js')); ?>"></script>
-    <script src="<?php echo e(asset('frontend-assets/js/plugins/jquery.syotimer.min.js')); ?>"></script>
-    <script src="<?php echo e(asset('frontend-assets/js/plugins/wow.js')); ?>"></script>
-    <script src="<?php echo e(asset('frontend-assets/js/plugins/jquery-ui.js')); ?>"></script>
-    <script src="<?php echo e(asset('frontend-assets/js/plugins/perfect-scrollbar.js')); ?>"></script>
-    <script src="<?php echo e(asset('frontend-assets/js/plugins/magnific-popup.js')); ?>"></script>
-    <script src="<?php echo e(asset('frontend-assets/js/plugins/select2.min.js')); ?>"></script>
-    <script src="<?php echo e(asset('frontend-assets/js/plugins/waypoints.js')); ?>"></script>
-    <script src="<?php echo e(asset('frontend-assets/js/plugins/counterup.js')); ?>"></script>
-    <script src="<?php echo e(asset('frontend-assets/js/plugins/jquery.countdown.min.js')); ?>"></script>
-    <script src="<?php echo e(asset('frontend-assets/js/plugins/images-loaded.js')); ?>"></script>
-    <script src="<?php echo e(asset('frontend-assets/js/plugins/isotope.js')); ?>"></script>
-    <script src="<?php echo e(asset('frontend-assets/js/plugins/scrollup.js')); ?>"></script>
-    <script src="<?php echo e(asset('frontend-assets/js/plugins/jquery.vticker-min.js')); ?>"></script>
-    <script src="<?php echo e(asset('frontend-assets/js/plugins/jquery.theia.sticky.js')); ?>"></script>
-    <script src="<?php echo e(asset('frontend-assets/js/plugins/jquery.elevatezoom.js')); ?>"></script>
-    <!-- Template  JS -->
-    <script src="<?php echo e(asset('frontend-assets/js/main.js?v=3.3')); ?>"></script>
-    <script src="<?php echo e(asset('frontend-assets/js/shop.js?v=3.3')); ?>"></script>
+    <!-- Latest compiled JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+
     <?php echo \Livewire\Livewire::scripts(); ?>
 
     <?php echo $__env->yieldPushContent('scripts'); ?>
@@ -77,7 +56,7 @@
             Swal.fire({
                 position: 'top-end',
                 icon: 'success',
-                title: ''+message+ '',
+                title: '' + message + '',
                 showConfirmButton: false,
                 timer: 2500
             })
@@ -87,7 +66,7 @@
                 position: 'top-end',
                 icon: 'warning',
                 title: 'SORRY',
-                text: ''+message+ '',
+                text: '' + message + '',
                 showConfirmButton: true,
                 timer: 5000
             })
