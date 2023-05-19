@@ -13,7 +13,16 @@ return new class extends Migration
     {
         Schema::create('districts', function (Blueprint $table) {
             $table->id();
+            $table->bigInteger('division_id')->unsigned();
+            $table->string('district_name');
+            $table->tinyInteger('status')->default(1);
+            $table->bigInteger('created_by')->unsigned();
+            $table->bigInteger('updated_by')->unsigned()->nullable();
             $table->timestamps();
+            $table->softDeletes();
+            $table->foreign('division_id')->references('id')->on('divisions')->onDelete('cascade');
+            $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('updated_by')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

@@ -13,7 +13,16 @@ return new class extends Migration
     {
         Schema::create('upazilas', function (Blueprint $table) {
             $table->id();
+            $table->bigInteger('district_id')->unsigned();
+            $table->string('upazila_name');
+            $table->tinyInteger('status')->default(1);
+            $table->bigInteger('created_by')->unsigned();
+            $table->bigInteger('updated_by')->unsigned()->nullable();
             $table->timestamps();
+            $table->softDeletes();
+            $table->foreign('district_id')->references('id')->on('districts')->onDelete('cascade');
+            $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('updated_by')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

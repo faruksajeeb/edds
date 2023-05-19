@@ -29,9 +29,10 @@
         .primary_bg_color {
             background-color: #e88923 !important;
         }
-        .big_number{
+
+        .big_number {
             font-size: 50px;
-            font-weight:bold;
+            font-weight: bold;
         }
     </style>
 <?php $__env->stopPush(); ?>
@@ -86,7 +87,7 @@
                                 <p>today</p>
                             </div>
                             <h2 class="fw-bold my-5 primary_text_color"><?php echo e($category['category_name']); ?></h2>
-                            
+
 
                         </div>
                     </div>
@@ -101,54 +102,30 @@
         <div class="container my-5 table-responsive-sm">
             <table class="table  table-hover ">
                 <thead>
+                    <?php
+                    $colSpan = count($categories);
+                    ?>
                     <tr class="primary_bg_color">
-                        <th colspan="4" class="text-center py-3 primary_bg_color text-white display-6">Division Wise
+                        <th colspan="<?php echo e($colSpan + 1); ?>"
+                            class="text-center py-3 primary_bg_color text-white display-6">Division Wise
                             Last 7 Days Statistices</th>
                     </tr>
                     <tr class="table-dark">
                         <th class="">Location</th>
-                        <th class="">Poultry</th>
-                        <th class="">Wild Bird</th>
-                        <th class="">LBM Worker</th>
+                        <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <th class="text-center"><?php echo e($category['category_name']); ?></th>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="table-warning">
-                        <td class="">Dhaka</td>
-                        <td class="">50</td>
-                        <td class="">30</td>
-                        <td class="">20</td>
-                    </tr>
-                    <tr class="table-warning">
-                        <td class="">Chittagong</td>
-                        <td class="">50</td>
-                        <td class="">30</td>
-                        <td class="">20</td>
-                    </tr>
-                    <tr class="table-warning">
-                        <td class="">Rajshahi</td>
-                        <td class="">50</td>
-                        <td class="">30</td>
-                        <td class="">20</td>
-                    </tr>
-                    <tr class="table-warning">
-                        <td class="">Khulna</td>
-                        <td class="">50</td>
-                        <td class="">30</td>
-                        <td class="">20</td>
-                    </tr>
-                    <tr class="table-warning">
-                        <td class="">Sylhet</td>
-                        <td class="">50</td>
-                        <td class="">30</td>
-                        <td class="">20</td>
-                    </tr>
-                    <tr class="table-warning">
-                        <td class="">Barisal</td>
-                        <td class="">50</td>
-                        <td class="">30</td>
-                        <td class="">20</td>
-                    </tr>
+                    <?php $__currentLoopData = $divisions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $division): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <tr class="table-warning">
+                            <td class=""><?php echo e($division['division_name']); ?></td>
+                            <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key=>$category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <td class="text-center"><?php echo e($division[$key]); ?></td>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                        </tr>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </tbody>
             </table>
         </div>
