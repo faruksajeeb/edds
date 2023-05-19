@@ -79,12 +79,13 @@
             <div class="row align-items-md-stretch">
                 <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <div class="col-md-4 my-3">
-                        <div class="h-100 p-5 text-dark bg-white rounded-3 text-center">
+                        <div class="h-100 p-3 text-dark bg-white rounded-3 text-center">
                             <div class="iconBox">
                                 
-                                <span class="big_number">55</span>
+                                <span class="big_number"><?php echo e($category['response_data']); ?></span>
+                                <p>today</p>
                             </div>
-                            <h2 class="fw-bold my-5 primary_text_color"><?php echo e($category->option_value); ?></h2>
+                            <h2 class="fw-bold my-5 primary_text_color"><?php echo e($category['category_name']); ?></h2>
                             
 
                         </div>

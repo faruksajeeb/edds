@@ -90,13 +90,14 @@
             <div class="row align-items-md-stretch">
                 @foreach ($categories as $category)
                     <div class="col-md-4 my-3">
-                        <div class="h-100 p-5 text-dark bg-white rounded-3 text-center">
+                        <div class="h-100 p-3 text-dark bg-white rounded-3 text-center">
                             <div class="iconBox">
                                 {{-- <i class="fa fa-eye"></i> --}}
-                                <span class="big_number">55</span>
+                                <span class="big_number">{{$category['response_data']}}</span>
+                                <p>today</p>
                             </div>
-                            <h2 class="fw-bold my-5 primary_text_color">{{ $category->option_value }}</h2>
-                            {{-- <p>Some Text</p> --}}
+                            <h2 class="fw-bold my-5 primary_text_color">{{ $category['category_name'] }}</h2>
+                            
 
                         </div>
                     </div>

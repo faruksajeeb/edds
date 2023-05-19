@@ -20,20 +20,28 @@ class Home extends Component
         # Cache Area
         $cacheName = 'active-categories';
         if (!$this->webspice->getCache($cacheName)) {
-            $categories = Option::where(['option_group_name'=>'category','status' => 1])->get();
+            $categories = Option::where(['option_group_name' => 'category', 'status' => 1])->get();
             $this->webspice->createCache($cacheName, $categories);
         } else {
             $categories = $this->webspice->getCache($cacheName);
         }
         # Category Wise Report
-        $query = Option::where(['option_group_name'=>'category','status' => 1])->select(
-            'options.option_value',
-             DB::raw("(SELECT COUNT(user_response_details.response) FROM user_response_details LEFT JOIN user_responses ON
-             user_responses.id=user_response_details.response_id
-             LEFT JOIN registered_users ON  registered_users.id=user_responses.registered_user_id
-             WHERE registered_users.respondent_type = options.option_value GROUP BY registered_users.respondent_type) as totalResponse")
-        );
-        dd($query->get());
-        return view('livewire.frontend.home', ['categories'=>$categories])->extends('livewire.frontend.master');
+        $categoryWiseReport = array();
+        foreach ($categories as $category) :
+            $categoryId = $category->id;
+            $categoryWiseReport[$categoryId]['category_name'] = $category->option_value;
+            $query = UserResponseDetail::leftJoin('questions', 'questions.id', '=', 'user_response_details.question_id');
+            $query->leftJoin('user_responses', 'user_responses.id', '=', 'user_response_details.response_id');
+            $query->where('questions.category_id', $categoryId);
+            $query->whereRaw('user_responses.response_date = CURDATE()');
+            if ($category->option_value == 'LBM Worker') {
+                $resData = $query->count('user_response_details.response');
+            } else {
+                $resData = $query->sum('user_response_details.response');
+            }
+            $categoryWiseReport[$categoryId]['response_data'] =   $resData;
+        endforeach;
+        // dd($categoryWiseReport);
+        return view('livewire.frontend.home', ['categories' => $categoryWiseReport])->extends('livewire.frontend.master');
     }
 }
