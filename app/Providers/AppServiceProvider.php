@@ -42,5 +42,15 @@ class AppServiceProvider extends ServiceProvider
             Cache::put('company_settings', $companySettings);     
         }   
         view()->share('company_settings', $companySettings);
+
+        if ( Cache::has('theme_settings') ) {
+            # get from file cache
+            $themeSettings = Cache::get('theme_settings');
+        }else{
+            # get from database
+            $themeSettings = DB::table('theme_settings')->first();    
+            Cache::put('theme_settings', $themeSettings);     
+        }   
+        view()->share('theme_settings', $themeSettings);
     }
 }

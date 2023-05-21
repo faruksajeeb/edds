@@ -20,7 +20,7 @@
 
 @if ($report_format == 'pdf')
     <div id="header" style="text-align:center">
-        <img style="width:200px" src="{{ public_path('/logo.png') }}" alt="Logo" />
+        <img style="width:200px" src="{{ asset('/uploads/'.$theme_settings->website_logo) }}" alt="Logo" />
         <h4 id="title" style="padding:5px;background-color:#F5DEB3;color:#000000">Survey Report</h4>
     </div>
 @endif

@@ -87,7 +87,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($option_groups as $key => $val)
+                                @forelse ($option_groups as $key => $val)
                                     <tr>
                                         <td>{{ $key + $option_groups->firstItem() }}</td>
                                         <td>{{ str_replace('_', ' ', $val->option_group_name) }}</td>
@@ -115,7 +115,11 @@
                                                 title="Delete"><i class="fa-solid fa-trash-can"></i></button> --}}
                                         </td> 
                                     </tr>
-                                @endforeach
+                                    @empty
+                                    <tr>
+                                        <td colspan="6" class="text-center">No records found. </td>
+                                    </tr>
+                                    @endforelse
                             </tbody>
                         </table>
                     </div>

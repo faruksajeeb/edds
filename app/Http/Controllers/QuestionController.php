@@ -90,9 +90,17 @@ class QuestionController extends Controller
             // $categories = Cache::get('categories-options')->where('status',1);
             $categories = Cache::get('active-categories-options');
         }
+        if (!Cache::has('active-respondents-options')) {
+            $respondents = Option::where(['option_group_name' => 'respondent', 'status' => 1])->get();
+            Cache::forever('active-respondents-options', $respondents);
+        } else {
+            // $respondents = Cache::get('respondents-options')->where('status',1);
+            $respondents = Cache::get('active-respondents-options');
+        }
 
         return view('question.create', [
-            'categories' => $categories
+            'categories' => $categories,
+            'respondents' => $respondents
         ]);
     }
 
@@ -108,11 +116,13 @@ class QuestionController extends Controller
             [
                 'value' => 'required|min:3|max:1000|unique:questions',
                 'category_id' => 'required',
+                'respondent' => 'required',
                 'input_method' => 'required',
             ],
             [
                 'value.required' => 'Value field is required.',
-                'category_id.required' => 'Respondent field is required.',
+                'category_id.required' => 'Category field is required.',
+                'respondent.required' => 'Respondent field is required.',
                 'input_method.required' => 'Input method field is required.',
             ]
         );
@@ -121,13 +131,23 @@ class QuestionController extends Controller
             'value' => $request->value,
             'value_bangla' => $request->value_bangla,
             'category_id' => $request->category_id,
+            'respondent' => $request->respondent,
             'input_method' => $request->input_method,
             'created_at' => $this->webspice->now('datetime24'),
             'created_by' => $this->webspice->getUserId(),
         );
 
         try {
-            $this->questions->create($data);
+            $question = $this->questions->create($data);
+            # if sub questions
+            // if($request->get('sub_question_value') !=''){
+                // $question->subQuestions()->create([
+                //     'value' => 'test_sub',
+                //     'value_bangla' => 'test_sub_bangla',
+                //     'created_at' => $this->webspice->now('datetime24'),
+                //     'created_by' => $this->webspice->getUserId(),
+                // ]);
+            // }
         } catch (Exception $e) {
             $this->webspice->insertOrFail('error', $e->getMessage());
         }
@@ -162,9 +182,18 @@ class QuestionController extends Controller
             // $categories = Cache::get('categories-options')->where('status',1);
             $categories = Cache::get('active-categories-options');
         }
+
+        if (!Cache::has('active-respondents-options')) {
+            $respondents = Option::where(['option_group_name' => 'respondent', 'status' => 1])->get();
+            Cache::forever('active-respondents-options', $respondents);
+        } else {
+            // $respondents = Cache::get('respondents-options')->where('status',1);
+            $respondents = Cache::get('active-respondents-options');
+        }
         return view('question.edit', [
             'questionInfo' => $questionInfo,
-            'categories' => $categories
+            'categories' => $categories,
+            'respondents' => $respondents
         ]);
     }
 
@@ -183,11 +212,13 @@ class QuestionController extends Controller
             [
                 'value' => 'required|min:3|max:1000|unique:questions,value,' . $id,
                 'category_id' => 'required',
+                'respondent' => 'required',
                 'input_method' => 'required',
             ],
             [
                 'value.required' => 'Value field is required.',
-                'category_id.required' => 'Respondent field is required.',
+                'category_id.required' => 'Category field is required.',
+                'respondent.required' => 'Respondent field is required.',
                 'value.unique' => 'This value has already been taken for another record.',
                 'input_method.required' => 'Input method field is required.',
             ]
@@ -197,6 +228,7 @@ class QuestionController extends Controller
             $question->value = $request->value;
             $question->value_bangla = $request->value_bangla;
             $question->category_id = $request->category_id;
+            $question->respondent = $request->respondent;
             $question->input_method = $request->input_method;
             $question->updated_at = $this->webspice->now('datetime24');
             $question->updated_by = $this->webspice->getUserId();

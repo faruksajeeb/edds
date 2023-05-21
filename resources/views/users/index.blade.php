@@ -119,7 +119,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($users as $key => $val)
+                                @forelse ($users as $key => $val)
                                     <tr>
                                         <td>{{ $key + $users->firstItem() }}</td>
                                         <td>{{ $val->name }}</td>
@@ -213,7 +213,11 @@
 
                                         </td>
                                     </tr>
-                                @endforeach
+                                    @empty
+                                    <tr>
+                                        <td colspan="7" class="text-center">No records found. </td>
+                                    </tr>
+                                    @endforelse
                             </tbody>
                         </table>
                         {{ $users->withQueryString()->links() }}

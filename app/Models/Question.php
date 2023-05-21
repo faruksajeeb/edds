@@ -14,6 +14,8 @@ class Question extends Model
         'value',
         'value_bangla',
         'category_id',
+        'respondent',
+        'input_method',
         'created_by',
         'updated_by',
         'status'
@@ -29,6 +31,10 @@ class Question extends Model
     public function option() : BelongsTo
     {
         return $this->belongsTo(Option::class,'category_id','id')->withTrashed();
+    }
+
+    function subQuestions() {
+        return $this->hasMany(SubQuestion::class);
     }
 
 

@@ -121,7 +121,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($areas as $index => $val)
+                                @forelse ($areas as $index => $val)
                                     <tr>
                                         <td>{{ $index + $areas->firstItem() }}</td>
                                         <td>{{ $val->value }}</td>
@@ -195,7 +195,11 @@
 
                         </td>
                         </tr>
-                        @endforeach
+                        @empty
+                        <tr>
+                            <td colspan="5" class="text-center">No records found. </td>
+                        </tr>
+                        @endforelse
                         </tbody>
                         </table>
                         {{ $areas->withQueryString()->links() }}

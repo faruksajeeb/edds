@@ -45,7 +45,7 @@
                     <div class="container">
                         <a class="navbar-brand" href="{{ route('/') }}">
                             <img loading="prelaod" decoding="async" class="img-fluid" width="160"
-                                src="{{ asset('/public/logo.png') }}" alt="icddr,b">
+                                src="{{ asset('/uploads/'.$theme_settings->website_logo) }}" alt="icddr,b">
                         </a>
                         <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                             data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
@@ -85,7 +85,7 @@
             <!-- /navigation -->
         </div>
     </div>
-    <div class="container-fluid slider-section h-100 mx-0 px-0 py-5 " style="background-color: #CCC">
+    <div class="container-fluid slider-section h-100 mx-0 px-0 py-5 " style="background-color: #FFDEAD">
 
         <div class="container my-3">
             <div class="row align-items-md-stretch">
@@ -130,7 +130,7 @@
                     <tr class="primary_bg_color">
                         <th colspan="{{ $colSpan + 1 }}"
                             class="text-center py-3 primary_bg_color text-white display-6">Division Wise
-                            Last 7 Days Statistices</th>
+                            Last 7 Days Statistics</th>
                     </tr>
                     <tr class="table-dark">
                         <th class="">Location</th>

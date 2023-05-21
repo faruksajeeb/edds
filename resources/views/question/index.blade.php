@@ -115,6 +115,8 @@
                                     <th>Value</th>
                                     <th>Value Bangla</th>
                                     <th>Category</th>
+                                    <th>Respondent</th>
+                                    <th>Input Method</th>
                                     {{-- <th>Created At</th>
                                     <th>Updated At</th> --}}
                                     <th>Status</th>
@@ -122,13 +124,14 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($questions as $index => $val)
+                                @forelse ($questions as $index => $val)
                                     <tr>
                                         <td>{{ $index + $questions->firstItem() }}</td>
                                         <td>{{ $val->value }}</td>
                                         <td>{{ $val->value_bangla }}</td>
                                         <td>{{ $val->option ? $val->option->option_value : '' }}</td>
-                                    
+                                        <td>{{ $val->respondent }}</td>                                    
+                                        <td>{{ $val->input_method }}</td>                                    
                                         {{-- <td>{{ $val->created_at }}</td>
                                         <td>{{ $val->updated_at }}</td> --}}
                                         <td>
@@ -198,7 +201,11 @@
 
                         </td>
                         </tr>
-                        @endforeach
+                        @empty
+                        <tr>
+                            <td colspan="8" class="text-center">No records found. </td>
+                        </tr>
+                        @endforelse
                         </tbody>
                         </table>
                         {{ $questions->withQueryString()->links() }}

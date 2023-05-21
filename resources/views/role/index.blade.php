@@ -112,7 +112,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($roles as $key => $val)
+                                @forelse ($roles as $key => $val)
                                     <tr>
                                         <td>{{ $key + 1 }}</td>
                                         <td>{{ $val->name }}</td>
@@ -189,7 +189,11 @@
 
                         </td>
                         </tr>
-                        @endforeach
+                        @empty
+                        <tr>
+                            <td colspan="8" class="text-center">No records found. </td>
+                        </tr>
+                        @endforelse
                         </tbody>
                         </table>
                         {{ $roles->withQueryString()->links() }}

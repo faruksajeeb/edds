@@ -34,7 +34,7 @@
                             @else
                                 <a href="{{ url('/sub_questions') }}">Sub Questions</a>
                             @endif
-                            @if ( (request()->get('status') == 'archived') && ($sub_questions->total() >0))
+                            @if (request()->get('status') == 'archived' && $sub_questions->total() > 0)
                                 @can('sub_question.restore')
                                     <div class="float-end">
                                         <a href="" class="btn btn-primary btn-sm btn-restore-all"
@@ -115,7 +115,7 @@
                                     <th>Value</th>
                                     <th>Value Bangla</th>
                                     <th>Question</th>
-                                    <th>Input Method</th>
+                                    {{-- <th>Input Method</th> --}}
                                     <th>Created At</th>
                                     <th>Updated At</th>
                                     <th>Status</th>
@@ -123,13 +123,13 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($sub_questions as $index => $val)
+                                @forelse ($sub_questions as $index => $val)
                                     <tr>
                                         <td>{{ $index + $sub_questions->firstItem() }}</td>
                                         <td>{{ $val->value }}</td>
                                         <td>{{ $val->value_bangla }}</td>
                                         <td>{{ isset($val->question) ? $val->question->value : '' }}</td>
-                                        <td>{{ $val->input_method }}</td>
+                                        {{-- <td>{{ $val->input_method }}</td> --}}
                                         <td>{{ $val->created_at }}</td>
                                         <td>{{ $val->updated_at }}</td>
                                         <td>
@@ -199,7 +199,11 @@
 
                         </td>
                         </tr>
-                        @endforeach
+                    @empty
+                        <tr>
+                            <td colspan="8" class="text-center">No records found. </td>
+                        </tr>
+                        @endforelse
                         </tbody>
                         </table>
                         {{ $sub_questions->withQueryString()->links() }}

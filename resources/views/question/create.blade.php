@@ -30,15 +30,40 @@
                     <form action="{{ route('questions.store') }}" method="POST" class="needs-validation" novalidate>
                         @csrf
                         <div class="form-group my-1">
-                            <label for="" class="@if ($errors->has('value_bangla')) has-error @endif fw-bold">Category*</label>
+                            <label for=""
+                                class="@if ($errors->has('value_bangla')) has-error @endif fw-bold">Category*</label>
                             <select name="category_id" id="category_id" class="form-select" required>
                                 <option value="">--select category--</option>
-                                @foreach ($categories as $val)                                    
-                                    <option value="{{$val->id}}" {{ $val->id==old('responden_id')?'selected':''}}>{{$val->option_value}}</option>
+                                @foreach ($categories as $val)
+                                    <option value="{{ $val->id }}"
+                                        {{ $val->id == old('category_id') ? 'selected' : '' }}>{{ $val->option_value }}
+                                    </option>
                                 @endforeach
                             </select>
                             @if ($errors->has('category_id'))
                                 @error('category_id')
+                                    <div class="alert alert-danger">{{ $message }}</div>
+                                @enderror
+                            @else
+                                <div class="invalid-feedback">
+                                    Please select category.
+                                </div>
+                            @endif
+                        </div>
+                        <div class="form-group my-1">
+                            <label for=""
+                                class="@if ($errors->has('value_bangla')) has-error @endif fw-bold">Respondent *</label>
+                            <select name="respondent" id="respondent" class="form-select" required>
+                                <option value="">--select respondent--</option>
+                                @foreach ($respondents as $val)
+                                    <option value="{{ $val->option_value }}"
+                                        {{ $val->option_value == old('respondent') ? 'selected' : '' }}>
+                                        {{ $val->option_value }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @if ($errors->has('respondent'))
+                                @error('respondent')
                                     <div class="alert alert-danger">{{ $message }}</div>
                                 @enderror
                             @else
@@ -75,11 +100,14 @@
                                 *</label>
                             <select name="input_method" id="input_method" class="form-select" required>
                                 <option value="">--select input method--</option>
-                                <option value="textbox" {{ old('input_method') == 'textbox' ? 'selected' : '' }}>Text Box
+                                <option value="textbox" {{ old('input_method') == 'textbox' ? 'selected' : '' }}>Text
+                                    Box
                                 </option>
-                                <option value="selectbox" {{ old('input_method') == 'selectbox' ? 'selected' : '' }}>Select
+                                <option value="selectbox" {{ old('input_method') == 'selectbox' ? 'selected' : '' }}>
+                                    Select
                                     Box</option>
-                                <option value="checkbox" {{ old('input_method') == 'checkbox' ? 'selected' : '' }}>Checkbox
+                                <option value="checkbox" {{ old('input_method') == 'checkbox' ? 'selected' : '' }}>
+                                    Checkbox
                                 </option>
                             </select>
                             @if ($errors->has('input_method'))
@@ -92,9 +120,11 @@
                                 </div>
                             @endif
                         </div>
+                        
                         <br />
                         <div class="form-group">
-                            <button type="submit" name="submit-btn" class="btn btn-lg btn-success btn-submit">Save</button>
+                            <button type="submit" name="submit-btn"
+                                class="btn btn-lg btn-success btn-submit">Save</button>
                         </div>
                     </form>
                 </div>

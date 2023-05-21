@@ -17,6 +17,7 @@ use App\Http\Controllers\SubAnswerController;
 use App\Http\Controllers\UserResponseController;
 use App\Http\Controllers\AreaController;
 use App\Http\Controllers\MarketController;
+use App\Http\Controllers\RegisteredUserController;
 
 use App\Http\Livewire\Backend\OptionGroup;
 use App\Http\Livewire\Backend\Options;
@@ -40,7 +41,7 @@ Route::get('/', Home::class)->name('/');
 
 Route::middleware('auth')->group(function () {
     Route::get('active-inactive', [Webspice::class, 'activeInactive'])->name('active.inactive');
-    Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
+    Route::match(['get','post'],'/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
     Route::any('change-password', [UserController::class, 'changePassword'])->name('change-password');
     Route::get('user-profile', [UserController::class, 'userProfile'])->name('user-profile');
 
@@ -60,7 +61,8 @@ Route::middleware('auth')->group(function () {
             'sub_answers' => SubAnswerController::class,
             'user_responses' => UserResponseController::class,
             'areas' => AreaController::class,
-            'markets' => MarketController::class
+            'markets' => MarketController::class,
+            'registered_users' => RegisteredUserController::class
         ]);
         Route::match(['get', 'put'], 'company-setting', [SettingController::class, 'companySetting'])->name('company-setting');
         Route::match(['get', 'put'], 'basic-setting', [SettingController::class, 'basicSetting'])->name('basic-setting');
@@ -95,7 +97,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/restore-all', [RoleController::class, 'restoreAll'])->name('restore-all');
     });
     Route::get('clear-permission-cache', [RoleController::class, 'clearPermissionCache'])->name('clear-permission-cache');
-    
+
     # Permission
     Route::group([
         'prefix' => '/permissions',
@@ -135,7 +137,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{answer}/force-delete', [AnswerController::class, 'forceDelete'])->name('force-delete');
         Route::post('/restore-all', [AnswerController::class, 'restoreAll'])->name('restore-all');
     });
-    
+
     # Sub Answer
     Route::group([
         'prefix' => '/sub_answers',
@@ -167,8 +169,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/restore-all', [AreaController::class, 'restoreAll'])->name('restore-all');
     });
 
-     # Market
-     Route::group([
+    # Market
+    Route::group([
         'prefix' => '/markets',
         'as' => 'markets.',
     ], function () {
@@ -177,8 +179,19 @@ Route::middleware('auth')->group(function () {
         Route::post('/restore-all', [MarketController::class, 'restoreAll'])->name('restore-all');
     });
 
+    # Registered User
+    Route::group([
+        'prefix' => '/registered_users',
+        'as' => 'registered_users.',
+    ], function () {
+        Route::post('/{registered_user}/restore', [RegisteredUserController::class, 'restore'])->name('restore');
+        Route::delete('/{registered_user}/force-delete', [RegisteredUserController::class, 'forceDelete'])->name('force-delete');
+        Route::post('/restore-all', [RegisteredUserController::class, 'restoreAll'])->name('restore-all');
+    });
+
     # Report
-    Route::match(['get','post'],'survey-report', [ReportController::class, 'surveyReport'])->name('survey-report');
+    Route::match(['get', 'post'], 'survey-report', [ReportController::class, 'surveyReport'])->name('survey-report');
+
 });
 Route::get('/clear', function () {
     // Artisan::call('optimize:clear');

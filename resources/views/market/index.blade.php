@@ -122,7 +122,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($markets as $index => $val)
+                                @forelse ($markets as $index => $val)
                                     <tr>
                                         <td>{{ $index + $markets->firstItem() }}</td>
                                         <td>{{ $val->value }}</td>
@@ -197,7 +197,11 @@
 
                         </td>
                         </tr>
-                        @endforeach
+                        @empty
+                        <tr>
+                            <td colspan="8" class="text-center">No records found. </td>
+                        </tr>
+                        @endforelse
                         </tbody>
                         </table>
                         {{ $markets->withQueryString()->links() }}

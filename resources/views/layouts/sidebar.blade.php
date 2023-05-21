@@ -5,7 +5,7 @@
                 <ul class="p-0 brand-name">
                     <li class="">
                         <a href="{{ route('dashboard') }}" class="bg-white ">
-                            <span class="icon">icddr,b</span>
+                            {{-- <span class="icon">icddr,b</span> --}}
                             <span class="title">
                                 <h5 class=" py-4">{{ $company_settings->company_name }}</h5>
                             </span>
@@ -148,6 +148,25 @@
                                 </li>
                             @endcan
                         </ul>
+                    </li>
+                @endif
+                @if (Auth::guard('web')->user()->can('registered_user.view'))
+                    <li class="{{ Route::is('registered_users') ? 'active' : '' }}">
+                        <a href="{{ url('registered_users') }}" class="nav-link ps-1 align-middle">
+                            <span class="icon"><i class="fas fa-users"></i></span>
+                            <span class="ms-1 d-sm-inline title ">Registered Users</span>
+                            {{-- <i class="icon fa-solid fa-angle-right text-right"></i> --}}
+                        </a>
+                        {{-- <ul class="collapse nav flex-column ms-3 ps-3 {{ Route::is('survey-report') ? 'show' : '' }}"
+                            id="report_submenu" data-bs-parent="#menu">
+                            @can('report.survey')
+                                <li class="{{ Route::is('survey-report') ? 'active' : '' }}">
+                                    <a href="{{ route('survey-report') }}" class="nav-link px-2"><i
+                                            class="fa-solid fa-building"></i> <span class="d-sm-inline ps-1 mb-1"> Survey
+                                            Report</span></a>
+                                </li>
+                            @endcan
+                        </ul> --}}
                     </li>
                 @endif
                 @if (Auth::guard('web')->user()->can('user.view') ||

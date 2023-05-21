@@ -122,7 +122,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($sub_answers as $index => $val)
+                                @forelse ($sub_answers as $index => $val)
                                     <tr>
                                         <td>{{ $index + $sub_answers->firstItem() }}</td>
                                         <td>{{ $val->value }}</td>
@@ -197,7 +197,11 @@
 
                         </td>
                         </tr>
-                        @endforeach
+                        @empty
+                        <tr>
+                            <td colspan="8" class="text-center">No records found. </td>
+                        </tr>
+                        @endforelse
                         </tbody>
                         </table>
                         {{ $sub_answers->withQueryString()->links() }}

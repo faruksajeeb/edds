@@ -5,7 +5,7 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel" ><i class="fa-solid fa-magnifying-glass"></i> User
+                    <h5 class="modal-title" id="exampleModalLabel"><i class="fa-solid fa-magnifying-glass"></i> User
                         Response Detail ( {{ $val->id }})
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
@@ -30,7 +30,7 @@
                                     <td>:
                                         {{ isset($val->registered_user) ? $val->registered_user->respondent_type : '' }}
                                     </td>
-                                </tr>                                
+                                </tr>
                                 <tr>
                                     <td>User Name</td>
                                     <td>: {{ isset($val->registered_user) ? $val->registered_user->full_name : '' }}
@@ -73,10 +73,23 @@
                                 <tbody>
                                     <?php
                             //print_r($val->user_responseDetails);
+                            // $val->userResponseDetails->count();
+                            $quesId = '';
                             foreach($val->userResponseDetails as $item):
                             ?>
                                     <tr>
-                                        <td>{{ isset($item->question) ? $item->question->value : '' }}</td>
+                                        <td>
+                                            {{-- @if ($loop->iteration == 1) --}}
+                                           
+                                                @if ($quesId != $item->question->id)
+                                                    {{ isset($item->question) ? $item->question->value : '' }}
+                                                @endif
+                                                @php
+                                                    $quesId = $item->question->id;
+                                                @endphp
+                                            {{-- @endif --}}
+                                            {{-- {{ isset($item->question) ? $item->question->value : '' }} --}}
+                                        </td>
                                         <td>{{ isset($item->subQuestion) ? $item->subQuestion->value : '' }}</td>
                                         <td class="text-center">{{ $item->response }}</td>
                                     </tr>

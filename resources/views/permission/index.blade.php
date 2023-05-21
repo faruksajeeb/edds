@@ -111,7 +111,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($permissions as $index => $val)
+                                @forelse ($permissions as $index => $val)
                                     <tr>
                                         <td>{{ $index + $permissions->firstItem() }}</td>
                                         <td>{{ $val->name }}</td>
@@ -183,7 +183,11 @@
 
                         </td>
                         </tr>
-                        @endforeach
+                        @empty
+                        <tr>
+                            <td colspan="8" class="text-center">No records found. </td>
+                        </tr>
+                        @endforelse
                         </tbody>
                         </table>
                         {{ $permissions->withQueryString()->links() }}

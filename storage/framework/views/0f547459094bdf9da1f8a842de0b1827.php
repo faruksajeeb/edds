@@ -8,24 +8,69 @@
 <?php endif; ?>
 <?php $component->withAttributes([]); ?>
      <?php $__env->slot('title', null, []); ?> 
-        Survey Report
+        Registered Users
      <?php $__env->endSlot(); ?>
     <div class="row">
-        <div class="col-md-12 offset-md-0">
-            <form action="" method="POST" class="needs-validation" novalidate>
-                <?php echo csrf_field(); ?>
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="text-center">Survey Report</h3>
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-white">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h5 class="card-title py-1"><i class="fa fa-table"></i>
+                                <?php if(request()->get('status') == 'archived'): ?>
+                                    Archived
+                                <?php endif; ?> Registered Users
+                            </h5>
+                        </div>
+                        <div class="col-md-4">
+                            <nav aria-label="breadcrumb" class="float-end">
+                                <ol class="breadcrumb">
+                                    <li class="breadcrumb-item"><a href="#">Response</a></li>
+                                    <li class="breadcrumb-item " aria-current="page">
+                                        <?php if(request()->get('status') == 'archived'): ?>
+                                            Archived
+                                        <?php endif; ?> Registered Users
+                                    </li>
+                                </ol>
+                            </nav>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="row mb-2">
-                                    <label for="Division" class="col-sm-3 col-form-label">Division</label>
-                                    <div class="col-sm-9">
-                                        <select name="division" id="drpDivision" class="form-select">
-                                            <option value="">--select division--</option>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <?php if(request()->get('status') != 'archived'): ?>
+                                <a href="<?php echo e(url('/registered_users?status=archived')); ?>">Archived Registered Users</a>
+                            <?php else: ?>
+                                <a href="<?php echo e(url('/registered_users')); ?>">Registered Users</a>
+                            <?php endif; ?>
+                            <?php if(request()->get('status') == 'archived' && $registered_users->total() > 0): ?>
+                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('registered_user.restore')): ?>
+                                    <div class="float-end">
+                                        <a href="" class="btn btn-primary btn-sm btn-restore-all"
+                                            onclick="event.preventDefault(); restoreAllConfirmation()"><i
+                                                class="fa-solid fa-trash-arrow-up"></i> Restore All</a>
+                                        <form id="restore-all-form" action="<?php echo e(route('registered_users.restore-all')); ?>"
+                                            style="display:inline" method="POST">
+                                            <?php echo method_field('POST'); ?>
+                                            <?php echo csrf_field(); ?>
+                                        </form>
+                                    </div>
+                                <?php endif; ?>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body mt-0 pt-0">
+                    <div class="">
+                        <form action="" method="GET">
+                            <?php echo csrf_field(); ?>
+                            <input type="hidden" name="status"
+                                value="<?php echo e(request()->get('status') == 'archived' ? 'archived' : ''); ?>">
+                            <div class="row">
+
+                                <div class="col-md-12 col-sm-12 px-0">
+                                    <div class="input-group my-1">
+                                        <select name="search_division" class="form-select" id="drpDivision">
+                                            <option value="">select division</option>
                                             <option value="Dhaka">Dhaka</option>
                                             <option value="Chattogram">Chattogram</option>
                                             <option value="Barishal">Barishal</option>
@@ -35,13 +80,8 @@
                                             <option value="Rangpur">Rangpur</option>
                                             <option value="Sylhet">Sylhet</option>
                                         </select>
-                                    </div>
-                                </div>
-                                <div class="row mb-2">
-                                    <label for="district" class="col-sm-3 col-form-label">DIstrict</label>
-                                    <div class="col-sm-9">
-                                        <select name="district" id="drpDistrict" class="form-select">
-                                            <option value="">--select district--</option>
+                                        <select name="search_district" class="form-select" id="drpDistrict">
+                                            <option value="">select division first</option>
                                             <option data-link="Dhaka" value="Dhaka">Dhaka</option>
                                             <option data-link="Dhaka" value="Faridpur">Faridpur</option>
                                             <option data-link="Dhaka" value="Gazipur">Gazipur</option>
@@ -108,13 +148,8 @@
                                             <option data-link="Sylhet" value="Sunamganj">Sunamganj</option>
                                             <option data-link="Sylhet" value="Sylhet">Sylhet</option>
                                         </select>
-                                    </div>
-                                </div>
-                                <div class="row mb-2">
-                                    <label for="thana" class="col-sm-3 col-form-label">Thana</label>
-                                    <div class="col-sm-9">
-                                        <select name="thana" id="drpUpazilla" class="form-select">
-                                            <option value="">--select thana--</option>
+                                        <select name="search_thana" class="form-select" id="drpUpazilla">
+                                            <option value="">select district first</option>
                                             <option data-link="Dhaka" value="Dhamrai">Dhamrai</option>
                                             <option data-link="Dhaka" value="Dohar">Dohar</option>
                                             <option data-link="Dhaka" value="Keraniganj">Keraniganj</option>
@@ -673,163 +708,208 @@
                                             <option data-link="Sunamganj" value="Dowarabazar">Dowarabazar</option>
                                             <option data-link="Sunamganj" value="Jamalganj">Jamalganj</option>
                                         </select>
-                                    </div>
-                                </div>
-                                <div class="row mb-2">
-                                    <label for="thana" class="col-sm-3 col-form-label">Area</label>
-                                    <div class="col-sm-9">
-                                        <select name="area_id" id="area_id" class="form-select">
-                                            <option value="">--select area--</option>
-                                            <?php $__currentLoopData = $areas; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $val): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                                <option value="<?php echo e($val->id); ?>"><?php echo e($val->value); ?></option>
-                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                        <select name="search_gender" class="form-select" id="search_gender">
+                                            <option value="">select gender</option>
+                                            <option value="male"
+                                                <?php echo e(request()->get('search_gender') == 'male' ? 'selected' : ''); ?>>Male</option>
+                                                <option value="female"
+                                                <?php echo e(request()->get('search_gender') == 'female' ? 'selected' : ''); ?>>Female</option>
+                                                <option value="common"
+                                                <?php echo e(request()->get('search_gender') == 'common' ? 'selected' : ''); ?>>Common</option>
                                         </select>
                                     </div>
-                                </div>
-                                <div class="row mb-2">
-                                    <label for="thana" class="col-sm-3 col-form-label">Market</label>
-                                    <div class="col-sm-9">
-                                        <select name="market_id" id="market_id" class="form-select">
-                                            <option value="">--select market--</option>
-                                            <?php $__currentLoopData = $markets; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $val): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                                <option value="<?php echo e($val->id); ?>"><?php echo e($val->value); ?></option>
-                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                    <div class="input-group">
+                                        <select name="search_respodent" class="form-select" id="search_respodent">
+                                            <option value="">Select respondent type</option>
+                                            <option value="Customer"
+                                                <?php echo e(request()->get('search_respodent') == 'Customer' ? 'selected' : ''); ?>>
+                                                Customer</option>
+                                            <option value="Seller"
+                                                <?php echo e(request()->get('search_respodent') == 'Seller' ? 'selected' : ''); ?>>
+                                                Seller</option>
+                                            <option value="LBW Worker"
+                                                <?php echo e(request()->get('search_respodent') == 'LBW Worker' ? 'selected' : ''); ?>>
+                                                LBW Worker</option>
+                                            
                                         </select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
+                                        <input type="text" name="search_text"
+                                            value="<?php echo e(request()->get('search_text')); ?>" class="form-control"
+                                            placeholder="Search by name/mobile/email/gender">
 
-                                <div class="row mb-2">
-                                    <label for="thana" class="col-sm-3 col-form-label">Category</label>
-                                    <div class="col-sm-9">
-                                        <select name="category_id" id="category_id" class="form-select">
-                                            <option value="">--select category--</option>
-                                            <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $val): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                                <option value="<?php echo e($val->id); ?>"><?php echo e($val->option_value); ?></option>
-                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="row mb-2">
-                                    <label for="thana" class="col-sm-3 col-form-label">Question</label>
-                                    <div class="col-sm-9">
-                                        <select name="question_id" id="question_id" class="form-select">
-                                            <option value="">--select question--</option>
-                                            <?php $__currentLoopData = $questions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $val): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                                <option value="<?php echo e($val->id); ?>"><?php echo e($val->value); ?></option>
-                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                        </select>
-                                    </div>
-                                </div>
+                                        <button class="btn btn-secondary mx-1 filter_btn" name="submit_btn"
+                                            type="submit" value="search">
+                                            <i class="fa fa-search"></i> Filter Data
+                                        </button>
+                                        <a href='<?php echo e(request()->get('status') == 'archived' ? url('/registered_users?status=archived') : url('/registered_users')); ?>'
+                                            class="btn btn-xs btn-primary me-1 refresh_btn"><i
+                                                class="fa fa-refresh"></i> Refresh</a>
+                                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('registered_user.export')): ?>
+                                            
+                                            
 
-                                <div class="row mb-2">
-                                    <label for="thana" class="col-sm-3 col-form-label">Sub Question</label>
-                                    <div class="col-sm-9">
-                                        <select name="sub_question_id" id="sub_question_id" class="form-select">
-                                            <option value="">--select sub question--</option>
-                                            <?php $__currentLoopData = $sub_questions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $val): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                                <option value="<?php echo e($val->id); ?>"><?php echo e($val->value); ?></option>
-                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="row mb-2">
-                                    <label for="ate from" class="col-sm-3 col-form-label">Date From *</label>
-                                    <div class="col-sm-9">
-                                        <input type="text" class="datepicker form-control"
-                                            value="<?php echo e(date('Y-m-01')); ?>" name="date_from" required />
-                                        <?php if($errors->has('date_from')): ?>
-                                            <?php $__errorArgs = ['date_from'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?>
-                                                <div class="alert alert-danger"><?php echo e($message); ?></div>
-                                            <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>
-                                        <?php else: ?>
-                                            <div class="invalid-feedback">
-                                                Please select date from.
-                                            </div>
+                                            <button class="btn btn-xs btn-success float-end me-1 export_btn"
+                                                name="submit_btn" value="export" type="submit">
+                                                <i class="fa-solid fa-download"></i> Export
+                                            </button>
                                         <?php endif; ?>
                                     </div>
                                 </div>
-                                <div class="row mb-2">
-                                    <label for="date to" class="col-sm-3 col-form-label">Date To *</label>
-                                    <div class="col-sm-9">
-                                        <input type="text" class="datepicker form-control"
-                                            value="<?php echo e(date('Y-m-t')); ?>" name="date_to" required />
-                                        <?php if($errors->has('date_to')): ?>
-                                            <?php $__errorArgs = ['date_to'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?>
-                                                <div class="alert alert-danger"><?php echo e($message); ?></div>
-                                            <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>
-                                        <?php else: ?>
-                                            <div class="invalid-feedback">
-                                                Please select date to.
-                                            </div>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                                <div class="row mb-2">
-                                    <div class="col-md-6">
-                                        <input type="radio" name="report_type" value="sub_question_wise" checked> Sub
-                                        Question Wise
-                                    </div>
-                                    <div class="col-md-6">
-        
-                                        <input type="radio" name="report_type" value="question_wise"> Question Wise
-                                    </div>
-        
-                                </div>
-                            </div>
-                        </div>
+                                
 
-                        
-                    </div>
-                    <div class="card-footer text-end">
-                        <button class="btn btn-md btn-info" type="submit" name='submit_btn' value="view"><i
-                                class="fas fa-search"></i> View</button>
-                        <button class="btn btn-md btn-danger" type="submit" name='submit_btn' value="pdf"><i
-                                class="fas fa-file"></i> PDF</button>
-                        <button class="btn btn-md btn-success" type="submit" name='submit_btn'
-                            value="export"><i class="fas fa-file-excel"></i> Export</button>
+                            </div>
+                        </form>
+                        <table class="table mb-0">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>User Name</th>
+                                    <th>Email</th>
+                                    <th>Mobile</th>
+                                    <th>Gender</th>
+                                    <th>Respondent</th>
+                                    <th>Division</th>
+                                    <th>District</th>
+                                    <th>Thana</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php $__empty_1 = true; $__currentLoopData = $registered_users; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $val): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                                    <tr>
+                                        <td><?php echo e($index + $registered_users->firstItem()); ?></td>
+                                        <td><?php echo e($val->full_name); ?>
+
+                                        </td>
+                                        <td><?php echo e($val->email); ?></td>
+                                        <td><?php echo e($val->mobile_no); ?>
+
+                                        </td>
+                                        <td><?php echo e($val->gender); ?>
+
+                                        </td>
+                                        <td><?php echo e($val->respondent_type); ?></td>
+                                        <td><?php echo e($val->division); ?></td>
+                                        <td><?php echo e($val->district); ?></td>
+                                        <td><?php echo e($val->thana); ?></td>
+                                        <td class="text-nowrap">
+                                            <?php if(request()->get('status') == 'archived'): ?>
+                                                
+                                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('registered_user.restore')): ?>
+                                                    <a href=""
+                                                        class="btn btn-primary btn-sm btn-restore-<?php echo e($val->id); ?>"
+                                                        onclick="event.preventDefault(); restoreConfirmation(<?php echo e($val->id); ?>)"><i
+                                                            class="fa-solid fa-trash-arrow-up"></i> Restore</a>
+                                                    <form id="restore-form-<?php echo e($val->id); ?>"
+                                                        action="<?php echo e(route('registered_users.restore', Crypt::encryptString($val->id))); ?>"
+                                                        method="POST" style="display: none">
+                                                        <?php echo method_field('POST'); ?>
+                                                        <?php echo csrf_field(); ?>
+                                                    </form>
+                                                <?php endif; ?>
+                                                
+                                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('registered_user.force_delete')): ?>
+                                                    <a href=""
+                                                        class="btn btn-danger btn-sm btn-force-delete-<?php echo e($val->id); ?>"
+                                                        onclick="event.preventDefault(); forceDelete(<?php echo e($val->id); ?>)"><i
+                                                            class="fa-solid fa-remove"></i> Force Delete</a>
+                                                    <form id="force-delete-form-<?php echo e($val->id); ?>"
+                                                        style="display: none"
+                                                        action="<?php echo e(route('registered_users.force-delete', Crypt::encryptString($val->id))); ?>"
+                                                        method="POST">
+                                                        <?php echo method_field('DELETE'); ?>
+                                                        <?php echo csrf_field(); ?>
+                                                    </form>
+                                                <?php endif; ?>
+                                            <?php else: ?>
+                                                
+                                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('registered_user.edit')): ?>
+                                                    <?php if($val->status == 1): ?>
+                                                        
+                                                    <?php endif; ?>
+                                                <?php endif; ?>
+                                                
+
+                                                
+                                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('registered_user.delete')): ?>
+                                                    <a href=""
+                                                        class="btn btn-outline-danger btn-sm btn-delete-<?php echo e($val->id); ?>"
+                                                        onclick="event.preventDefault(); confirmDelete(<?php echo e($val->id); ?>)"><i
+                                                            class="fa-solid fa-trash"></i> Delete</a>
+                                                    <form id="delete-form-<?php echo e($val->id); ?>" style="display: none"
+                                                        action="<?php echo e(route('registered_users.destroy', Crypt::encryptString($val->id))); ?>"
+                                                        method="POST">
+                                                        <?php echo method_field('DELETE'); ?>
+                                                        <?php echo csrf_field(); ?>
+                                                    </form>
+                                                <?php endif; ?>
+                                            <?php endif; ?>
+
+                                        </td>
+                                    </tr>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                                    <tr>
+                                        <td colspan="10" class="text-center">No records found. </td>
+                                    </tr>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                        <?php echo e($registered_users->withQueryString()->links()); ?>
+
                     </div>
                 </div>
-            </form>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-          
-            <?php if(isset($report_format) && $report_format=='view'): ?>
-                <?php
-                    //$data = (Object)$data;
-                ?>
-                <?php if($report_type=='sub_question_wise'): ?>
-                    <?php echo $__env->make('report.survey_report_export', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
-                <?php elseif($report_type=='question_wise'): ?>
-                    <?php echo $__env->make('report.question_wise_survey_report_export', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
-                <?php endif; ?>
-                
-            <?php endif; ?>
+            </div>
         </div>
     </div>
     <?php $__env->startPush('scripts'); ?>
         <script>
+            let confirmVerify = (id) => {
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to cancel this again!'",
+                    icon: 'warning',
+                    allowOutsideClick: false,
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, verify it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $('.btn-verify-' + id).addClass('disabledAnchor');
+                        $('.btn-verify-' + id).html(
+                            '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Verifying...'
+                        );
+                        document.getElementById('verify-form-' + id).submit();
+                        processing('Verifying...');
+                    }
+                })
+            }
+
             $(document).ready(function() {
+
+
+
+
+                // if (!searchDistrict && !searchThana) {
                 $("#drpDistrict, #drpUpazilla").children('option').hide();
                 $("#drpDistrict, #drpUpazilla").val("");
+                // }
+
+                var searchDivision = "<?php echo e(request()->get('search_division')); ?>";
+                if (searchDivision) {
+                    $("#drpDivision option[value=" + searchDivision + "]").attr('selected', 'selected');
+                }
+                var searchDistrict = "<?php echo e(request()->get('search_district')); ?>";
+                if (searchDistrict) {
+                    $("#drpDistrict").children('option[data-link="' + searchDivision + '"]').show();
+                    $("#drpDistrict option[value=" + searchDistrict + "]").attr('selected', 'selected');
+
+                }
+                var searchThana = "<?php echo e(request()->get('search_thana')); ?>";
+                if (searchThana) {
+                    $("#drpUpazilla").children('option[data-link="' + searchDistrict + '"]').show();
+                    $("#drpUpazilla option[value=" + searchThana + "]").attr('selected', 'selected');
+                }
+
                 $("#drpDivision").change(function() {
                     $("#drpDistrict, #drpUpazilla").children('option').hide();
                     $("#drpDistrict, #drpUpazilla").val("");
@@ -855,4 +935,4 @@ unset($__errorArgs, $__bag); ?>
 <?php $component = $__componentOriginal9ac128a9029c0e4701924bd2d73d7f54; ?>
 <?php unset($__componentOriginal9ac128a9029c0e4701924bd2d73d7f54); ?>
 <?php endif; ?>
-<?php /**PATH C:\xampp8.1.6\htdocs\laravel\edds\resources\views/report/survey_report.blade.php ENDPATH**/ ?>
+<?php /**PATH C:\xampp8.1.6\htdocs\laravel\edds\resources\views/registered_user/index.blade.php ENDPATH**/ ?>

@@ -49,6 +49,29 @@
                                 @enderror
                             @else
                                 <div class="invalid-feedback">
+                                    Please select category.
+                                </div>
+                            @endif
+                        </div>
+
+                        <div class="form-group my-1">
+                            <label for=""
+                                class="@if ($errors->has('value_bangla')) has-error @endif fw-bold">Respondent
+                                *</label>
+                            <select name="respondent" id="respondent" class="form-select" required>
+                                <option value="">--select respondent--</option>
+                                @foreach ($respondents as $val)
+                                    <option value="{{ $val->option_value }}"
+                                        {{ $val->option_value == old('respondent', $questionInfo->respondent) ? 'selected' : '' }}>
+                                        {{ $val->option_value }}</option>
+                                @endforeach
+                            </select>
+                            @if ($errors->has('respondent'))
+                                @error('respondent')
+                                    <div class="alert alert-danger">{{ $message }}</div>
+                                @enderror
+                            @else
+                                <div class="invalid-feedback">
                                     Please select respondent.
                                 </div>
                             @endif

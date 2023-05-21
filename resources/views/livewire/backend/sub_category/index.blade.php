@@ -115,7 +115,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($sub_categories as $key => $val)
+                                @forelse ($sub_categories as $key => $val)
                                     <tr>
                                         <td>{{ $key + $sub_categories->firstItem() }}</td>
                                         <td>{{ str_replace('_', ' ', $val->category->name) }}</td>
@@ -145,7 +145,11 @@
                                                     class="fa-solid fa-trash-can"></i></button>
                                         </td>
                                     </tr>
-                                @endforeach
+                                    @empty
+                                    <tr>
+                                        <td colspan="7" class="text-center">No records found. </td>
+                                    </tr>
+                                    @endforelse
                             </tbody>
                         </table>
                     </div>

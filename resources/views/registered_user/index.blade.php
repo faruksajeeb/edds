@@ -1,15 +1,7 @@
-<?php if (isset($component)) { $__componentOriginal9ac128a9029c0e4701924bd2d73d7f54 = $component; } ?>
-<?php $component = App\View\Components\AppLayout::resolve([] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? (array) $attributes->getIterator() : [])); ?>
-<?php $component->withName('app-layout'); ?>
-<?php if ($component->shouldRender()): ?>
-<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
-<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag && $constructor = (new ReflectionClass(App\View\Components\AppLayout::class))->getConstructor()): ?>
-<?php $attributes = $attributes->except(collect($constructor->getParameters())->map->getName()->all()); ?>
-<?php endif; ?>
-<?php $component->withAttributes([]); ?>
-     <?php $__env->slot('title', null, []); ?> 
-        User Responses
-     <?php $__env->endSlot(); ?>
+<x-app-layout>
+    <x-slot name="title">
+        Registered Users
+    </x-slot>
     <div class="row">
         <div class="col-md-12">
             <div class="card">
@@ -17,9 +9,9 @@
                     <div class="row">
                         <div class="col-md-8">
                             <h5 class="card-title py-1"><i class="fa fa-table"></i>
-                                <?php if(request()->get('status') == 'archived'): ?>
+                                @if (request()->get('status') == 'archived')
                                     Archived
-                                <?php endif; ?> User Responses
+                                @endif Registered Users
                             </h5>
                         </div>
                         <div class="col-md-4">
@@ -27,9 +19,9 @@
                                 <ol class="breadcrumb">
                                     <li class="breadcrumb-item"><a href="#">Response</a></li>
                                     <li class="breadcrumb-item " aria-current="page">
-                                        <?php if(request()->get('status') == 'archived'): ?>
+                                        @if (request()->get('status') == 'archived')
                                             Archived
-                                        <?php endif; ?> User Responses
+                                        @endif Registered Users
                                     </li>
                                 </ol>
                             </nav>
@@ -37,34 +29,34 @@
                     </div>
                     <div class="row">
                         <div class="col-md-12">
-                            <?php if(request()->get('status') != 'archived'): ?>
-                                <a href="<?php echo e(url('/user_responses?status=archived')); ?>">Archived User Responses</a>
-                            <?php else: ?>
-                                <a href="<?php echo e(url('/user_responses')); ?>">User Responses</a>
-                            <?php endif; ?>
-                            <?php if(request()->get('status') == 'archived' && $user_responses->total() > 0): ?>
-                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('user_response.restore')): ?>
+                            @if (request()->get('status') != 'archived')
+                                <a href="{{ url('/registered_users?status=archived') }}">Archived Registered Users</a>
+                            @else
+                                <a href="{{ url('/registered_users') }}">Registered Users</a>
+                            @endif
+                            @if (request()->get('status') == 'archived' && $registered_users->total() > 0)
+                                @can('registered_user.restore')
                                     <div class="float-end">
                                         <a href="" class="btn btn-primary btn-sm btn-restore-all"
                                             onclick="event.preventDefault(); restoreAllConfirmation()"><i
                                                 class="fa-solid fa-trash-arrow-up"></i> Restore All</a>
-                                        <form id="restore-all-form" action="<?php echo e(route('user_responses.restore-all')); ?>"
+                                        <form id="restore-all-form" action="{{ route('registered_users.restore-all') }}"
                                             style="display:inline" method="POST">
-                                            <?php echo method_field('POST'); ?>
-                                            <?php echo csrf_field(); ?>
+                                            @method('POST')
+                                            @csrf
                                         </form>
                                     </div>
-                                <?php endif; ?>
-                            <?php endif; ?>
+                                @endcan
+                            @endif
                         </div>
                     </div>
                 </div>
                 <div class="card-body mt-0 pt-0">
                     <div class="">
                         <form action="" method="GET">
-                            <?php echo csrf_field(); ?>
+                            @csrf
                             <input type="hidden" name="status"
-                                value="<?php echo e(request()->get('status') == 'archived' ? 'archived' : ''); ?>">
+                                value="{{ request()->get('status') == 'archived' ? 'archived' : '' }}">
                             <div class="row">
 
                                 <div class="col-md-12 col-sm-12 px-0">
@@ -708,81 +700,71 @@
                                             <option data-link="Sunamganj" value="Dowarabazar">Dowarabazar</option>
                                             <option data-link="Sunamganj" value="Jamalganj">Jamalganj</option>
                                         </select>
-                                        <select name="search_area" class="form-select" id="search_area">
-                                            <option value="">select area</option>
-                                            <?php $__currentLoopData = $areas; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $val): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                                <option value="<?php echo e($val->id); ?>" <?php echo e(request()->get('search_area') == $val->id ? 'selected' : ''); ?>><?php echo e($val->value); ?></option>
-                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                        <select name="search_gender" class="form-select" id="search_gender">
+                                            <option value="">select gender</option>
+                                            <option value="male"
+                                                {{ request()->get('search_gender') == 'male' ? 'selected' : '' }}>Male</option>
+                                                <option value="female"
+                                                {{ request()->get('search_gender') == 'female' ? 'selected' : '' }}>Female</option>
+                                                <option value="common"
+                                                {{ request()->get('search_gender') == 'common' ? 'selected' : '' }}>Common</option>
                                         </select>
-
                                     </div>
                                     <div class="input-group">
-                                        <select name="search_market" class="form-select" id="search_market">
-                                            <option value="">select market</option>
-                                            <?php $__currentLoopData = $markets; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $val): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                                <option value="<?php echo e($val->id); ?>" <?php echo e(request()->get('search_market') == $val->id ? 'selected' : ''); ?>><?php echo e($val->value); ?></option>
-                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                        </select>
                                         <select name="search_respodent" class="form-select" id="search_respodent">
                                             <option value="">Select respondent type</option>
                                             <option value="Customer"
-                                                <?php echo e(request()->get('search_respodent') == 'Customer' ? 'selected' : ''); ?>>
+                                                {{ request()->get('search_respodent') == 'Customer' ? 'selected' : '' }}>
                                                 Customer</option>
                                             <option value="Seller"
-                                                <?php echo e(request()->get('search_respodent') == 'Seller' ? 'selected' : ''); ?>>
+                                                {{ request()->get('search_respodent') == 'Seller' ? 'selected' : '' }}>
                                                 Seller</option>
                                             <option value="LBW Worker"
-                                                <?php echo e(request()->get('search_respodent') == 'LBW Worker' ? 'selected' : ''); ?>>
+                                                {{ request()->get('search_respodent') == 'LBW Worker' ? 'selected' : '' }}>
                                                 LBW Worker</option>
-                                            
+                                            {{-- @foreach ($respondents as $val)
+                                                <option value="{{ $val->id }}"
+                                                    {{ $val->id == old('responden_id') ? 'selected' : '' }}>
+                                                    {{ $val->option_value }}</option>
+                                            @endforeach --}}
                                         </select>
-                                        <select name="search_status" class="form-select" id="search_status">
-                                            <option value="">Select Status</option>
-                                            <option value="2"
-                                                <?php echo e(request()->get('search_status') == '2' ? 'selected' : ''); ?>>Verified
-                                            </option>
-                                            <option value="0"
-                                                <?php echo e(request()->get('search_status') == '0' ? 'selected' : ''); ?>>Pending
-                                            </option>
-                                        </select>
+                                        <input type="text" name="search_text"
+                                            value="{{ request()->get('search_text') }}" class="form-control"
+                                            placeholder="Search by name/mobile/email/gender">
 
+                                        <button class="btn btn-secondary mx-1 filter_btn" name="submit_btn"
+                                            type="submit" value="search">
+                                            <i class="fa fa-search"></i> Filter Data
+                                        </button>
+                                        <a href='{{ request()->get('status') == 'archived' ? url('/registered_users?status=archived') : url('/registered_users') }}'
+                                            class="btn btn-xs btn-primary me-1 refresh_btn"><i
+                                                class="fa fa-refresh"></i> Refresh</a>
+                                        @can('registered_user.export')
+                                            {{-- <button class="btn btn-xs btn-danger float-end " name="submit_btn"
+                                        value="pdf" type="submit">
+                                        <i class="fa-solid fa-download"></i> PDF
+                                    </button> --}}
+                                            {{-- <button class="btn btn-xs btn-info float-end me-1 export_btn" name="submit_btn"
+                                            value="csv" type="submit">
+                                            <i class="fa-solid fa-download"></i> CSV
+                                        </button> --}}
 
-
-                                        <div class="input-group input-daterange my-1">
-                                            <input type="text" name="search_text"
-                                                value="<?php echo e(request()->get('search_text')); ?>" class="form-control"
-                                                placeholder="Search by name/mobile/email/gender">
-
-                                            <input type="text" class="form-control datepicker" name="date_from"
-                                                placeholder="Date From" value="<?php echo e(request()->get('date_from')); ?>" aria-label="DateFrom">
-                                            <span class="input-group-text">to</span>
-                                            <input type="text" class="form-control datepicker" name="date_to"
-                                                placeholder="Date To" value="<?php echo e(request()->get('date_to')); ?>" aria-label="DateTo">
-
-                                            
-
-                                            <div class="input-group-append">
-                                                <button class="btn btn-secondary mx-1 filter_btn" name="submit_btn"
-                                                    type="submit" value="search">
-                                                    <i class="fa fa-search"></i> Filter Data
-                                                </button>
-                                                <a href='<?php echo e(request()->get('status') == 'archived' ? url('/user_responses?status=archived') : url('/user_responses')); ?>'
-                                                    class="btn btn-xs btn-primary me-1 refresh_btn"><i
-                                                        class="fa fa-refresh"></i> Refresh</a>
-                                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('user_response.export')): ?>
-                                                    
-                                                    
-
-                                                    <button class="btn btn-xs btn-success float-end me-1 export_btn"
-                                                        name="submit_btn" value="export" type="submit">
-                                                        <i class="fa-solid fa-download"></i> Export
-                                                    </button>
-                                                <?php endif; ?>
-                                            </div>
-                                        </div>
+                                            <button class="btn btn-xs btn-success float-end me-1 export_btn"
+                                                name="submit_btn" value="export" type="submit">
+                                                <i class="fa-solid fa-download"></i> Export
+                                            </button>
+                                        @endcan
                                     </div>
                                 </div>
-                                
+                                {{-- <div class="col-md-3 col-sm-12">
+                                    @can('registered_user.create')
+                                         <a href="{{ route('registered_users.create') }}"
+                                            class="btn btn-xs btn-outline-primary float-end" name="create_new"
+                                            type="button">
+                                            <i class="fa-solid fa-plus"></i> Create Registered User
+                                        </a> 
+                                    @endcan
+                                </div> --}}
 
                             </div>
                         </form>
@@ -790,127 +772,102 @@
                             <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>Response Date</th>
                                     <th>User Name</th>
                                     <th>Email</th>
                                     <th>Mobile</th>
                                     <th>Gender</th>
                                     <th>Respondent</th>
-                                    <th>Status</th>
+                                    <th>Division</th>
+                                    <th>District</th>
+                                    <th>Thana</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php $__currentLoopData = $user_responses; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $val): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                @forelse ($registered_users as $index => $val)
                                     <tr>
-                                        <td><?php echo e($index + $user_responses->firstItem()); ?></td>
-                                        <td><?php echo e($val->response_date); ?></td>
-                                        <td><?php echo e(isset($val->registered_user) ? $val->registered_user->full_name : ''); ?>
-
+                                        <td>{{ $index + $registered_users->firstItem() }}</td>
+                                        <td>{{ $val->full_name }}
                                         </td>
-                                        <td><?php echo e(isset($val->registered_user) ? $val->registered_user->email : ''); ?></td>
-                                        <td><?php echo e(isset($val->registered_user) ? $val->registered_user->mobile_no : ''); ?>
-
+                                        <td>{{ $val->email }}</td>
+                                        <td>{{ $val->mobile_no }}
                                         </td>
-                                        <td><?php echo e(isset($val->registered_user) ? $val->registered_user->gender : ''); ?>
-
+                                        <td>{{ $val->gender }}
                                         </td>
-                                        
-                                        <td><?php echo e(isset($val->registered_user) ? $val->registered_user->respondent_type : ''); ?>
-
-                                        </td>
-                                        <td><?php echo App\Lib\Webspice::status($val->status); ?></td>
-
-
+                                        <td>{{ $val->respondent_type }}</td>
+                                        <td>{{ $val->division }}</td>
+                                        <td>{{ $val->district }}</td>
+                                        <td>{{ $val->thana }}</td>
                                         <td class="text-nowrap">
-                                            <?php if(request()->get('status') == 'archived'): ?>
-                                                
-                                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('user_response.restore')): ?>
+                                            @if (request()->get('status') == 'archived')
+                                                {{-- restore button --}}
+                                                @can('registered_user.restore')
                                                     <a href=""
-                                                        class="btn btn-primary btn-sm btn-restore-<?php echo e($val->id); ?>"
-                                                        onclick="event.preventDefault(); restoreConfirmation(<?php echo e($val->id); ?>)"><i
+                                                        class="btn btn-primary btn-sm btn-restore-{{ $val->id }}"
+                                                        onclick="event.preventDefault(); restoreConfirmation({{ $val->id }})"><i
                                                             class="fa-solid fa-trash-arrow-up"></i> Restore</a>
-                                                    <form id="restore-form-<?php echo e($val->id); ?>"
-                                                        action="<?php echo e(route('user_responses.restore', Crypt::encryptString($val->id))); ?>"
+                                                    <form id="restore-form-{{ $val->id }}"
+                                                        action="{{ route('registered_users.restore', Crypt::encryptString($val->id)) }}"
                                                         method="POST" style="display: none">
-                                                        <?php echo method_field('POST'); ?>
-                                                        <?php echo csrf_field(); ?>
+                                                        @method('POST')
+                                                        @csrf
                                                     </form>
-                                                <?php endif; ?>
-                                                
-                                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('user_response.force_delete')): ?>
+                                                @endcan
+                                                {{-- force delete button --}}
+                                                @can('registered_user.force_delete')
                                                     <a href=""
-                                                        class="btn btn-danger btn-sm btn-force-delete-<?php echo e($val->id); ?>"
-                                                        onclick="event.preventDefault(); forceDelete(<?php echo e($val->id); ?>)"><i
+                                                        class="btn btn-danger btn-sm btn-force-delete-{{ $val->id }}"
+                                                        onclick="event.preventDefault(); forceDelete({{ $val->id }})"><i
                                                             class="fa-solid fa-remove"></i> Force Delete</a>
-                                                    <form id="force-delete-form-<?php echo e($val->id); ?>"
+                                                    <form id="force-delete-form-{{ $val->id }}"
                                                         style="display: none"
-                                                        action="<?php echo e(route('user_responses.force-delete', Crypt::encryptString($val->id))); ?>"
+                                                        action="{{ route('registered_users.force-delete', Crypt::encryptString($val->id)) }}"
                                                         method="POST">
-                                                        <?php echo method_field('DELETE'); ?>
-                                                        <?php echo csrf_field(); ?>
+                                                        @method('DELETE')
+                                                        @csrf
                                                     </form>
-                                                <?php endif; ?>
-                                            <?php else: ?>
-                                                
-                                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('user_response.edit')): ?>
-                                                    <?php if($val->status == 1): ?>
-                                                        
-                                                    <?php endif; ?>
-                                                <?php endif; ?>
-                                                
-                                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('user_response.verify')): ?>
-                                                    <?php if($val->status == 0): ?>
-                                                        <a href=""
-                                                            class="btn btn-outline-success btn-sm btn-verify-<?php echo e($val->id); ?>"
-                                                            onclick="event.preventDefault(); confirmVerify(<?php echo e($val->id); ?>)"><i
-                                                                class="fas fa-check"></i> Verify</a>
-                                                        <form id="verify-form-<?php echo e($val->id); ?>"
-                                                            style="display: none"
-                                                            action="<?php echo e(route('user_responses.verify', Crypt::encryptString($val->id))); ?>"
-                                                            method="POST">
-                                                            <?php echo method_field('PUT'); ?>
-                                                            <?php echo csrf_field(); ?>
-                                                        </form>
-                                                    <?php endif; ?>
-                                                <?php endif; ?>
-                                                <button class="btn btn-sm btn-secondary me-1 mt-1"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#details-modal-<?php echo e($val->id); ?>">
-                                                    <i class="fa-solid fa-magnifying-glass-plus"></i></button>
+                                                @endcan
+                                            @else
+                                                {{-- edit button --}}
+                                                @can('registered_user.edit')
+                                                    @if ($val->status == 1)
+                                                        {{-- <a href="{{ route('registered_users.edit', Crypt::encryptString($val->id)) }}"
+                                            class="btn btn-outline-warning btn-sm"><i class="fa-solid fa-pencil"></i> Edit</a> --}}
+                                                    @endif
+                                                @endcan
+                                                {{-- edit button --}}
 
-                                                
-                                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('user_response.delete')): ?>
-                                                    <?php if($val->status == 0): ?>
-                                                        <a href=""
-                                                            class="btn btn-outline-danger btn-sm btn-delete-<?php echo e($val->id); ?>"
-                                                            onclick="event.preventDefault(); confirmDelete(<?php echo e($val->id); ?>)"><i
-                                                                class="fa-solid fa-trash"></i> Delete</a>
-                                                        <form id="delete-form-<?php echo e($val->id); ?>"
-                                                            style="display: none"
-                                                            action="<?php echo e(route('user_responses.destroy', Crypt::encryptString($val->id))); ?>"
-                                                            method="POST">
-                                                            <?php echo method_field('DELETE'); ?>
-                                                            <?php echo csrf_field(); ?>
-                                                        </form>
-                                                    <?php endif; ?>
-                                                <?php endif; ?>
-                                            <?php endif; ?>
+                                                {{-- delete button --}}
+                                                @can('registered_user.delete')
+                                                    <a href=""
+                                                        class="btn btn-outline-danger btn-sm btn-delete-{{ $val->id }}"
+                                                        onclick="event.preventDefault(); confirmDelete({{ $val->id }})"><i
+                                                            class="fa-solid fa-trash"></i> Delete</a>
+                                                    <form id="delete-form-{{ $val->id }}" style="display: none"
+                                                        action="{{ route('registered_users.destroy', Crypt::encryptString($val->id)) }}"
+                                                        method="POST">
+                                                        @method('DELETE')
+                                                        @csrf
+                                                    </form>
+                                                @endcan
+                                            @endif
 
                                         </td>
                                     </tr>
-                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                @empty
+                                    <tr>
+                                        <td colspan="10" class="text-center">No records found. </td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
-                        <?php echo e($user_responses->withQueryString()->links()); ?>
-
+                        {{ $registered_users->withQueryString()->links() }}
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <?php echo $__env->make('user_response.detail', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
-    <?php $__env->startPush('scripts'); ?>
+    @push('scripts')
         <script>
             let confirmVerify = (id) => {
                 Swal.fire({
@@ -944,17 +901,17 @@
                 $("#drpDistrict, #drpUpazilla").val("");
                 // }
 
-                var searchDivision = "<?php echo e(request()->get('search_division')); ?>";
+                var searchDivision = "{{ request()->get('search_division') }}";
                 if (searchDivision) {
                     $("#drpDivision option[value=" + searchDivision + "]").attr('selected', 'selected');
                 }
-                var searchDistrict = "<?php echo e(request()->get('search_district')); ?>";
+                var searchDistrict = "{{ request()->get('search_district') }}";
                 if (searchDistrict) {
                     $("#drpDistrict").children('option[data-link="' + searchDivision + '"]').show();
                     $("#drpDistrict option[value=" + searchDistrict + "]").attr('selected', 'selected');
 
                 }
-                var searchThana = "<?php echo e(request()->get('search_thana')); ?>";
+                var searchThana = "{{ request()->get('search_thana') }}";
                 if (searchThana) {
                     $("#drpUpazilla").children('option[data-link="' + searchDistrict + '"]').show();
                     $("#drpUpazilla option[value=" + searchThana + "]").attr('selected', 'selected');
@@ -978,11 +935,5 @@
                 });
             });
         </script>
-    <?php $__env->stopPush(); ?>
- <?php echo $__env->renderComponent(); ?>
-<?php endif; ?>
-<?php if (isset($__componentOriginal9ac128a9029c0e4701924bd2d73d7f54)): ?>
-<?php $component = $__componentOriginal9ac128a9029c0e4701924bd2d73d7f54; ?>
-<?php unset($__componentOriginal9ac128a9029c0e4701924bd2d73d7f54); ?>
-<?php endif; ?>
-<?php /**PATH C:\xampp8.1.6\htdocs\laravel\edds\resources\views/user_response/index.blade.php ENDPATH**/ ?>
+    @endpush
+</x-app-layout>

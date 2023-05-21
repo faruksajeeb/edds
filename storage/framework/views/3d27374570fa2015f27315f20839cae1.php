@@ -5,7 +5,7 @@
                 <ul class="p-0 brand-name">
                     <li class="">
                         <a href="<?php echo e(route('dashboard')); ?>" class="bg-white ">
-                            <span class="icon">icddr,b</span>
+                            
                             <span class="title">
                                 <h5 class=" py-4"><?php echo e($company_settings->company_name); ?></h5>
                             </span>
@@ -148,6 +148,16 @@
                                 </li>
                             <?php endif; ?>
                         </ul>
+                    </li>
+                <?php endif; ?>
+                <?php if(Auth::guard('web')->user()->can('registered_user.view')): ?>
+                    <li class="<?php echo e(Route::is('registered_users') ? 'active' : ''); ?>">
+                        <a href="<?php echo e(url('registered_users')); ?>" class="nav-link ps-1 align-middle">
+                            <span class="icon"><i class="fas fa-users"></i></span>
+                            <span class="ms-1 d-sm-inline title ">Registered Users</span>
+                            
+                        </a>
+                        
                     </li>
                 <?php endif; ?>
                 <?php if(Auth::guard('web')->user()->can('user.view') ||

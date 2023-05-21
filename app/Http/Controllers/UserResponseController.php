@@ -337,7 +337,8 @@ class UserResponseController extends Controller
             $user_response->status = 2; //verified 
             $user_response->verified_at = $this->webspice->now('datetime24'); 
             $user_response->verified_by = $this->webspice->getUserId(); 
-            $user_response->save();
+            // $user_response->save();
+            $user_response->saveQuietly(); #without dispatching any events.
             # Log
             $this->webspice->log('user_responses', $user_response->id, "FORCE DELETED");
             # Cache Update

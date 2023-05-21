@@ -20,27 +20,27 @@
     <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('dashboard.view')): ?>
         
         
-        <form action="" method="POST" class="mt-2">
+        <form action="" method="POST" class="mt-2 chart_form">
             <?php echo csrf_field(); ?>
             <div class="row">
                 <div class="col-md-3">
                     <select name="chart_type" id="chart_type" class="form-select">
-                        <option value="">--Select Chart Type--</option>
-                        <option value="column">Column</option>
-                        <option value="bar">Bar</option>
-                        <option value="pie">Pie</option>
+                        <option value="">--Select Chart Type--</option>                        
+                        <option value="bar" <?php echo e(($chart_type=='bar')?'selected':''); ?>>Bar</option>
+                        <option value="pie" <?php echo e(($chart_type=='pie')?'selected':''); ?>>Pie</option>
+                        <option value="line" <?php echo e(($chart_type=='line')?'selected':''); ?>>Line</option>
                     </select>
                 </div>
                 <div class="col-md-3">
                     <input type="text" name="date_from" id="date_from" placeholder="Date From"
-                        class="datepicker form-control" required />
+                        class="datepicker form-control" value="<?php echo e($date_from); ?>" required />
                 </div>
                 <div class="col-md-3">
                     <input type="text" name="date_to" id="date_to" placeholder="Date To"
-                        class="datepicker form-control" required />
+                        class="datepicker form-control" value="<?php echo e($date_to); ?>" required />
                 </div>
                 <div class="col-md-3">
-                    <button class="form-control btn btn-secondary">Generate</button>
+                    <button class="form-control btn btn-secondary generate_btn" type="submit" name="submit_btn" value="submit_btn">Generate</button>
                 </div>
             </div>
         </form>
@@ -56,43 +56,58 @@
         <?php $__env->startPush('scripts'); ?>
             <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
             <script type="text/javascript">
-             var labels =  <?php echo e(Js::from($labels)); ?>;
-             var users =  <?php echo e(Js::from($data)); ?>;
-  
+                var labels = <?php echo e(Js::from($labels)); ?>;
+                var responses = <?php echo e(Js::from($data)); ?>;
+
                 const data = {
                     labels: labels,
-                    datasets: [{
-                        label: 'My First dataset',
-                        backgroundColor: [
-                            'rgba(255, 99, 132, 0.2)',
-                            'rgba(255, 159, 64, 0.2)',
-                            'rgba(255, 205, 86, 0.2)',
-                            'rgba(75, 192, 192, 0.2)',
-                            'rgba(54, 162, 235, 0.2)',
-                            'rgba(153, 102, 255, 0.2)',
-                            'rgba(201, 203, 207, 0.2)'
-                        ],
-                        borderColor: [
-                            'rgb(255, 99, 132)',
-                            'rgb(255, 159, 64)',
-                            'rgb(255, 205, 86)',
-                            'rgb(75, 192, 192)',
-                            'rgb(54, 162, 235)',
-                            'rgb(153, 102, 255)',
-                            'rgb(201, 203, 207)'
-                        ],
-                        borderWidth: 1,
-                        data: users
-                    }]
+                    datasets: [
+                        <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        
+                            {
+                                label: "<?php echo e($category->option_value); ?>",
+                                // backgroundColor: [
+                                //     'rgba(255, 99, 132, 0.2)',
+                                //     'rgba(255, 159, 64, 0.2)',
+                                //     'rgba(255, 205, 86, 0.2)',
+                                //     'rgba(75, 192, 192, 0.2)',
+                                //     'rgba(54, 162, 235, 0.2)',
+                                //     'rgba(153, 102, 255, 0.2)',
+                                //     'rgba(201, 203, 207, 0.2)'
+                                // ],
+                                // borderColor: [
+                                //     'rgb(255, 99, 132)',
+                                //     'rgb(255, 159, 64)',
+                                //     'rgb(255, 205, 86)',
+                                //     'rgb(75, 192, 192)',
+                                //     'rgb(54, 162, 235)',
+                                //     'rgb(153, 102, 255)',
+                                //     'rgb(201, 203, 207)'
+                                // ],
+                                borderWidth: 1,
+                                data: responses[<?php echo e($category->id); ?>]
+                            },
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    ]
                 };
 
                 const config = {
-                    type: 'bar',
+                    type: '<?php echo e($chart_type); ?>',
                     data: data,
                     options: {
+                        responsive: true,
                         scales: {
                             y: {
                                 beginAtZero: true
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            title: {
+                                display: true,
+                                text: 'Division Wise Response Data'
                             }
                         }
                     }
@@ -102,6 +117,14 @@
                     document.getElementById('myChart'),
                     config
                 );
+
+
+                $(document).on('click', ".generate_btn", function() {
+                    $('.generate_btn').html(
+                                '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Generating...'
+                            );
+                });
+
             </script>
         <?php $__env->stopPush(); ?>
     <?php endif; ?>

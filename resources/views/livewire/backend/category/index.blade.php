@@ -104,7 +104,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($categories as $key => $val)
+                                @endforelse ($categories as $key => $val)
                                     <tr>
                                         <td>{{ $key + $categories->firstItem() }}</td>
                                         <td><img src="{{asset('frontend-assets/imgs/categories')}}/{{ $val->image }}" width="50" /></td>
@@ -135,7 +135,11 @@
                                                     class="fa-solid fa-trash-can"></i></button>
                                         </td>
                                     </tr>
-                                @endforeach
+                                    @empty
+                                    <tr>
+                                        <td colspan="8" class="text-center">No records found. </td>
+                                    </tr>
+                                    @endforelse
                             </tbody>
                         </table>
                     </div>

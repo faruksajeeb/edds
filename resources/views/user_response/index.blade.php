@@ -813,7 +813,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($user_responses as $index => $val)
+                                @forelse ($user_responses as $index => $val)
                                     <tr>
                                         <td>{{ $index + $user_responses->firstItem() }}</td>
                                         <td>{{ $val->response_date }}</td>
@@ -908,7 +908,11 @@
 
                                         </td>
                                     </tr>
-                                @endforeach
+                                @empty
+                                <tr>
+                                    <td colspan="9" class="text-center">No records found. </td>
+                                </tr>
+                                @endforelse
                             </tbody>
                         </table>
                         {{ $user_responses->withQueryString()->links() }}

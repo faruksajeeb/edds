@@ -65,27 +65,27 @@
             </div>
         </div> --}}
         {{-- <hr> --}}
-        <form action="" method="POST" class="mt-2">
+        <form action="" method="POST" class="mt-2 chart_form">
             @csrf
             <div class="row">
                 <div class="col-md-3">
                     <select name="chart_type" id="chart_type" class="form-select">
-                        <option value="">--Select Chart Type--</option>
-                        <option value="column">Column</option>
-                        <option value="bar">Bar</option>
-                        <option value="pie">Pie</option>
+                        <option value="">--Select Chart Type--</option>                        
+                        <option value="bar" {{($chart_type=='bar')?'selected':'';}}>Bar</option>
+                        <option value="pie" {{($chart_type=='pie')?'selected':'';}}>Pie</option>
+                        <option value="line" {{($chart_type=='line')?'selected':'';}}>Line</option>
                     </select>
                 </div>
                 <div class="col-md-3">
                     <input type="text" name="date_from" id="date_from" placeholder="Date From"
-                        class="datepicker form-control" required />
+                        class="datepicker form-control" value="{{ $date_from }}" required />
                 </div>
                 <div class="col-md-3">
                     <input type="text" name="date_to" id="date_to" placeholder="Date To"
-                        class="datepicker form-control" required />
+                        class="datepicker form-control" value="{{  $date_to }}" required />
                 </div>
                 <div class="col-md-3">
-                    <button class="form-control btn btn-secondary">Generate</button>
+                    <button class="form-control btn btn-secondary generate_btn" type="submit" name="submit_btn" value="submit_btn">Generate</button>
                 </div>
             </div>
         </form>
@@ -177,43 +177,58 @@
         @push('scripts')
             <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
             <script type="text/javascript">
-             var labels =  {{ Js::from($labels) }};
-             var users =  {{ Js::from($data) }};
-  
+                var labels = {{ Js::from($labels) }};
+                var responses = {{ Js::from($data) }};
+
                 const data = {
                     labels: labels,
-                    datasets: [{
-                        label: 'My First dataset',
-                        backgroundColor: [
-                            'rgba(255, 99, 132, 0.2)',
-                            'rgba(255, 159, 64, 0.2)',
-                            'rgba(255, 205, 86, 0.2)',
-                            'rgba(75, 192, 192, 0.2)',
-                            'rgba(54, 162, 235, 0.2)',
-                            'rgba(153, 102, 255, 0.2)',
-                            'rgba(201, 203, 207, 0.2)'
-                        ],
-                        borderColor: [
-                            'rgb(255, 99, 132)',
-                            'rgb(255, 159, 64)',
-                            'rgb(255, 205, 86)',
-                            'rgb(75, 192, 192)',
-                            'rgb(54, 162, 235)',
-                            'rgb(153, 102, 255)',
-                            'rgb(201, 203, 207)'
-                        ],
-                        borderWidth: 1,
-                        data: users
-                    }]
+                    datasets: [
+                        @foreach ($categories as $key => $category)
+                        
+                            {
+                                label: "{{ $category->option_value }}",
+                                // backgroundColor: [
+                                //     'rgba(255, 99, 132, 0.2)',
+                                //     'rgba(255, 159, 64, 0.2)',
+                                //     'rgba(255, 205, 86, 0.2)',
+                                //     'rgba(75, 192, 192, 0.2)',
+                                //     'rgba(54, 162, 235, 0.2)',
+                                //     'rgba(153, 102, 255, 0.2)',
+                                //     'rgba(201, 203, 207, 0.2)'
+                                // ],
+                                // borderColor: [
+                                //     'rgb(255, 99, 132)',
+                                //     'rgb(255, 159, 64)',
+                                //     'rgb(255, 205, 86)',
+                                //     'rgb(75, 192, 192)',
+                                //     'rgb(54, 162, 235)',
+                                //     'rgb(153, 102, 255)',
+                                //     'rgb(201, 203, 207)'
+                                // ],
+                                borderWidth: 1,
+                                data: responses[{{$category->id}}]
+                            },
+                        @endforeach
+                    ]
                 };
 
                 const config = {
-                    type: 'bar',
+                    type: '{{$chart_type}}',
                     data: data,
                     options: {
+                        responsive: true,
                         scales: {
                             y: {
                                 beginAtZero: true
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            title: {
+                                display: true,
+                                text: 'Division Wise Response Data'
                             }
                         }
                     }
@@ -223,6 +238,14 @@
                     document.getElementById('myChart'),
                     config
                 );
+
+
+                $(document).on('click', ".generate_btn", function() {
+                    $('.generate_btn').html(
+                                '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Generating...'
+                            );
+                });
+
             </script>
         @endpush
     @endcan

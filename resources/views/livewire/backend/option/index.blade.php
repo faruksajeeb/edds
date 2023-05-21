@@ -120,7 +120,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($options as $key => $val)
+                                @forelse ($options as $key => $val)
                                     <tr>
                                         <td>{{ $key + $options->firstItem() }}</td>
                                         <td>{{ str_replace('_', ' ', $val->option_group_name) }}</td>
@@ -152,7 +152,11 @@
                                                     class="fa-solid fa-trash-can"></i></button>
                                         </td>
                                     </tr>
-                                @endforeach
+                                    @empty
+                                    <tr>
+                                        <td colspan="7" class="text-center">No records found. </td>
+                                    </tr>
+                                    @endforelse
                             </tbody>
                         </table>
                     </div>
