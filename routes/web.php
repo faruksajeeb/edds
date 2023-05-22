@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
 use App\Lib\Webspice;
 
+use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
@@ -18,6 +19,7 @@ use App\Http\Controllers\UserResponseController;
 use App\Http\Controllers\AreaController;
 use App\Http\Controllers\MarketController;
 use App\Http\Controllers\RegisteredUserController;
+
 
 use App\Http\Livewire\Backend\OptionGroup;
 use App\Http\Livewire\Backend\Options;
@@ -38,7 +40,7 @@ use App\Http\Livewire\Frontend\Home;
 */
 
 Route::get('/', Home::class)->name('/');
-
+Route::get('lang/change', [LanguageController::class, 'change'])->name('changeLang');
 Route::middleware('auth')->group(function () {
     Route::get('active-inactive', [Webspice::class, 'activeInactive'])->name('active.inactive');
     Route::match(['get','post'],'/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');

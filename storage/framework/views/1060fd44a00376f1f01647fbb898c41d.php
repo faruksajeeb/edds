@@ -1,4 +1,4 @@
-@push('styles')
+<?php $__env->startPush('styles'); ?>
     <style>
         .nav-link {
             font-size: 20px;
@@ -35,7 +35,7 @@
             font-weight: bold;
         }
     </style>
-@endpush
+<?php $__env->stopPush(); ?>
 <div class="container-fluid mx-0 px-0">
     <div class="container-fluid header-section py-3">
         <div class="container">
@@ -43,9 +43,9 @@
             <header class="navigation">
                 <nav class="navbar navbar-expand-xl navbar-light text-center py-3">
                     <div class="container">
-                        <a class="navbar-brand" href="{{ route('/') }}">
+                        <a class="navbar-brand" href="<?php echo e(route('/')); ?>">
                             <img loading="prelaod" decoding="async" class="img-fluid" width="160"
-                                src="{{ asset('/uploads/' . $theme_settings->website_logo) }}" alt="icddr,b">
+                                src="<?php echo e(asset('/uploads/' . $theme_settings->website_logo)); ?>" alt="icddr,b">
                         </a>
                         <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                             data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
@@ -54,33 +54,22 @@
                         </button>
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
                             <ul class="navbar-nav ms-auto mb-2 mb-lg-0 me-3">
-                                <li class="nav-item"> <a class="nav-link" href="{{ route('/') }}">{{ __('menu.home') }}</a>
+                                <li class="nav-item"> <a class="nav-link" href="<?php echo e(route('/')); ?>"><?php echo e(__('menu.home')); ?></a>
                                 </li>
-                                <li class="nav-item "> <a class="nav-link" href="{{ route('/') }}">{{ __('menu.about') }}</a>
+                                <li class="nav-item "> <a class="nav-link" href="<?php echo e(route('/')); ?>"><?php echo e(__('menu.about')); ?></a>
                                 </li>
-                                <li class="nav-item "> <a class="nav-link" href="{{ route('/') }}">{{ __('menu.services') }}</a>
+                                <li class="nav-item "> <a class="nav-link" href="<?php echo e(route('/')); ?>"><?php echo e(__('menu.services')); ?></a>
                                 </li>
-                                <li class="nav-item "> <a class="nav-link" href="{{ route('/') }}">{{ __('menu.contact') }}</a>
+                                <li class="nav-item "> <a class="nav-link" href="<?php echo e(route('/')); ?>"><?php echo e(__('menu.contact')); ?></a>
                                 </li>
-                                {{-- <li class="nav-item dropdown"> <a class="nav-link dropdown-toggle" href="#"
-                                        id="navbarDropdown" role="button" data-bs-toggle="dropdown"
-                                        aria-expanded="false">Pages</a>
-                                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                        <li><a class="dropdown-item " href="">DropDown 1</a>
-                                        </li>
-                                        <li><a class="dropdown-item " href="">DropDown 2</a>
-                                        </li>
-                                        <li><a class="dropdown-item " href="">DropDown 3</a>
-                                        </li>
-                                    </ul>
-                                </li> --}}
+                                
                             </ul>
-                            <a href="{{ route('login') }}" class="btn btn-outline-primary">{{ __('menu.login') }}</a>
-                            @if ((session()->get('locale') == 'bn'))
+                            <a href="<?php echo e(route('login')); ?>" class="btn btn-outline-primary"><?php echo e(__('menu.login')); ?></a>
+                            <?php if((session()->get('locale') == 'bn')): ?>
                                 <button class="btn primary_bg_color text-white ms-2 changeLang" value="en">English</button>
-                            @elseif(!session()->get('locale') || session()->get('locale') == 'en')
+                            <?php elseif(!session()->get('locale') || session()->get('locale') == 'en'): ?>
                                 <button class="btn primary_bg_color text-white ms-2 changeLang" value="bn">বাংলা</button>
-                            @endif
+                            <?php endif; ?>
 
                         </div>
                     </div>
@@ -93,33 +82,22 @@
 
         <div class="container my-3">
             <div class="row align-items-md-stretch">
-                @foreach ($categories as $category)
+                <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <div class="col-md-4 my-3">
                         <div class="h-100 p-3 text-dark bg-white rounded-3 text-center">
                             <div class="iconBox">
-                                {{-- <i class="fa fa-eye"></i> --}}
-                                <span class="big_number">{{ $category['response_data'] }}</span>
+                                
+                                <span class="big_number"><?php echo e($category['response_data']); ?></span>
                                 <p>today</p>
                             </div>
-                            <h2 class="fw-bold my-5 primary_text_color">{{ (session()->get('locale')=='bn')?$category['category_name_bangla'] : $category['category_name'] }}</h2>
+                            <h2 class="fw-bold my-5 primary_text_color"><?php echo e((session()->get('locale')=='bn')?$category['category_name_bangla'] : $category['category_name']); ?></h2>
 
 
                         </div>
                     </div>
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </div>
-            {{-- <div class="row row-cols-1 row-cols-md-3 gx-4 m-1">
-                <div class="col themed-grid-col h-100 py-5 text-center align-middle">
-
-                    <h1 class="text-center ">Poultry</h1>
-                </div>
-                <div class="col themed-grid-col h-100 py-5">
-                    <h1 class="text-center">Wild Bird</h1>
-                </div>
-                <div class="col themed-grid-col h-100 py-5">
-                    <h1 class="text-center">LBM Worker</h1>
-                </div>                
-            </div> --}}
+            
         </div>
 
     </div>
@@ -132,26 +110,26 @@
                     $colSpan = count($categories);
                     ?>
                     <tr class="primary_bg_color">
-                        <th colspan="{{ $colSpan + 1 }}"
+                        <th colspan="<?php echo e($colSpan + 1); ?>"
                             class="text-center py-3 primary_bg_color text-white display-6">Division Wise
                             Last 7 Days Statistics</th>
                     </tr>
                     <tr class="table-dark">
                         <th class="">Location</th>
-                        @foreach ($categories as $category)
-                            <th class="text-center">{{ $category['category_name'] }}</th>
-                        @endforeach
+                        <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <th class="text-center"><?php echo e($category['category_name']); ?></th>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($divisions as $division)
+                    <?php $__currentLoopData = $divisions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $division): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <tr class="table-warning">
-                            <td class="">{{ $division['division_name'] }}</td>
-                            @foreach ($categories as $key => $category)
-                                <td class="text-center">{{ $division[$key] }}</td>
-                            @endforeach
+                            <td class=""><?php echo e($division['division_name']); ?></td>
+                            <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <td class="text-center"><?php echo e($division[$key]); ?></td>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </tr>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </tbody>
             </table>
         </div>
@@ -162,9 +140,9 @@
         </div>
     </div>
 </div>
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
     <script type="text/javascript">
-        var url = "{{ route('changeLang') }}";
+        var url = "<?php echo e(route('changeLang')); ?>";
 
         $(".changeLang").on('click',function() {
             var lang = $(this).attr('value');
@@ -172,4 +150,5 @@
             window.location.href = url + "?lang=" + lang;
         });
     </script>
-@endpush
+<?php $__env->stopPush(); ?>
+<?php /**PATH C:\xampp8.1.6\htdocs\laravel\edds\resources\views/livewire/frontend/home.blade.php ENDPATH**/ ?>

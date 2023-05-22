@@ -41,6 +41,7 @@ class Home extends Component
         foreach ($categories as $category) :
             $categoryId = $category->id;
             $categoryWiseReport[$categoryId]['category_name'] = $category->option_value;
+            $categoryWiseReport[$categoryId]['category_name_bangla'] = $category->option_value2;
             $query = UserResponseDetail::leftJoin('questions', 'questions.id', '=', 'user_response_details.question_id');
             $query->leftJoin('user_responses', 'user_responses.id', '=', 'user_response_details.response_id');
             $query->where('questions.category_id', $categoryId);
