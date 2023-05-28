@@ -66,7 +66,7 @@
                             </ul>
                             <a href="<?php echo e(route('login')); ?>" class="btn btn-outline-primary"><?php echo e(__('menu.login')); ?></a>
                             <?php if((session()->get('locale') == 'bn')): ?>
-                                <button class="btn primary_bg_color text-white ms-2 changeLang" value="en">English</button>
+                                <button class="btn btn-danger text-white ms-2 changeLang" value="en">English</button>
                             <?php elseif(!session()->get('locale') || session()->get('locale') == 'en'): ?>
                                 <button class="btn primary_bg_color text-white ms-2 changeLang" value="bn">বাংলা</button>
                             <?php endif; ?>
@@ -87,8 +87,8 @@
                         <div class="h-100 p-3 text-dark bg-white rounded-3 text-center">
                             <div class="iconBox">
                                 
-                                <span class="big_number"><?php echo e($category['response_data']); ?></span>
-                                <p>today</p>
+                                <span class="big_number"><?php echo e((session()->get('locale')=='bn')?$webspice->convertToBanglaNumber($category['response_data']):$category['response_data']); ?></span>
+                                <p><?php echo e(__('text.today')); ?></p>
                             </div>
                             <h2 class="fw-bold my-5 primary_text_color"><?php echo e((session()->get('locale')=='bn')?$category['category_name_bangla'] : $category['category_name']); ?></h2>
 
@@ -111,22 +111,21 @@
                     ?>
                     <tr class="primary_bg_color">
                         <th colspan="<?php echo e($colSpan + 1); ?>"
-                            class="text-center py-3 primary_bg_color text-white display-6">Division Wise
-                            Last 7 Days Statistics</th>
+                            class="text-center py-3 primary_bg_color text-white display-6"><?php echo e(__('text.tabular_statistic_title')); ?></th>
                     </tr>
                     <tr class="table-dark">
-                        <th class="">Location</th>
+                        <th class=""><?php echo e(__('text.location')); ?></th>
                         <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                            <th class="text-center"><?php echo e($category['category_name']); ?></th>
+                            <th class="text-center"><?php echo e((session()->get('locale')=='bn')?$category['category_name_bangla'] : $category['category_name']); ?></th>
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </tr>
                 </thead>
                 <tbody>
                     <?php $__currentLoopData = $divisions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $division): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <tr class="table-warning">
-                            <td class=""><?php echo e($division['division_name']); ?></td>
+                            <td class=""><?php echo e((session()->get('locale')=='bn')?$webspice->convertToBanglaDivision($division['division_name']):$division['division_name']); ?></td>
                             <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                <td class="text-center"><?php echo e($division[$key]); ?></td>
+                                <td class="text-center"><?php echo e((session()->get('locale')=='bn')?$webspice->convertToBanglaNumber($division[$key]) : $division[$key]); ?></td>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </tr>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
@@ -136,7 +135,8 @@
     </div>
     <div class="container-fluid py-3  primary_bg_color ">
         <div class="container text-center text-white">
-            @ All right reserved by icddr,b
+            <?php echo e(__('text.copyright')); ?>
+
         </div>
     </div>
 </div>
@@ -145,6 +145,9 @@
         var url = "<?php echo e(route('changeLang')); ?>";
 
         $(".changeLang").on('click',function() {
+            $('.changeLang').html(
+                        '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Language Changing...'
+                    );
             var lang = $(this).attr('value');
             //alert(lang);
             window.location.href = url + "?lang=" + lang;

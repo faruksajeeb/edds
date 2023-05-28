@@ -15,6 +15,7 @@ use App\Exports\SurveyReportExport;
 use App\Models\UserResponseDetail;
 use Exception;
 use PDF;
+use DB;
 
 class ReportController extends Controller
 {
@@ -193,7 +194,7 @@ class ReportController extends Controller
                         // No Data Found!                
                         return redirect('survey-report')->with('warning', 'SORRY! No Records Found.');
                     }
-                    
+
                     $customResult = array();
                     foreach ($records as $val) :
                         $categoryId = $val->category_id ? $val->category_id : 'not_assigned';
@@ -282,13 +283,13 @@ class ReportController extends Controller
         } else {
             $sub_questions = $this->webspice->getCache($cacheName);
         }
-        
+
         $data['areas'] = $areas;
         $data['markets'] = $markets;
         $data['categories'] = $categories;
         $data['questions'] = $questions;
         $data['sub_questions'] = $sub_questions;
-        return view('report.survey_report', $data );
+        return view('report.survey_report', $data);
     }
 
     protected function questionWiseSurveyReport($request)
@@ -388,5 +389,67 @@ class ReportController extends Controller
             # view
 
         }
+    }
+
+    public function districtWiseWarningsReport(Request $request)
+    {
+        $selectedCategory ='Poultry';
+        if($request->category){
+            $selectedCategory = $request->category;
+        }
+        $regionWiseColorMapRecords = DB::select("
+        SELECT district, SUM(CASE WHEN category='Poultry' THEN response ELSE 0 END) TOTAL_POULTRY,
+        SUM(CASE WHEN category='Wild Bird' THEN response ELSE 0 END) TOTAL_WILD_BIRD,
+        COUNT(DISTINCT(CASE WHEN category='LBM Worker' THEN response_id END)) TOTAL_LBM_WORKER
+        FROM(
+        SELECT user_response_details.*,
+        user_responses.registered_user_id, user_responses.response_date,
+        questions.category_id,
+        options.option_value AS category,
+        registered_users.division, registered_users.district
+        FROM user_response_details
+        LEFT JOIN user_responses ON user_responses.id = user_response_details.response_id
+        LEFT JOIN questions ON questions.id = user_response_details.question_id
+        LEFT JOIN `options` ON options.id = questions.category_id
+        LEFT JOIN registered_users ON registered_users.id = user_responses.registered_user_id
+        ) TBL_RES
+        GROUP BY district");
+
+        // $data = [65, 59, 80, 81, 56, 55, 40,80];
+        // dd($data);
+         # Cache Category
+         $cacheName = 'categories';
+         // $this->webspice->forgetCache($cacheName);
+         if (!$this->webspice->getCache($cacheName)) {
+             $categories = Option::where(['option_group_name' => 'category'])->get();
+             $this->webspice->createCache($cacheName, $categories);
+         } else {
+             $categories = $this->webspice->getCache($cacheName);
+         }
+
+        $webspice = $this->webspice;
+        return view('report.district_wise_warnings_report', compact('regionWiseColorMapRecords','categories','selectedCategory', 'webspice'));
+    }
+    public function divisionWiseCountingReport()
+    {
+        $googleMapResult = DB::select("
+            SELECT division, SUM(CASE WHEN category='Poultry' THEN response ELSE 0 END) TOTAL_POULTRY,
+            SUM(CASE WHEN category='Wild Bird' THEN response ELSE 0 END) TOTAL_WILD_BIRD,
+            COUNT(DISTINCT(CASE WHEN category='LBM Worker' THEN response_id END)) TOTAL_LBM_WORKER
+            FROM(
+            SELECT user_response_details.*,
+            user_responses.registered_user_id, user_responses.response_date,
+            questions.category_id,
+            options.option_value AS category,
+            registered_users.division
+            FROM user_response_details
+            LEFT JOIN user_responses ON user_responses.id = user_response_details.response_id
+            LEFT JOIN questions ON questions.id = user_response_details.question_id
+            LEFT JOIN `options` ON options.id = questions.category_id
+            LEFT JOIN registered_users ON registered_users.id = user_responses.registered_user_id
+            ) TBL_RES
+            GROUP BY division");
+            $webspice = $this->webspice;
+        return view('report.division_wise_counting_report',compact('googleMapResult','webspice'));
     }
 }

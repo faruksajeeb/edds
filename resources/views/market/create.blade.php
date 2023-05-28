@@ -32,7 +32,7 @@
                         @csrf
                         <div class="form-group my-1">
                             <label for=""
-                                class="@if ($errors->has('value_bangla')) has-error @endif fw-bold">Area</label>
+                                class="@if ($errors->has('value_bangla')) has-error @endif fw-bold">Area *</label>
                             <select name="area_id" id="area_id" class="form-select" required>
                                 <option value="">--select area--</option>
                                 @foreach ($areas as $val)

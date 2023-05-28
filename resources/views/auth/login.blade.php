@@ -90,7 +90,7 @@
                                 {{ __('Forgot your password?') }}
                             </a>
                         @endif
-                        <button type="submit" name="submit-btn" class="btn btn-lg btn-success btn-login mx-3" id='btn-login'>Log in</button>
+                        <button type="submit" name="submit-btn" class="btn btn-lg btn-success btn-login mx-3" id='btn-login'>Log In</button>
                     </div>
                 </form>
             </div>
@@ -119,7 +119,7 @@
                         $('#btn-login').addClass('disabledAnchor');
                         $('#btn-login').prop('disabled', true);
                         $('#btn-login').html(
-                            '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Logging...'
+                            '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Logging In...'
                         );
                     }
                     form.classList.add('was-validated')

@@ -77,7 +77,7 @@
                             </ul>
                             <a href="{{ route('login') }}" class="btn btn-outline-primary">{{ __('menu.login') }}</a>
                             @if ((session()->get('locale') == 'bn'))
-                                <button class="btn primary_bg_color text-white ms-2 changeLang" value="en">English</button>
+                                <button class="btn btn-danger text-white ms-2 changeLang" value="en">English</button>
                             @elseif(!session()->get('locale') || session()->get('locale') == 'en')
                                 <button class="btn primary_bg_color text-white ms-2 changeLang" value="bn">বাংলা</button>
                             @endif
@@ -98,8 +98,8 @@
                         <div class="h-100 p-3 text-dark bg-white rounded-3 text-center">
                             <div class="iconBox">
                                 {{-- <i class="fa fa-eye"></i> --}}
-                                <span class="big_number">{{ $category['response_data'] }}</span>
-                                <p>today</p>
+                                <span class="big_number">{{ (session()->get('locale')=='bn')?$webspice->convertToBanglaNumber($category['response_data']):$category['response_data'] }}</span>
+                                <p>{{ __('text.today') }}</p>
                             </div>
                             <h2 class="fw-bold my-5 primary_text_color">{{ (session()->get('locale')=='bn')?$category['category_name_bangla'] : $category['category_name'] }}</h2>
 
@@ -133,22 +133,21 @@
                     ?>
                     <tr class="primary_bg_color">
                         <th colspan="{{ $colSpan + 1 }}"
-                            class="text-center py-3 primary_bg_color text-white display-6">Division Wise
-                            Last 7 Days Statistics</th>
+                            class="text-center py-3 primary_bg_color text-white display-6">{{__('text.tabular_statistic_title')}}</th>
                     </tr>
                     <tr class="table-dark">
-                        <th class="">Location</th>
+                        <th class="">{{__('text.location')}}</th>
                         @foreach ($categories as $category)
-                            <th class="text-center">{{ $category['category_name'] }}</th>
+                            <th class="text-center">{{ (session()->get('locale')=='bn')?$category['category_name_bangla'] : $category['category_name'] }}</th>
                         @endforeach
                     </tr>
                 </thead>
                 <tbody>
                     @foreach ($divisions as $division)
                         <tr class="table-warning">
-                            <td class="">{{ $division['division_name'] }}</td>
+                            <td class="">{{ (session()->get('locale')=='bn')?$webspice->convertToBanglaDivision($division['division_name']):$division['division_name'] }}</td>
                             @foreach ($categories as $key => $category)
-                                <td class="text-center">{{ $division[$key] }}</td>
+                                <td class="text-center">{{ (session()->get('locale')=='bn')?$webspice->convertToBanglaNumber($division[$key]) : $division[$key] }}</td>
                             @endforeach
                         </tr>
                     @endforeach
@@ -158,7 +157,7 @@
     </div>
     <div class="container-fluid py-3  primary_bg_color ">
         <div class="container text-center text-white">
-            @ All right reserved by icddr,b
+            {{__('text.copyright')}}
         </div>
     </div>
 </div>
@@ -167,6 +166,9 @@
         var url = "{{ route('changeLang') }}";
 
         $(".changeLang").on('click',function() {
+            $('.changeLang').html(
+                        '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Language Changing...'
+                    );
             var lang = $(this).attr('value');
             //alert(lang);
             window.location.href = url + "?lang=" + lang;

@@ -47,7 +47,7 @@ class Home extends Component
             $query->where('questions.category_id', $categoryId);
             $query->whereRaw('user_responses.response_date = CURDATE()');
             if ($category->option_value == 'LBM Worker') {
-                $resData = $query->count('user_response_details.response');
+                $resData = $query->count(DB::raw("DISTINCT(user_response_details.response_id)"));
             } else {
                 $resData = $query->sum('user_response_details.response');
             }
@@ -67,7 +67,7 @@ class Home extends Component
                 $query->where('registered_users.division', $division->division_name);
                 $query->whereBetween('user_responses.response_date',[Carbon::today()->subDays(7)->toDateString(),Carbon::today()->toDateString()]);
                 if ($category->option_value == 'LBM Worker') {
-                    $resData = $query->count('user_response_details.response');
+                    $resData = $query->count(DB::raw("DISTINCT(user_response_details.response_id)"));
                 } else {
                     $resData = $query->sum('user_response_details.response');
                 }
@@ -77,7 +77,8 @@ class Home extends Component
         // dd($categoryWiseReport);
         return view('livewire.frontend.home', [
             'categories' => $categoryWiseReport,
-            'divisions' => $divisionWiseReport
+            'divisions' => $divisionWiseReport,
+            'webspice' => $this->webspice
         ])->extends('livewire.frontend.master');
     }
 }

@@ -8,6 +8,7 @@ use App\Models\Option;
 use App\Models\UserResponseDetail;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use DB;
 
 class DashboardController extends Controller
 {
@@ -65,7 +66,8 @@ class DashboardController extends Controller
                 ->where('registered_users.division',$division->division_name);
                 $query->whereBetween('user_responses.response_date',[$date_from,$date_to]);
                 if ($category->option_value == 'LBM Worker') {
-                    $categoryWiseDivisionResponse[] = $query->count('user_response_details.response');
+                    // $categoryWiseDivisionResponse[] = $query->count('user_response_details.response');
+                    $categoryWiseDivisionResponse[] = $query->count(DB::raw("DISTINCT(user_response_details.response_id)"));
                 } else {
                     $categoryWiseDivisionResponse[] = $query->sum('user_response_details.response');
                 }
@@ -74,10 +76,15 @@ class DashboardController extends Controller
             
             $data[$category->id] = $categoryWiseDivisionResponse;
         }
-      
+   
+// dd($results);
+
+
+
         // $data = [65, 59, 80, 81, 56, 55, 40,80];
         // dd($data);
-        return view('dashboard', compact('categories', 'labels', 'chart_type','date_from','date_to','data'));
+        $webspice = $this->webspice;
+        return view('dashboard', compact('categories', 'labels', 'chart_type','date_from','date_to','data','webspice'));
     }
 
 }

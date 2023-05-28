@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Cache;
 // use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Session;
 use Mail;
+use Intervention\Image\Facades\Image;
 
 class Webspice
 {
@@ -170,9 +171,9 @@ class Webspice
 			case 6:
 				$text = '<span class="badge bg-info">New</span>';
 				break;
-			// case 7:
-			// 	$text = '<span class="badge bg-success">Active</span>';
-			// 	break;
+				// case 7:
+				// 	$text = '<span class="badge bg-success">Active</span>';
+				// 	break;
 			case 8:
 				$text = '<span class="badge bg-info">Initiated</span>';
 				break;
@@ -262,9 +263,9 @@ class Webspice
 			case -6:
 				$text = '<span class="badge bg-danger">Renewed</span>';
 				break;
-			// case -7:
-			// 	$text = '<span class="badge bg-danger">Inactive</span>';
-			// 	break;
+				// case -7:
+				// 	$text = '<span class="badge bg-danger">Inactive</span>';
+				// 	break;
 			default:
 				$text = '<span class="badge bg-default">Unknown</span>';
 				break;
@@ -344,24 +345,27 @@ class Webspice
 
 		return response()->json($queryStatus);
 	}
-    
-	public function hasCache($cacheName){
+
+	public function hasCache($cacheName)
+	{
 		return Cache::has($cacheName);
 	}
 
-	public function createCache($cacheName,$data){
+	public function createCache($cacheName, $data)
+	{
 		Cache::forever($cacheName, $data);
 	}
 
-	public function getCache($cacheName){
+	public function getCache($cacheName)
+	{
 		return Cache::get($cacheName);
 	}
 	# Remove Cache	
 	function forgetCache($cacheName)
 	{
 		Cache::forget($cacheName);
-		Cache::forget('active-'.$cacheName);
-		Cache::forget('inactive-'.$cacheName);
+		Cache::forget('active-' . $cacheName);
+		Cache::forget('inactive-' . $cacheName);
 	}
 
 	function static_exchange_status($status)
@@ -574,7 +578,7 @@ class Webspice
 		}
 	}
 
-	
+
 
 	public function getUserId(): int
 	{
@@ -609,5 +613,168 @@ class Webspice
 		return $date;
 	}
 
+
+	function getGeoData($address, $component)
+	{
+		$cityCoordinates = array();
+		$cityCoordinates['Dhaka'] = json_decode('{"results":[{"address_components":[{"long_name":"Dhaka","short_name":"Dhaka","types":["locality","political"]},{"long_name":"Dhaka District","short_name":"Dhaka District","types":["administrative_area_level_2","political"]},{"long_name":"Dhaka Division","short_name":"Dhaka Division","types":["administrative_area_level_1","political"]},{"long_name":"Bangladesh","short_name":"BD","types":["country","political"]}],"formatted_address":"Dhaka, Bangladesh","geometry":{"bounds":{"northeast":{"lat":23.9000025,"lng":90.5090166},"southwest":{"lat":23.6612704,"lng":90.3295468}},"location":{"lat":23.810332,"lng":90.4125181},"location_type":"APPROXIMATE","viewport":{"northeast":{"lat":23.9000025,"lng":90.5090166},"southwest":{"lat":23.6612704,"lng":90.3295468}}},"place_id":"ChIJgWsCh7C4VTcRwgRZ3btjpY8","types":["locality","political"]}],"status":"OK"}');
+		$cityCoordinates['Chattogram'] = json_decode('{"results":[{"address_components":[{"long_name":"Chattogram","short_name":"Chattogram","types":["locality","political"]},{"long_name":"Chittagong District","short_name":"Chittagong District","types":["administrative_area_level_2","political"]},{"long_name":"Chittagong Division","short_name":"Chittagong Division","types":["administrative_area_level_1","political"]},{"long_name":"Bangladesh","short_name":"BD","types":["country","political"]}],"formatted_address":"Chattogram, Bangladesh","geometry":{"bounds":{"northeast":{"lat":22.4306091,"lng":91.89192229999999},"southwest":{"lat":22.2212596,"lng":91.7478132}},"location":{"lat":22.356851,"lng":91.7831819},"location_type":"APPROXIMATE","viewport":{"northeast":{"lat":22.4306091,"lng":91.89192229999999},"southwest":{"lat":22.2212596,"lng":91.7478132}}},"place_id":"ChIJ09-VQKbYrDAR2QVpy1vMFVA","types":["locality","political"]}],"status":"OK"}');
+		$cityCoordinates['Barishal'] = json_decode('{"results":[{"address_components":[{"long_name":"Barishal","short_name":"Barishal","types":["locality","political"]},{"long_name":"Barisal District","short_name":"Barisal District","types":["administrative_area_level_2","political"]},{"long_name":"Barisal Division","short_name":"Barisal Division","types":["administrative_area_level_1","political"]},{"long_name":"Bangladesh","short_name":"BD","types":["country","political"]}],"formatted_address":"Barishal, Bangladesh","geometry":{"bounds":{"northeast":{"lat":22.7438022,"lng":90.3900342},"southwest":{"lat":22.646964,"lng":90.3175744}},"location":{"lat":22.7010021,"lng":90.35345110000002},"location_type":"APPROXIMATE","viewport":{"northeast":{"lat":22.7438022,"lng":90.3900342},"southwest":{"lat":22.646964,"lng":90.3175744}}},"partial_match":true,"place_id":"ChIJh-Ts-wc0VTcRSkHUmZWbBl0","types":["locality","political"]}],"status":"OK"}');
+		$cityCoordinates['Khulna'] = json_decode('{"results":[{"address_components":[{"long_name":"Khulna","short_name":"Khulna","types":["locality","political"]},{"long_name":"Khulna District","short_name":"Khulna District","types":["administrative_area_level_2","political"]},{"long_name":"Khulna Division","short_name":"Khulna Division","types":["administrative_area_level_1","political"]},{"long_name":"Bangladesh","short_name":"BD","types":["country","political"]}],"formatted_address":"Khulna, Bangladesh","geometry":{"bounds":{"northeast":{"lat":22.933575,"lng":89.58234780000001},"southwest":{"lat":22.7570288,"lng":89.48265560000002}},"location":{"lat":22.845641,"lng":89.54032789999999},"location_type":"APPROXIMATE","viewport":{"northeast":{"lat":22.933575,"lng":89.58234780000001},"southwest":{"lat":22.7570288,"lng":89.48265560000002}}},"place_id":"ChIJLxVHy3GQ_zkRUolxkCIhS_A","types":["locality","political"]}],"status":"OK"}');
+		$cityCoordinates['Mymensingh'] = json_decode('{"results":[{"address_components":[{"long_name":"Mymensingh","short_name":"Mymensingh","types":["locality","political"]},{"long_name":"Mymensingh District","short_name":"Mymensingh District","types":["administrative_area_level_2","political"]},{"long_name":"Mymensingh Division","short_name":"Mymensingh Division","types":["administrative_area_level_1","political"]},{"long_name":"Bangladesh","short_name":"BD","types":["country","political"]}],"formatted_address":"Mymensingh, Bangladesh","geometry":{"bounds":{"northeast":{"lat":24.7836463,"lng":90.4485512},"southwest":{"lat":24.7142056,"lng":90.3444408}},"location":{"lat":24.7471492,"lng":90.4202734},"location_type":"APPROXIMATE","viewport":{"northeast":{"lat":24.7836463,"lng":90.4485512},"southwest":{"lat":24.7142056,"lng":90.3444408}}},"place_id":"ChIJWZutBxBPVjcRbC3jYLCcpXk","types":["locality","political"]}],"status":"OK"}');
+		$cityCoordinates['Rajshahi'] = json_decode('{"results":[{"address_components":[{"long_name":"Rajshahi","short_name":"Rajshahi","types":["locality","political"]},{"long_name":"Rajshahi District","short_name":"Rajshahi District","types":["administrative_area_level_2","political"]},{"long_name":"Rajshahi Division","short_name":"Rajshahi Division","types":["administrative_area_level_1","political"]},{"long_name":"Bangladesh","short_name":"BD","types":["country","political"]}],"formatted_address":"Rajshahi, Bangladesh","geometry":{"bounds":{"northeast":{"lat":24.4110607,"lng":88.6670065},"southwest":{"lat":24.3492474,"lng":88.5450254}},"location":{"lat":24.3745146,"lng":88.60416599999999},"location_type":"APPROXIMATE","viewport":{"northeast":{"lat":24.4110607,"lng":88.6670065},"southwest":{"lat":24.3492474,"lng":88.5450254}}},"place_id":"ChIJMdA4aqnv-zkREPTWDpU6-RA","types":["locality","political"]}],"status":"OK"}');
+		$cityCoordinates['Rangpur'] = json_decode('{"results":[{"address_components":[{"long_name":"Rangpur","short_name":"Rangpur","types":["locality","political"]},{"long_name":"Rangpur District","short_name":"Rangpur District","types":["administrative_area_level_2","political"]},{"long_name":"Rangpur Division","short_name":"Rangpur Division","types":["administrative_area_level_1","political"]},{"long_name":"Bangladesh","short_name":"BD","types":["country","political"]}],"formatted_address":"Rangpur, Bangladesh","geometry":{"bounds":{"northeast":{"lat":25.7894586,"lng":89.3148492},"southwest":{"lat":25.7102183,"lng":89.2092418}},"location":{"lat":25.7438916,"lng":89.275227},"location_type":"APPROXIMATE","viewport":{"northeast":{"lat":25.7894586,"lng":89.3148492},"southwest":{"lat":25.7102183,"lng":89.2092418}}},"place_id":"ChIJmwGm_OYt4zkRyBj4h-aWpJ8","types":["locality","political"]}],"status":"OK"}');
+		$cityCoordinates['Sylhet'] = json_decode('{"results":[{"address_components":[{"long_name":"Sylhet","short_name":"Sylhet","types":["locality","political"]},{"long_name":"Sylhet District","short_name":"Sylhet District","types":["administrative_area_level_2","political"]},{"long_name":"Sylhet Division","short_name":"Sylhet Division","types":["administrative_area_level_1","political"]},{"long_name":"Bangladesh","short_name":"BD","types":["country","political"]}],"formatted_address":"Sylhet, Bangladesh","geometry":{"bounds":{"northeast":{"lat":24.9378139,"lng":91.9106771},"southwest":{"lat":24.8617132,"lng":91.8112867}},"location":{"lat":24.8949294,"lng":91.8687063},"location_type":"APPROXIMATE","viewport":{"northeast":{"lat":24.9378139,"lng":91.9106771},"southwest":{"lat":24.8617132,"lng":91.8112867}}},"place_id":"ChIJnzJw0tNUUDcRgnP2MTT5jvU","types":["locality","political"]}],"status":"OK"}');
+
+		if (!isset($cityCoordinates[$address])) {
+			return 'address-not-found';
+		}
+		switch ($component) {
+			case 'location':
+				if (isset($cityCoordinates[$address]->results[0]->geometry->location)) {
+					return $cityCoordinates[$address]->results[0]->geometry->location;
+				}
+				break;
+		}
+
+		return false;
+	}
+
+
+
+	static function getColorCodeForMapArea(array $dbResultArray,$category, $areaName)
+	{
+		// dd($category);
+		# static value
+		$thresholdMin = 1;
+		$thresholdMid = 10;
+		$thresholdMax = 20;
+		$maxColor = '#de2d26';
+		$midColor = '#fb6a4a';
+		$minColor = '#F8AFA6';
+		$defaultColor = '#F9F1F0';
+		$value = 0;
+		foreach ($dbResultArray as $k => $v) {
+			if($category=='Poultry'){
+				$value = $v->TOTAL_POULTRY;
+			}elseif($category=='Wild Bird'){
+				$value = $v->TOTAL_WILD_BIRD;
+			}elseif($category=='LBM Worker'){
+				$value = $v->TOTAL_LBM_WORKER;
+			}
+
+			if (strtolower($v->district) != strtolower($areaName)) {
+				continue;
+			}
+
+			if ($value >= $thresholdMax) {
+				return $maxColor;
+			} elseif ($value >= $thresholdMid) {
+				return $midColor;
+			} elseif ($value >= $thresholdMin) {
+				return $minColor;
+			}
+		}
+
+		return $defaultColor; # default
+	}
+
+	function convertToBanglaNumber($number)
+	{
+		$englishNumbers = array('1', '2', '3', '4', '5', '6', '7', '8', '9', '0');
+		$banglaNumbers = array('১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯', '০');
+
+		$converted = str_replace($englishNumbers, $banglaNumbers, $number);
+		return $converted;
+	}
+
+	function convertToBanglaDay($day)
+	{
+		if ($day) {
+			$englishDays = array('Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday');
+			$banglaDays = array('শনিবার', 'রবিবার', 'সোমবার', 'মঙ্গলবার', 'বুধবার', 'বৃহস্পতিবার', 'শুক্রবার');
+
+			$converted = str_replace($englishDays, $banglaDays, $day);
+			return $converted;
+		}
+	}
+
+	function convertToBanglaDayShort($day)
+	{
+		if ($day) {
+			$englishDays = array('Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri');
+			$banglaDays = array('শনি', 'রবি', 'সোম', 'মঙ্গল', 'বুধ', 'বৃহঃ', 'শুক্র');
+
+			$converted = str_replace($englishDays, $banglaDays, $day);
+			return $converted;
+		}
+	}
+
+	function convertToBanglaMonth($month)
+	{
+		if ($month) {
+			$englishMonths = array('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December');
+			$banglaMonths = array('জানুয়ারি', 'ফেব্রুয়ারি', 'মার্চ', 'এপ্রিল', 'মে', 'জুন', 'জুলাই', 'আগস্ট', 'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর');
+
+			$converted = str_replace($englishMonths, $banglaMonths, $month);
+			return $converted;
+		}
+	}
+
+	function convertToBanglaMonthShort($month)
+	{
+		if ($month) {
+			$englishMonths = array('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
+			$banglaMonths = array('জানু', 'ফেব্রু', 'মার্চ', 'এপ্রি', 'মে', 'জুন', 'জুলা', 'আগ', 'সেপ্টে', 'অক্টো', 'নভে', 'ডিসে');
+
+			$converted = str_replace($englishMonths, $banglaMonths, $month);
+			return $converted;
+		}
+	}
+
+	function convertToBanglaDivision($division)
+	{
+		if ($division) {
+			$englishDivisions = array('Dhaka', "Chattogram", 'Barishal', 'Khulna', 'Mymensingh', 'Rajshahi', 'Rangpur', 'Sylhet');
+			$banglaDivisions = array('ঢাকা', "চট্টগ্রাম", 'বরিশাল', 'খুলনা', 'ময়মনসিংহ', 'রাজশাহী', 'রংপুর', 'সিলেট');
+
+			$converted = str_replace($englishDivisions, $banglaDivisions, $division);
+			return $converted;
+		}
+	}
+
+	function convertToBangla($value)
+	{
+		$englishValues = array(
+			'1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
+			'Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday',
+			'Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri',
+			'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December',
+			'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+			'Dhaka', "Chattogram", 'Barishal', 'Khulna', 'Mymensingh', 'Rajshahi', 'Rangpur', 'Sylhet'
+		);
+		$banglaValues = array(
+			'১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯', '০',
+			'শনিবার', 'রবিবার', 'সোমবার', 'মঙ্গলবার', 'বুধবার', 'বৃহস্পতিবার', 'শুক্রবার',
+			'শনি', 'রবি', 'সোম', 'মঙ্গল', 'বুধ', 'বৃহঃ', 'শুক্র',
+			'জানুয়ারি', 'ফেব্রুয়ারি', 'মার্চ', 'এপ্রিল', 'মে', 'জুন', 'জুলাই', 'আগস্ট', 'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর',
+			'জানু', 'ফেব্রু', 'মার্চ', 'এপ্রি', 'মে', 'জুন', 'জুলা', 'আগ', 'সেপ্টে', 'অক্টো', 'নভে', 'ডিসে',
+			'ঢাকা', "চট্টগ্রাম", 'বরিশাল', 'খুলনা', 'ময়মনসিংহ', 'রাজশাহী', 'রংপুর', 'সিলেট'
+		);
+		$converted = str_replace($englishValues, $banglaValues, $value);
+		return $converted;
+	}
+
 	
+    public static function imageShow($filename)
+    {
+        $path = public_path('images/' . $filename);
+        $image = Image::make($path);
+
+        // Resize the image to a lower resolution
+        $image->resize(320, 240); // Adjust the dimensions as needed
+
+        // Set the response header and output the image
+        return $image->response();
+    }
 }

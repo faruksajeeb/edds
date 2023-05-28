@@ -138,13 +138,26 @@
                             <span class="ms-1 d-sm-inline title ">Report</span>
                             <i class="icon fa-solid fa-angle-right text-right"></i>
                         </a>
-                        <ul class="collapse nav flex-column ms-3 ps-3 {{ Route::is('survey-report') ? 'show' : '' }}"
+                        <ul class="collapse nav flex-column ms-3 ps-3 {{ (Route::is('survey-report') || Route::is('district-wise-warnings-report') || Route::is('division-wise-counting-report')) ? 'show' : '' }}"
                             id="report_submenu" data-bs-parent="#menu">
                             @can('report.survey')
                                 <li class="{{ Route::is('survey-report') ? 'active' : '' }}">
                                     <a href="{{ route('survey-report') }}" class="nav-link px-2"><i
-                                            class="fa-solid fa-building"></i> <span class="d-sm-inline ps-1 mb-1"> Survey
+                                            class="fa-solid fa-file"></i> <span class="d-sm-inline ps-1 mb-1"> Survey
                                             Report</span></a>
+                                </li>
+                            @endcan
+                            @can('report.district_wise_warnings_report')
+                                <li class="{{ Route::is('district-wise-warnings-report') ? 'active' : '' }}">
+                                    <a href="{{ route('district-wise-warnings-report') }}" class="nav-link px-2"><i
+                                            class="fa-solid fa-map-location-dot"></i> <span class="d-sm-inline ps-1 mb-1"> District Wise Warnings
+                                            Report (Map)</span></a>
+                                </li>
+                            @endcan
+                            @can('report.division_wise_counting_report')
+                                <li class="{{ Route::is('division-wise-counting-report') ? 'active' : '' }}">
+                                    <a href="{{ route('division-wise-counting-report') }}" class="nav-link px-2"><i
+                                            class="fa-solid fa-map-location-dot"></i> <span class="d-sm-inline ps-1 mb-1"> Division Wise Counting Report (Google Map)</span></a>
                                 </li>
                             @endcan
                         </ul>

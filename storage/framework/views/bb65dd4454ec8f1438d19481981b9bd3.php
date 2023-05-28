@@ -1,12 +1,12 @@
 <!-- Modal -->
-@foreach ($user_responses as $index => $val)
-    <div class="modal fade" id="details-modal-{{ $val->id }}" tabindex="-1" aria-labelledby="exampleModalLabel"
+<?php $__currentLoopData = $user_responses; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $val): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+    <div class="modal fade" id="details-modal-<?php echo e($val->id); ?>" tabindex="-1" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel"><i class="fa-solid fa-magnifying-glass"></i> User
-                        Response Detail ( {{ $val->id }})
+                        Response Detail ( <?php echo e($val->id); ?>)
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
                         wire:click.prevent='resetInput'></button>
@@ -17,7 +17,7 @@
                             <span class="visually-hidden">Processing...</span>
                         </div>
                     </div>
-                    @if (isset($val))
+                    <?php if(isset($val)): ?>
                         <fieldset class="reset">
                             <legend class="reset">User Information</legend>
                             <table class="table">
@@ -25,37 +25,40 @@
                                     <td class="">
                                         Response Date
                                     </td>
-                                    <td>: {{ $val->response_date }}</td>
+                                    <td>: <?php echo e($val->response_date); ?></td>
                                     <td>Respondent Type</td>
                                     <td>:
-                                        {{ isset($val->registered_user) ? $val->registered_user->respondent_type : '' }}
+                                        <?php echo e(isset($val->registered_user) ? $val->registered_user->respondent_type : ''); ?>
+
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>User Name</td>
-                                    <td>: {{ isset($val->registered_user) ? $val->registered_user->full_name : '' }}
+                                    <td>: <?php echo e(isset($val->registered_user) ? $val->registered_user->full_name : ''); ?>
+
                                     </td>
                                     <td>Mobile</td>
-                                    <td>: {{ isset($val->registered_user) ? $val->registered_user->mobile_no : '' }}
+                                    <td>: <?php echo e(isset($val->registered_user) ? $val->registered_user->mobile_no : ''); ?>
+
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>Email</td>
-                                    <td>: {{ isset($val->registered_user) ? $val->registered_user->email : '' }}</td>
+                                    <td>: <?php echo e(isset($val->registered_user) ? $val->registered_user->email : ''); ?></td>
                                     <td>Division</td>
-                                    <td>: {{ isset($val->registered_user) ? $val->registered_user->division : '' }}</td>
+                                    <td>: <?php echo e(isset($val->registered_user) ? $val->registered_user->division : ''); ?></td>
                                 </tr>
                                 <tr>
                                     <td>District</td>
-                                    <td>: {{ isset($val->registered_user) ? $val->registered_user->district : '' }}</td>
+                                    <td>: <?php echo e(isset($val->registered_user) ? $val->registered_user->district : ''); ?></td>
                                     <td>Thana</td>
-                                    <td>: {{ isset($val->registered_user) ? $val->registered_user->thana : '' }}</td>
+                                    <td>: <?php echo e(isset($val->registered_user) ? $val->registered_user->thana : ''); ?></td>
                                 </tr>
                                 <tr>
                                     <td>Area</td>
-                                    <td>: {{ isset($val->area) ? $val->area->value : '' }}</td>
+                                    <td>: <?php echo e(isset($val->area) ? $val->area->value : ''); ?></td>
                                     <td>Market</td>
-                                    <td>: {{ isset($val->market) ? $val->market->value : (($val->market_id==-100)?$val->market_other:'')}}</td>
+                                    <td>: <?php echo e(isset($val->market) ? $val->market->value : (($val->market_id==-100)?$val->market_other:'')); ?></td>
                                 </tr>
                             </table>
                             <a href="https://www.google.com/maps/search/?api=1&query=<?php echo $val->location ?>" target="_blank">Response Location</a>
@@ -66,7 +69,7 @@
                             <table class="table">
                                 <thead>
                                     <tr>
-                                        {{-- <th>ID</th> --}}
+                                        
                                         <th>Question</th>
                                         <th>Sub Questin</th>
                                         <th class="text-center">Response</th>
@@ -82,29 +85,30 @@
                             ?>
                                     <tr>
                                         <td>
-                                            {{-- @if ($loop->iteration == 1) --}}
-                                            @if ($quesId != $item->question->id)
-                                                {{ isset($item->question) ? $item->question->value : '' }}
+                                            
+                                            <?php if($quesId != $item->question->id): ?>
+                                                <?php echo e(isset($item->question) ? $item->question->value : ''); ?>
+
                                                 <br/>
-                                                @if (Storage::disk('external')->exists($file))
-                                                    <a href="../edds_app/tmp_img/{{ $item->question_id . '_' . $item->sub_question_id }}.jpg"
+                                                <?php if(Storage::disk('external')->exists($file)): ?>
+                                                    <a href="../edds_app/tmp_img/<?php echo e($item->question_id . '_' . $item->sub_question_id); ?>.jpg"
                                                         target="_blank">Uploaded Image</a>
-                                                    {{-- <img src="../edds_app/tmp_img/{{$item->question_id.'_'.$item->sub_question_id}}.jpg" width="250" height="250" alt="Low-Resolution Image"> --}}
-                                                @endif
-                                            @endif
+                                                    
+                                                <?php endif; ?>
+                                            <?php endif; ?>
                                         </td>
-                                        <td>{{ isset($item->subQuestion) ? $item->subQuestion->value : '' }}</td>
-                                        <td class="text-center">{{ $item->response }}</td>
+                                        <td><?php echo e(isset($item->subQuestion) ? $item->subQuestion->value : ''); ?></td>
+                                        <td class="text-center"><?php echo e($item->response); ?></td>
                                     </tr>
 
-                                    @php
+                                    <?php
                                         $quesId = $item->question->id;
-                                    @endphp
+                                    ?>
                                     <?php endforeach; ?>
                                 </tbody>
                             </table>
                         </fieldset>
-                    @endif
+                    <?php endif; ?>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
@@ -114,4 +118,5 @@
             </div>
         </div>
     </div>
-@endforeach
+<?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+<?php /**PATH C:\xampp8.1.6\htdocs\laravel\edds\resources\views/user_response/detail.blade.php ENDPATH**/ ?>

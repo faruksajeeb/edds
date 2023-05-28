@@ -1,42 +1,42 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="<?php echo e(str_replace('_', '-', app()->getLocale())); ?>">
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
     <meta http-equiv='cache-control' content='no-cache'>
     <meta http-equiv='expires' content='0'>
     <meta http-equiv='pragma' content='no-cache'>
-    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('/uploads/'.$theme_settings->website_logo) }}">
-    <title>{{ config('app.name', 'Laravel') }} | {{ $title }}</title>
+    <link rel="shortcut icon" type="image/x-icon" href="<?php echo e(asset('/uploads/'.$theme_settings->website_logo)); ?>">
+    <title><?php echo e(config('app.name', 'Laravel')); ?> | <?php echo e($title); ?></title>
 
     <!-- Fonts -->
     <link rel="stylesheet" href="https://fonts.bunny.net/css2?family=Nunito:wght@400;600;700&display=swap">
-    <script src="{{ asset('plugins/sweetalert2/sweetalert2.min.js') }}"></script>
-    <link rel="stylesheet" href="{{ asset('plugins/sweetalert2/sweetalert2.min.css') }}">
+    <script src="<?php echo e(asset('plugins/sweetalert2/sweetalert2.min.js')); ?>"></script>
+    <link rel="stylesheet" href="<?php echo e(asset('plugins/sweetalert2/sweetalert2.min.css')); ?>">
     <!-- Scripts -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
 
-    <link rel="stylesheet" href="{{ asset('plugins/jquery-ui/jquery-ui.css') }}" />
+    <link rel="stylesheet" href="<?php echo e(asset('plugins/jquery-ui/jquery-ui.css')); ?>" />
 
-    <link rel="stylesheet" type="text/css" href="{{ asset('css/bootstrap.min.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('css/style.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('plugins/font-awesome/css/all.min.css') }}">
-    {{-- <link  rel="stylesheet" type="text/css" href="{{ asset('css/select2.min.css" rel="stylesheet')}}" /> --}}
+    <link rel="stylesheet" type="text/css" href="<?php echo e(asset('css/bootstrap.min.css')); ?>">
+    <link rel="stylesheet" type="text/css" href="<?php echo e(asset('css/style.css')); ?>">
+    <link rel="stylesheet" type="text/css" href="<?php echo e(asset('plugins/font-awesome/css/all.min.css')); ?>">
+    
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" />
 
 
     <script src="https://cdn.ckeditor.com/ckeditor5/35.4.0/classic/ckeditor.js"></script>
-    {{-- <script src="https://cdn.ckeditor.com/ckeditor5/35.4.0/decoupled-document/ckeditor.js"></script> --}}
+    
 
-    <link rel="stylesheet" href="{{ asset('plugins/datetimepicker/jquery.datetimepicker.css') }}" />
+    <link rel="stylesheet" href="<?php echo e(asset('plugins/datetimepicker/jquery.datetimepicker.css')); ?>" />
     <!-- year Picker -->
-    <link rel="stylesheet" href="{{ asset('plugins/yearpicker/yearpicker.css') }}" />
+    <link rel="stylesheet" href="<?php echo e(asset('plugins/yearpicker/yearpicker.css')); ?>" />
     <!-- date range picker -->
-    <link rel="stylesheet" type="text/css" href="{{ asset('plugins/daterangepicker/daterangepicker.css') }}" />
+    <link rel="stylesheet" type="text/css" href="<?php echo e(asset('plugins/daterangepicker/daterangepicker.css')); ?>" />
     <!-- Month Picker -->
-    <link rel="stylesheet" type="text/css" href="{{ asset('plugins/monthpicker/MonthPicker.min.css') }}" />
+    <link rel="stylesheet" type="text/css" href="<?php echo e(asset('plugins/monthpicker/MonthPicker.min.css')); ?>" />
     <style>
         .themed-grid-col {
             padding-top: 1rem;
@@ -75,53 +75,47 @@
 
 
 
-    @livewireStyles
-    @stack('styles')
+    <?php echo \Livewire\Livewire::styles(); ?>
+
+    <?php echo $__env->yieldPushContent('styles'); ?>
 </head>
 
 <body class="font-sans antialiased">
     <div class="min-h-screen bg-gray-100">
-        @include('layouts.sidebar')
+        <?php echo $__env->make('layouts.sidebar', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
         <section id="main" class="main">
-            @include('layouts.topbar')
+            <?php echo $__env->make('layouts.topbar', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
             <div class="main-content p-2">
-                @include('layouts.flash-message')
+                <?php echo $__env->make('layouts.flash-message', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
                 <main>
-                    {{ $slot }}
+                    <?php echo e($slot); ?>
+
                 </main>
             </div>
         </section>
-        {{-- @include('layouts.navigation') --}}
+        
 
         <!-- Page Heading -->
-        {{-- @if (isset($header))
-                <header class="bg-white shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                        {{ $header }}
-                    </div>
-                </header>
-            @endif --}}
+        
 
         <!-- Page Content -->
-        {{-- <main>
-            {{ $slot }}
-        </main> --}}
+        
     </div>
-    <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ asset('js/popper.min.js') }}"></script>
-    <script src="{{ asset('js/jquery-3.6.1.min.js') }}"></script>
-    <script src="{{ asset('plugins/jquery-ui/jquery-ui.js') }}"></script>
-    <script src="{{ asset('js/select2.min.js') }}"></script>
-    {{-- <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.full.min.js"></script> --}}
+    <script src="<?php echo e(asset('js/bootstrap.bundle.min.js')); ?>"></script>
+    <script src="<?php echo e(asset('js/popper.min.js')); ?>"></script>
+    <script src="<?php echo e(asset('js/jquery-3.6.1.min.js')); ?>"></script>
+    <script src="<?php echo e(asset('plugins/jquery-ui/jquery-ui.js')); ?>"></script>
+    <script src="<?php echo e(asset('js/select2.min.js')); ?>"></script>
+    
 
-    <script src="{{ asset('plugins/datetimepicker/jquery.datetimepicker.full.min.js') }}"></script>
+    <script src="<?php echo e(asset('plugins/datetimepicker/jquery.datetimepicker.full.min.js')); ?>"></script>
     <!-- Yearpicker -->
-    <script src="{{ asset('plugins/yearpicker/yearpicker.js') }}"></script>
+    <script src="<?php echo e(asset('plugins/yearpicker/yearpicker.js')); ?>"></script>
     <!-- daterange picker -->
-    <script type="text/javascript" src="{{ asset('plugins/daterangepicker/moment.min.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('plugins/daterangepicker/daterangepicker.js') }}"></script>
+    <script type="text/javascript" src="<?php echo e(asset('plugins/daterangepicker/moment.min.js')); ?>"></script>
+    <script type="text/javascript" src="<?php echo e(asset('plugins/daterangepicker/daterangepicker.js')); ?>"></script>
     <!-- Month Picker -->
-    <script type="text/javascript" src="{{ asset('plugins/monthpicker/MonthPicker.min.js') }}"></script>
+    <script type="text/javascript" src="<?php echo e(asset('plugins/monthpicker/MonthPicker.min.js')); ?>"></script>
 
     <script>
         // Example starter JavaScript for disabling form submissions if there are invalid fields
@@ -204,7 +198,7 @@
             var field_id = $(this).attr('id');
             $.ajax({
                 type: "GET",
-                url: "{{ route('active.inactive') }}",
+                url: "<?php echo e(route('active.inactive')); ?>",
                 dataType: "json",
                 data: {
                     id: id,
@@ -380,9 +374,10 @@
         }
     </script>
 
-    @stack('scripts')
+    <?php echo $__env->yieldPushContent('scripts'); ?>
 
-    @livewireScripts
+    <?php echo \Livewire\Livewire::scripts(); ?>
+
     <script>
         Livewire.on('success', message => {
             $(".modal").modal('hide');
@@ -403,3 +398,4 @@
 </body>
 
 </html>
+<?php /**PATH C:\xampp8.1.6\htdocs\laravel\edds\resources\views/layouts/app.blade.php ENDPATH**/ ?>

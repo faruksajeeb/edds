@@ -2,11 +2,13 @@
     <x-slot name="title">
         Dashboard
     </x-slot>
-    @push('style')
+    @push('styles')
         <style>
             .card-box .card .numbers {
                 font-size: 405px !important;
             }
+
+            #svgDistrictWiseMap { width:940px; height:1270px; }
         </style>
     @endpush
     @can('dashboard.view')
@@ -70,10 +72,10 @@
             <div class="row">
                 <div class="col-md-3">
                     <select name="chart_type" id="chart_type" class="form-select">
-                        <option value="">--Select Chart Type--</option>                        
-                        <option value="bar" {{($chart_type=='bar')?'selected':'';}}>Bar</option>
-                        <option value="pie" {{($chart_type=='pie')?'selected':'';}}>Pie</option>
-                        <option value="line" {{($chart_type=='line')?'selected':'';}}>Line</option>
+                        <option value="">--Select Chart Type--</option>
+                        <option value="bar" {{ $chart_type == 'bar' ? 'selected' : '' }}>Bar</option>
+                        <option value="pie" {{ $chart_type == 'pie' ? 'selected' : '' }}>Pie</option>
+                        <option value="line" {{ $chart_type == 'line' ? 'selected' : '' }}>Line</option>
                     </select>
                 </div>
                 <div class="col-md-3">
@@ -82,10 +84,11 @@
                 </div>
                 <div class="col-md-3">
                     <input type="text" name="date_to" id="date_to" placeholder="Date To"
-                        class="datepicker form-control" value="{{  $date_to }}" required />
+                        class="datepicker form-control" value="{{ $date_to }}" required />
                 </div>
                 <div class="col-md-3">
-                    <button class="form-control btn btn-secondary generate_btn" type="submit" name="submit_btn" value="submit_btn">Generate</button>
+                    <button class="form-control btn btn-secondary generate_btn" type="submit" name="submit_btn"
+                        value="submit_btn">Generate</button>
                 </div>
             </div>
         </form>
@@ -93,7 +96,10 @@
             <div class="col-md-12 chart_container h-100 bg-white">
                 <canvas id="myChart" height="120px"></canvas>
             </div>
+
         </div>
+      
+        
         {{-- <div class="row align-items-md-stretch">
             <div class="col-md-3">
                 <div class="h-100 p-5 text-dark bg-white rounded-3 text-center">
@@ -154,37 +160,20 @@
         <!-- Button trigger modal -->
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
             Launch demo modal
-        </button> --}}
+        </button> 
+        
+        --}}
 
-        <!-- Modal -->
-        {{-- <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        ...
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary">Save changes</button>
-                    </div>
-                </div>
-            </div>
-        </div> --}}
         @push('scripts')
             <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
             <script type="text/javascript">
                 var labels = {{ Js::from($labels) }};
                 var responses = {{ Js::from($data) }};
-
                 const data = {
                     labels: labels,
                     datasets: [
                         @foreach ($categories as $key => $category)
-                        
+
                             {
                                 label: "{{ $category->option_value }}",
                                 // backgroundColor: [
@@ -206,14 +195,14 @@
                                 //     'rgb(201, 203, 207)'
                                 // ],
                                 borderWidth: 1,
-                                data: responses[{{$category->id}}]
+                                data: responses[{{ $category->id }}]
                             },
                         @endforeach
                     ]
                 };
 
                 const config = {
-                    type: '{{$chart_type}}',
+                    type: '{{ $chart_type }}',
                     data: data,
                     options: {
                         responsive: true,
@@ -242,11 +231,11 @@
 
                 $(document).on('click', ".generate_btn", function() {
                     $('.generate_btn').html(
-                                '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Generating...'
-                            );
+                        '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Generating...'
+                    );
                 });
-
             </script>
+            
         @endpush
     @endcan
 </x-app-layout>
