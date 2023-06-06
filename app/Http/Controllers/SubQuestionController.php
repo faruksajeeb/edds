@@ -10,6 +10,7 @@ use Exception;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\SubQuestionExport;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Validation\Rule;
 
 class SubQuestionController extends Controller
 {
@@ -109,12 +110,22 @@ class SubQuestionController extends Controller
 
         $request->validate(
             [
-                'value' => 'required|min:3|max:1000|unique:sub_questions',
+                'value' => ['required','min:1','max:1000',Rule::unique('sub_questions')->where(function ($query) use($request) {
+                    return $query->where('value', $request->value)
+                        ->where('question_id', $request->question_id);
+                })],
+                'value_bangla' => ['required','min:1','max:1000',Rule::unique('sub_questions')->where(function ($query) use($request) {
+                    return $query->where('value_bangla', $request->value_bangla)
+                        ->where('question_id', $request->question_id);
+                })],
                 'question_id' => 'required',
                 // 'input_method' => 'required',
             ],
             [
                 'value.required' => 'Value field is required.',
+                'value.unique' => 'This sub question has already been taken for this question',
+                'value_bangla.required' => 'Value Bangla field is required.',
+                'value_bangla.unique' => 'This sub question value bangla has already been taken for this question',
                 'question_id.required' => 'Question field is required.',
                 // 'input_method.required' => 'Input method field is required.',
             ]
@@ -184,15 +195,24 @@ class SubQuestionController extends Controller
 
         $request->validate(
             [
-                'value' => 'required|min:3|max:1000|unique:sub_questions,value,' . $id,
+                'value' => ['required','min:3','max:1000',Rule::unique('sub_questions')->ignore($id, 'id')->where(function ($query) use($request) {
+                    return $query->where('value', $request->value)
+                        ->where('question_id', $request->question_id);
+                })],
+                'value_bangla' => ['required','min:3','max:1000',Rule::unique('sub_questions')->ignore($id, 'id')->where(function ($query) use($request) {
+                    return $query->where('value_bangla', $request->value_bangla)
+                        ->where('question_id', $request->question_id);
+                })],
                 'question_id' => 'required',
                 // 'input_method' => 'required',
             ],
             [
-                'value.required' => 'Value field is required.',
+                'value.required' => 'Value field is required.',                
+                'value.unique' => 'This value has already been taken for another record.',
+                'value_bangla.required' => 'Value Bangla field is required.',                
+                'value_bangla.unique' => 'This value bangla has already been taken for another record.',
                 'question_id.required' => 'Question field is required.',
                 'input_method.required' => 'Input method field is required.',
-                'value.unique' => 'This value has already been taken for another record.'
             ]
         );
         try {

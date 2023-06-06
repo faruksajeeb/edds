@@ -90,6 +90,7 @@ class ReportController extends Controller
                     $query->orderBy('user_responses.id');
                     $query->groupBy('user_responses.id');
                     $query->groupBy('user_response_details.question_id');
+                    $query->where('user_responses.status', 2);
                     $records = $query->get();
                     // dd($records);
                     if (count($records) <= 0) {
@@ -187,7 +188,7 @@ class ReportController extends Controller
                     $query->whereBetween('user_responses.response_date', [$request->date_from, $request->date_to]);
 
                     // dd($records);
-
+                    $query->where('user_responses.status', 2);
                     $records = $query->get();
 
                     if (count($records) <= 0) {
@@ -346,7 +347,7 @@ class ReportController extends Controller
         if ($request->sub_question_id != '') {
             $query->where('user_response_details.sub_question_id', $request->sub_question_id);
         }
-
+        $query->where('user_responses.status', 2);
         $query->whereBetween('user_responses.response_date', [$request->date_from, $request->date_to]);
         $records = $query->get();
         // dd($records);
@@ -403,7 +404,7 @@ class ReportController extends Controller
         COUNT(DISTINCT(CASE WHEN category='LBM Worker' THEN response_id END)) TOTAL_LBM_WORKER
         FROM(
         SELECT user_response_details.*,
-        user_responses.registered_user_id, user_responses.response_date,
+        user_responses.status,user_responses.registered_user_id, user_responses.response_date,
         questions.category_id,
         options.option_value AS category,
         registered_users.division, registered_users.district
@@ -413,6 +414,7 @@ class ReportController extends Controller
         LEFT JOIN `options` ON options.id = questions.category_id
         LEFT JOIN registered_users ON registered_users.id = user_responses.registered_user_id
         ) TBL_RES
+        WHERE status=2
         GROUP BY district");
 
         // $data = [65, 59, 80, 81, 56, 55, 40,80];
@@ -438,7 +440,7 @@ class ReportController extends Controller
             COUNT(DISTINCT(CASE WHEN category='LBM Worker' THEN response_id END)) TOTAL_LBM_WORKER
             FROM(
             SELECT user_response_details.*,
-            user_responses.registered_user_id, user_responses.response_date,
+            user_responses.status,user_responses.registered_user_id, user_responses.response_date,
             questions.category_id,
             options.option_value AS category,
             registered_users.division
@@ -448,6 +450,7 @@ class ReportController extends Controller
             LEFT JOIN `options` ON options.id = questions.category_id
             LEFT JOIN registered_users ON registered_users.id = user_responses.registered_user_id
             ) TBL_RES
+            WHERE status = 2 
             GROUP BY division");
             $webspice = $this->webspice;
         return view('report.division_wise_counting_report',compact('googleMapResult','webspice'));

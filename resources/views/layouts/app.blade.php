@@ -8,7 +8,7 @@
     <meta http-equiv='cache-control' content='no-cache'>
     <meta http-equiv='expires' content='0'>
     <meta http-equiv='pragma' content='no-cache'>
-    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('/uploads/'.$theme_settings->website_logo) }}">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('/uploads/' . $theme_settings->website_logo) }}">
     <title>{{ config('app.name', 'Laravel') }} | {{ $title }}</title>
 
     <!-- Fonts -->
@@ -23,7 +23,7 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('css/bootstrap.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('css/style.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('plugins/font-awesome/css/all.min.css') }}">
-    {{-- <link  rel="stylesheet" type="text/css" href="{{ asset('css/select2.min.css" rel="stylesheet')}}" /> --}}
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/select2.min.css" rel="stylesheet') }}" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" />
 
 
@@ -124,8 +124,17 @@
     <script type="text/javascript" src="{{ asset('plugins/monthpicker/MonthPicker.min.js') }}"></script>
 
     <script>
+        $(document).ready(function() {
+
+        });
         // Example starter JavaScript for disabling form submissions if there are invalid fields
         (function() {
+            $('.select2').select2({
+                width: '100%',
+                placeholder: function() {
+                    $(this).data('placeholder');
+                }
+            });
             $('.btn-submit').prop('disabled', false);
             'use strict'
             // Fetch all the forms we want to apply custom Bootstrap validation styles to

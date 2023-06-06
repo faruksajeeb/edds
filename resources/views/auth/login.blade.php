@@ -90,7 +90,7 @@
                                 {{ __('Forgot your password?') }}
                             </a>
                         @endif
-                        <button type="submit" name="submit-btn" class="btn btn-lg btn-success btn-login mx-3" id='btn-login'>Log In</button>
+                        <button type="submit" name="submit-btn" class="btn btn-lg btn-success btn-login mx-1 display-block" id='btn-login'>Log In</button>
                     </div>
                 </form>
             </div>

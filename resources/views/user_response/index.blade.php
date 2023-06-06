@@ -737,8 +737,8 @@
                                             <option value="2"
                                                 {{ request()->get('search_status') == '2' ? 'selected' : '' }}>Verified
                                             </option>
-                                            <option value="0"
-                                                {{ request()->get('search_status') == '0' ? 'selected' : '' }}>Pending
+                                            <option value="1"
+                                                {{ request()->get('search_status') == '1' ? 'selected' : '' }}>Pending
                                             </option>
                                         </select>
 
@@ -827,7 +827,13 @@
                                         {{-- <td>{{ isset($val->registered_user->respondent) ? $val->registered_user->respondent->option_value : '' }} --}}
                                         <td>{{ isset($val->registered_user) ? $val->registered_user->respondent_type : '' }}
                                         </td>
-                                        <td>{!! App\Lib\Webspice::status($val->status) !!}</td>
+                                        <td>
+                                            @if ($val->status==1)                                                
+                                            <span class="badge bg-info">Pending</span>
+                                            @elseif($val->status==2)                                            
+                                            <span class="badge bg-success">Verified</span>
+                                            @endif
+                                        </td>
 
 
                                         <td class="text-nowrap">
@@ -869,7 +875,7 @@
                                                 @endcan
                                                 {{-- edit button --}}
                                                 @can('user_response.verify')
-                                                    @if ($val->status == 0)
+                                                    @if ($val->status == 1)
                                                         <a href=""
                                                             class="btn btn-outline-success btn-sm btn-verify-{{ $val->id }}"
                                                             onclick="event.preventDefault(); confirmVerify({{ $val->id }})"><i
@@ -890,7 +896,7 @@
 
                                                 {{-- delete button --}}
                                                 @can('user_response.delete')
-                                                    @if ($val->status == 0)
+                                                    @if ($val->status == 1)
                                                         <a href=""
                                                             class="btn btn-outline-danger btn-sm btn-delete-{{ $val->id }}"
                                                             onclick="event.preventDefault(); confirmDelete({{ $val->id }})"><i

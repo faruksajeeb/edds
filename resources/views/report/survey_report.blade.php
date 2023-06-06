@@ -776,8 +776,8 @@
                         
                     </div>
                     <div class="card-footer text-end">
-                        <button class="btn btn-md btn-info" type="submit" name='submit_btn' value="view"><i
-                                class="fas fa-search"></i> View</button>
+                        {{-- <button class="btn btn-md btn-info" type="submit" name='submit_btn' value="view"><i
+                                class="fas fa-search"></i> View</button> --}}
                         <button class="btn btn-md btn-danger" type="submit" name='submit_btn' value="pdf"><i
                                 class="fas fa-file"></i> PDF</button>
                         <button class="btn btn-md btn-success" type="submit" name='submit_btn'

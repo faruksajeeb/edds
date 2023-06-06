@@ -99,7 +99,7 @@
                                    @php 
                                    //dd(gettype(old('roles')))
                                    @endphp
-                                    <select name="roles[]" id="" class="form-control select2" multiple
+                                    <select name="roles[]" id="" class="form-control select2"   data-placeholder="Select one or more..."  multiple
                                         required>
                                         @foreach ($roles as $role)
                                             <option value="{{ $role->id }}"

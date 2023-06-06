@@ -64,6 +64,7 @@ class DashboardController extends Controller
                 ->leftJoin('registered_users','registered_users.id','=','user_responses.registered_user_id')
                 ->where('questions.category_id',$category->id)
                 ->where('registered_users.division',$division->division_name);
+                $query->where('user_responses.status', 2);
                 $query->whereBetween('user_responses.response_date',[$date_from,$date_to]);
                 if ($category->option_value == 'LBM Worker') {
                     // $categoryWiseDivisionResponse[] = $query->count('user_response_details.response');

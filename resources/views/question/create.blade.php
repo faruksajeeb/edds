@@ -52,12 +52,11 @@
                         </div>
                         <div class="form-group my-1">
                             <label for=""
-                                class="@if ($errors->has('value_bangla')) has-error @endif fw-bold">Respondent *</label>
-                            <select name="respondent" id="respondent" class="form-select" required>
-                                <option value="">--select respondent--</option>
-                                @foreach ($respondents as $val)
+                                class="@if ($errors->has('value_bangla')) has-error @endif fw-bold">Respondent*</label>
+                            <select name="respondent[]" id="respondent" class="form-select  js-states select2"  multiple="multiple"  data-placeholder="Select one or more..." required>
+                                 @foreach ($respondents as $val)
                                     <option value="{{ $val->option_value }}"
-                                        {{ $val->option_value == old('respondent') ? 'selected' : '' }}>
+                                        {{ ((old('respondent') !== NULL) && in_array($val->option_value,old('respondent'))) ? 'selected' : '' }}>
                                         {{ $val->option_value }}
                                     </option>
                                 @endforeach
@@ -68,7 +67,7 @@
                                 @enderror
                             @else
                                 <div class="invalid-feedback">
-                                    Please select respondent.
+                                    Please select one or more respondent.
                                 </div>
                             @endif
                         </div>
@@ -90,9 +89,18 @@
                         <div class="form-group">
                             <label for=""
                                 class="@if ($errors->has('value_bangla')) has-error @endif fw-bold">Value
-                                Bangla</label><br />
+                                Bangla*</label><br />
                             <textarea name='value_bangla' id='value_bangla' class="form-control @error('value_bangla') is-invalid @enderror"
-                                placeholder="Enter question value in bangla" rows="3">{{ old('value_bangla') }}</textarea>
+                                placeholder="Enter question value in bangla" rows="3" required>{{ old('value_bangla') }}</textarea>
+                            @if ($errors->has('value_bangla'))
+                                @error('value_bangla')
+                                    <div class="alert alert-danger">{{ $message }}</div>
+                                @enderror
+                            @else
+                                <div class="invalid-feedback">
+                                    Please enter a value bangla.
+                                </div>
+                            @endif
                         </div>
                         <div class="form-group my-1">
                             <label for=""
@@ -100,14 +108,18 @@
                                 *</label>
                             <select name="input_method" id="input_method" class="form-select" required>
                                 <option value="">--select input method--</option>
-                                <option value="textbox" {{ old('input_method') == 'textbox' ? 'selected' : '' }}>Text
+                                <option value="text_box" {{ old('input_method') == 'text_box' ? 'selected' : '' }}>Text
                                     Box
                                 </option>
-                                <option value="selectbox" {{ old('input_method') == 'selectbox' ? 'selected' : '' }}>
+                                <option value="select_box" {{ old('input_method') == 'select_box' ? 'selected' : '' }}>
                                     Select
                                     Box</option>
-                                <option value="checkbox" {{ old('input_method') == 'checkbox' ? 'selected' : '' }}>
+                                <option value="check_box" {{ old('input_method') == 'check_box' ? 'selected' : '' }}>
                                     Checkbox
+                                </option>
+                                <option value="radio_button"
+                                    {{ old('input_method') == 'radio_button' ? 'selected' : '' }}>
+                                    Radio Button
                                 </option>
                             </select>
                             @if ($errors->has('input_method'))
@@ -120,7 +132,7 @@
                                 </div>
                             @endif
                         </div>
-                        
+
                         <br />
                         <div class="form-group">
                             <button type="submit" name="submit-btn"

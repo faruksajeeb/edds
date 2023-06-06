@@ -40,6 +40,8 @@ use App\Http\Livewire\Frontend\Home;
 */
 
 Route::get('/', Home::class)->name('/');
+Route::match(['get', 'post'], 'district-wise-warnings-report',Home::class)->name('district-wise-warnings-report');
+    
 Route::get('lang/change', [LanguageController::class, 'change'])->name('changeLang');
 Route::middleware('auth')->group(function () {
     Route::get('active-inactive', [Webspice::class, 'activeInactive'])->name('active.inactive');
@@ -193,7 +195,7 @@ Route::middleware('auth')->group(function () {
 
     # Report
     Route::match(['get', 'post'], 'survey-report', [ReportController::class, 'surveyReport'])->name('survey-report');
-    Route::match(['get', 'post'], 'district-wise-warnings-report', [ReportController::class, 'districtWiseWarningsReport'])->name('district-wise-warnings-report');
+    // Route::match(['get', 'post'], 'district-wise-warnings-report', [ReportController::class, 'districtWiseWarningsReport'])->name('district-wise-warnings-report');
     // Route::get('district-wise-warnings-report/category', [ReportController::class, 'change'])->name('changeLang');
     Route::match(['get', 'post'], 'division-wise-counting-report', [ReportController::class, 'divisionWiseCountingReport'])->name('division-wise-counting-report');
 

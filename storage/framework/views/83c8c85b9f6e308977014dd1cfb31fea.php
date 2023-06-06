@@ -8,7 +8,7 @@
 <?php endif; ?>
 <?php $component->withAttributes([]); ?>
      <?php $__env->slot('title', null, []); ?> 
-        Markets
+        Sub Questions
      <?php $__env->endSlot(); ?>
     <div class="row">
         <div class="col-md-12">
@@ -19,17 +19,17 @@
                             <h5 class="card-title py-1"><i class="fa fa-table"></i>
                                 <?php if(request()->get('status') == 'archived'): ?>
                                     Archived
-                                <?php endif; ?> Markets
+                                <?php endif; ?> Sub Questions
                             </h5>
                         </div>
                         <div class="col-md-4">
                             <nav aria-label="breadcrumb" class="float-end">
                                 <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="#">Master Data</a></li>
+                                    <li class="breadcrumb-item"><a href="#">Question & Answer</a></li>
                                     <li class="breadcrumb-item " aria-current="page">
                                         <?php if(request()->get('status') == 'archived'): ?>
                                             Archived
-                                        <?php endif; ?> Markets
+                                        <?php endif; ?> Sub Questions
                                     </li>
                                 </ol>
                             </nav>
@@ -38,17 +38,17 @@
                     <div class="row">
                         <div class="col-md-12">
                             <?php if(request()->get('status') != 'archived'): ?>
-                                <a href="<?php echo e(url('/markets?status=archived')); ?>">Archived Markets</a>
+                                <a href="<?php echo e(url('/sub_questions?status=archived')); ?>">Archived Sub Questions</a>
                             <?php else: ?>
-                                <a href="<?php echo e(url('/markets')); ?>">Markets</a>
+                                <a href="<?php echo e(url('/sub_questions')); ?>">Sub Questions</a>
                             <?php endif; ?>
-                            <?php if( (request()->get('status') == 'archived') && ($markets->total() >0)): ?>
-                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('market.restore')): ?>
+                            <?php if(request()->get('status') == 'archived' && $sub_questions->total() > 0): ?>
+                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('sub_question.restore')): ?>
                                     <div class="float-end">
                                         <a href="" class="btn btn-primary btn-sm btn-restore-all"
                                             onclick="event.preventDefault(); restoreAllConfirmation()"><i
                                                 class="fa-solid fa-trash-arrow-up"></i> Restore All</a>
-                                        <form id="restore-all-form" action="<?php echo e(route('markets.restore-all')); ?>"
+                                        <form id="restore-all-form" action="<?php echo e(route('sub_questions.restore-all')); ?>"
                                             style="display:inline" method="POST">
                                             <?php echo method_field('POST'); ?>
                                             <?php echo csrf_field(); ?>
@@ -84,9 +84,9 @@
                                                 value="search">
                                                 <i class="fa fa-search"></i> Search
                                             </button>
-                                            <a href='<?php echo e(request()->get('status') == 'archived' ? url('/markets?status=archived') : url('/markets')); ?>'
+                                            <a href='<?php echo e(request()->get('status') == 'archived' ? url('/sub_questions?status=archived') : url('/sub_questions')); ?>'
                                                 class="btn btn-xs btn-primary me-1"><i class="fa fa-refresh"></i></a>
-                                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('market.export')): ?>
+                                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('sub_question.export')): ?>
                                                 
                                                 <button class="btn btn-xs btn-info float-end me-1" name="submit_btn"
                                                     value="csv" type="submit">
@@ -102,11 +102,11 @@
                                     </div>
                                 </div>
                                 <div class="col-md-3 col-sm-12">
-                                    <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('market.create')): ?>
-                                        <a href="<?php echo e(route('markets.create')); ?>"
+                                    <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('sub_question.create')): ?>
+                                        <a href="<?php echo e(route('sub_questions.create')); ?>"
                                             class="btn btn-xs btn-outline-primary float-end" name="create_new"
                                             type="button">
-                                            <i class="fa-solid fa-plus"></i> Create Market
+                                            <i class="fa-solid fa-plus"></i> Create Sub Question
                                         </a>
                                     <?php endif; ?>
                                 </div>
@@ -119,7 +119,8 @@
                                     <th>Sl No.</th>
                                     <th>Value</th>
                                     <th>Value Bangla</th>
-                                    <th>Area</th>
+                                    <th>Question</th>
+                                    
                                     <th>Created At</th>
                                     <th>Updated At</th>
                                     <th>Status</th>
@@ -127,12 +128,13 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php $__empty_1 = true; $__currentLoopData = $markets; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $val): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                                <?php $__empty_1 = true; $__currentLoopData = $sub_questions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $val): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                                     <tr>
-                                        <td><?php echo e($index + $markets->firstItem()); ?></td>
+                                        <td><?php echo e($index + $sub_questions->firstItem()); ?></td>
                                         <td><?php echo e($val->value); ?></td>
                                         <td><?php echo e($val->value_bangla); ?></td>
-                                        <td><?php echo e(isset($val->area) ? $val->area->value : ''); ?></td>
+                                        <td><?php echo e(isset($val->question) ? $val->question->value : ''); ?></td>
+                                        
                                         <td><?php echo e($val->created_at); ?></td>
                                         <td><?php echo e($val->updated_at); ?></td>
                                         <td>
@@ -140,10 +142,10 @@
                                                 <?php if(request()->get('status') == 'archived'): ?>
                                                     <span class="badge bg-secondary">Archived</span>
                                                 <?php else: ?>
-                                                    <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('market.edit')): ?>
+                                                    <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('sub_question.edit')): ?>
                                                         <input class="form-check-input active_inactive_btn "
                                                             status="<?php echo e($val->status); ?>"
-                                                            <?php echo e($val->status == -1 ? '' : ''); ?> table="markets"
+                                                            <?php echo e($val->status == -1 ? '' : ''); ?> table="sub_questions"
                                                             type="checkbox" id="row_<?php echo e($val->id); ?>"
                                                             value="<?php echo e(Crypt::encryptString($val->id)); ?>"
                                                             <?php echo e($val->status == 1 ? 'checked' : ''); ?>
@@ -156,24 +158,24 @@
                         <td class="text-nowrap">
                             <?php if(request()->get('status') == 'archived'): ?>
                                 
-                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('market.restore')): ?>
+                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('sub_question.restore')): ?>
                                     <a href="" class="btn btn-primary btn-sm btn-restore-<?php echo e($val->id); ?>"
                                         onclick="event.preventDefault(); restoreConfirmation(<?php echo e($val->id); ?>)"><i
                                             class="fa-solid fa-trash-arrow-up"></i> Restore</a>
                                     <form id="restore-form-<?php echo e($val->id); ?>"
-                                        action="<?php echo e(route('markets.restore', Crypt::encryptString($val->id))); ?>"
+                                        action="<?php echo e(route('sub_questions.restore', Crypt::encryptString($val->id))); ?>"
                                         method="POST" style="display: none">
                                         <?php echo method_field('POST'); ?>
                                         <?php echo csrf_field(); ?>
                                     </form>
                                 <?php endif; ?>
                                 
-                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('market.force_delete')): ?>
+                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('sub_question.force_delete')): ?>
                                     <a href="" class="btn btn-danger btn-sm btn-force-delete-<?php echo e($val->id); ?>"
                                         onclick="event.preventDefault(); forceDelete(<?php echo e($val->id); ?>)"><i
                                             class="fa-solid fa-remove"></i> Force Delete</a>
                                     <form id="force-delete-form-<?php echo e($val->id); ?>" style="display: none"
-                                        action="<?php echo e(route('markets.force-delete', Crypt::encryptString($val->id))); ?>"
+                                        action="<?php echo e(route('sub_questions.force-delete', Crypt::encryptString($val->id))); ?>"
                                         method="POST">
                                         <?php echo method_field('DELETE'); ?>
                                         <?php echo csrf_field(); ?>
@@ -181,19 +183,19 @@
                                 <?php endif; ?>
                             <?php else: ?>
                                 
-                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('market.edit')): ?>
+                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('sub_question.edit')): ?>
                                     <?php if($val->status == 1): ?>
-                                        <a href="<?php echo e(route('markets.edit', Crypt::encryptString($val->id))); ?>"
+                                        <a href="<?php echo e(route('sub_questions.edit', Crypt::encryptString($val->id))); ?>"
                                             class="btn btn-outline-warning btn-sm"><i class="fa-solid fa-pencil"></i> Edit</a>
                                     <?php endif; ?>
                                 <?php endif; ?>
                                 
-                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('market.delete')): ?>
+                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('sub_question.delete')): ?>
                                     <a href="" class="btn btn-outline-danger btn-sm btn-delete-<?php echo e($val->id); ?>"
                                         onclick="event.preventDefault(); confirmDelete(<?php echo e($val->id); ?>)"><i
                                             class="fa-solid fa-trash"></i> Delete</a>
                                     <form id="delete-form-<?php echo e($val->id); ?>" style="display: none"
-                                        action="<?php echo e(route('markets.destroy', Crypt::encryptString($val->id))); ?>"
+                                        action="<?php echo e(route('sub_questions.destroy', Crypt::encryptString($val->id))); ?>"
                                         method="POST">
                                         <?php echo method_field('DELETE'); ?>
                                         <?php echo csrf_field(); ?>
@@ -203,14 +205,14 @@
 
                         </td>
                         </tr>
-                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                         <tr>
                             <td colspan="8" class="text-center">No records found. </td>
                         </tr>
                         <?php endif; ?>
                         </tbody>
                         </table>
-                        <?php echo e($markets->withQueryString()->links()); ?>
+                        <?php echo e($sub_questions->withQueryString()->links()); ?>
 
                     </div>
                 </div>
@@ -227,4 +229,4 @@
 <?php $component = $__componentOriginal9ac128a9029c0e4701924bd2d73d7f54; ?>
 <?php unset($__componentOriginal9ac128a9029c0e4701924bd2d73d7f54); ?>
 <?php endif; ?>
-<?php /**PATH C:\xampp8.1.6\htdocs\laravel\edds\resources\views/market/index.blade.php ENDPATH**/ ?>
+<?php /**PATH C:\xampp8.1.6\htdocs\laravel\edds\resources\views/sub_question/index.blade.php ENDPATH**/ ?>

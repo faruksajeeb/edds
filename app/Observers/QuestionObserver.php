@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Models\Question;
 use App\Lib\Webspice;
+use DB;
 
 class QuestionObserver
 {
@@ -27,6 +28,10 @@ class QuestionObserver
         $this->webspice->log('questions', $question->id, "INSERTED");
         # Cache Update
         $this->cacheClear();
+
+        // Update a single record
+        
+        $this->webspice->versionUpdate();
         #Message
         $this->webspice->message('insert_success');
     }
@@ -40,7 +45,8 @@ class QuestionObserver
         #Log
         $this->webspice->log('questions', $question->id, "UPDATED");
         # Cache Update
-        $this->cacheClear();
+        $this->cacheClear();       
+        $this->webspice->versionUpdate();
         #Message
         $this->webspice->message('update_success');
 
@@ -58,7 +64,8 @@ class QuestionObserver
         #Log
         $this->webspice->log('questions', $question->id, "DELETED");
         # Cache Update
-        $this->cacheClear();
+        $this->cacheClear();        
+        $this->webspice->versionUpdate();
         #Message
         $this->webspice->message('delete_success');
     }
@@ -70,6 +77,8 @@ class QuestionObserver
         $this->webspice->log('questions', $question->id, "RESTORED");
         # Cache Update
         $this->cacheClear();
+        
+        $this->webspice->versionUpdate();
         #Message
         $this->webspice->message('restore_success');
 
@@ -83,7 +92,8 @@ class QuestionObserver
         #Log
         $this->webspice->log('questions', $question->id, "FORCE DELETED");
         # Cache Update
-        $this->cacheClear();
+        $this->cacheClear();        
+        $this->webspice->versionUpdate();
         #Message
         $this->webspice->message('force_delete_success');
     }

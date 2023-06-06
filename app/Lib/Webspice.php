@@ -14,14 +14,20 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Session;
 use Mail;
 use Intervention\Image\Facades\Image;
-
+use App\Traits\Setting as S;
 class Webspice
 {
+	use S;
+	# Poperties
 	protected $user;
 	public $emailFrom = 'dev4nns@gmail.com';
 	public $adminEmail = 'ofsajeeb@gmail.com';
 	public $emailFromName = "EDDS ADMIN";
-
+	
+	public static function appUrl()
+    {
+        return S::appUrl();
+    }
 	public function settings()
 	{
 	}
@@ -299,6 +305,7 @@ class Webspice
 				'message' => "Status $text successfully."
 			];
 			if ($queryStatus['status'] == 'success') {
+				$this->versionUpdate();
 				# log
 				$this->log($request->table, $id, $text);
 				$this->forgetCache($request->table);
@@ -549,6 +556,7 @@ class Webspice
 
 	static function now($param = null)
 	{
+		//return self::testStaticMethod();
 		// date_default_timezone_set('Asia/Dhaka');
 		$date =  Carbon::now('Asia/Dhaka');
 		switch ($param) {
@@ -578,7 +586,9 @@ class Webspice
 		}
 	}
 
-
+	public static function testStaticMethod(){
+		return "Hello, I am static";
+	}
 
 	public function getUserId(): int
 	{
@@ -646,9 +656,17 @@ class Webspice
 	{
 		// dd($category);
 		# static value
-		$thresholdMin = 1;
-		$thresholdMid = 10;
-		$thresholdMax = 20;
+		if (Cache::has('basic_settings')) {
+            # get from file cache
+            $basicSettings = Cache::get('basic_settings');
+        } else {
+            # get from database
+            $basicSettings = DB::table('basic_settings')->first();
+            Cache::put('basic_settings', $basicSettings);
+        }
+		$thresholdMin = $basicSettings->threshold_min;
+		$thresholdMid = $basicSettings->threshold_mid;
+		$thresholdMax = $basicSettings->threshold_max;
 		$maxColor = '#de2d26';
 		$midColor = '#fb6a4a';
 		$minColor = '#F8AFA6';
@@ -777,4 +795,8 @@ class Webspice
         // Set the response header and output the image
         return $image->response();
     }
+
+	public function versionUpdate(){
+		DB::update('UPDATE tbl_data_version SET version =version+.1 WHERE id = ?',[1]);
+	}
 }

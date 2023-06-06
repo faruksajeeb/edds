@@ -8,7 +8,10 @@
                 font-size: 405px !important;
             }
 
-            #svgDistrictWiseMap { width:940px; height:1270px; }
+            #svgDistrictWiseMap {
+                width: 940px;
+                height: 1270px;
+            }
         </style>
     @endpush
     @can('dashboard.view')
@@ -93,13 +96,22 @@
             </div>
         </form>
         <div class="row chart_report mx-1 my-3">
-            <div class="col-md-12 chart_container h-100 bg-white">
-                <canvas id="myChart" height="120px"></canvas>
-            </div>
+            @if ($chart_type == 'pie')
+                <h5 class="text-center bg-white p-3">Division Wise Response Data</h5>
+                @foreach ($categories as $category)
+                    <div class="col-md-4 chart_container h-100 bg-white py-3">
+                        <canvas id="myPieChart{{ $category->id }}" height="150px"></canvas>
+                    </div>
+                @endforeach
+            @else
+                <div class="col-md-12 chart_container h-100 bg-white">
+                    <canvas id="myChart" height="120px"></canvas>
+                </div>
+            @endif
 
         </div>
-      
-        
+
+
         {{-- <div class="row align-items-md-stretch">
             <div class="col-md-3">
                 <div class="h-100 p-5 text-dark bg-white rounded-3 text-center">
@@ -169,64 +181,109 @@
             <script type="text/javascript">
                 var labels = {{ Js::from($labels) }};
                 var responses = {{ Js::from($data) }};
-                const data = {
-                    labels: labels,
-                    datasets: [
-                        @foreach ($categories as $key => $category)
-
-                            {
-                                label: "{{ $category->option_value }}",
-                                // backgroundColor: [
-                                //     'rgba(255, 99, 132, 0.2)',
-                                //     'rgba(255, 159, 64, 0.2)',
-                                //     'rgba(255, 205, 86, 0.2)',
-                                //     'rgba(75, 192, 192, 0.2)',
-                                //     'rgba(54, 162, 235, 0.2)',
-                                //     'rgba(153, 102, 255, 0.2)',
-                                //     'rgba(201, 203, 207, 0.2)'
-                                // ],
-                                // borderColor: [
-                                //     'rgb(255, 99, 132)',
-                                //     'rgb(255, 159, 64)',
-                                //     'rgb(255, 205, 86)',
-                                //     'rgb(75, 192, 192)',
-                                //     'rgb(54, 162, 235)',
-                                //     'rgb(153, 102, 255)',
-                                //     'rgb(201, 203, 207)'
-                                // ],
-                                borderWidth: 1,
-                                data: responses[{{ $category->id }}]
+                @if ($chart_type == 'pie')
+                    @foreach ($categories as $category)
+                        const data{{ $category->id }} = {
+                            labels: labels,
+                            datasets: [{
+                                label: '{{ $category->option_value }} Total',
+                                data: responses[{{ $category->id }}],
+                                // data: [0,2,3,4,5,6,7,8],
+                                backgroundColor: [
+                                    'rgb(255, 99, 132)',
+                                    'rgb(54, 162, 235)',
+                                    'rgb(255, 132, 0)',
+                                    'rgb(209, 77, 114)',
+                                    'rgb(255, 217, 90)',
+                                    'rgb(164, 89, 209)',
+                                    'rgb(44, 211, 225)',
+                                    'rgb(153, 169, 143)',
+                                    'rgb(82, 109, 130)',
+                                ],
+                                hoverOffset: 4
+                            }]
+                        };
+                        const config{{ $category->id }} = {
+                            type: 'pie',
+                            data: data{{ $category->id }},
+                            options: {
+                                responsive: true,
+                                plugins: {
+                                    legend: {
+                                        position: 'bottom',
+                                    },
+                                    title: {
+                                        display: true,
+                                        text: '{{ $category->option_value }}'
+                                    }
+                                }
                             },
-                        @endforeach
-                    ]
-                };
+                        };
+                        const myChart{{ $category->id }} = new Chart(
+                            document.getElementById("myPieChart{{ $category->id }}"),
+                            config{{ $category->id }}
+                        );
+                    @endforeach
+                @else
 
-                const config = {
-                    type: '{{ $chart_type }}',
-                    data: data,
-                    options: {
-                        responsive: true,
-                        scales: {
-                            y: {
-                                beginAtZero: true
-                            }
-                        },
-                        plugins: {
-                            legend: {
-                                position: 'top',
+                    const data = {
+                        labels: labels,
+                        datasets: [
+                            @foreach ($categories as $key => $category)
+
+                                {
+                                    label: "{{ $category->option_value }}",
+                                    // backgroundColor: [
+                                    //     'rgba(255, 99, 132, 0.2)',
+                                    //     'rgba(255, 159, 64, 0.2)',
+                                    //     'rgba(255, 205, 86, 0.2)',
+                                    //     'rgba(75, 192, 192, 0.2)',
+                                    //     'rgba(54, 162, 235, 0.2)',
+                                    //     'rgba(153, 102, 255, 0.2)',
+                                    //     'rgba(201, 203, 207, 0.2)'
+                                    // ],
+                                    // borderColor: [
+                                    //     'rgb(255, 99, 132)',
+                                    //     'rgb(255, 159, 64)',
+                                    //     'rgb(255, 205, 86)',
+                                    //     'rgb(75, 192, 192)',
+                                    //     'rgb(54, 162, 235)',
+                                    //     'rgb(153, 102, 255)',
+                                    //     'rgb(201, 203, 207)'
+                                    // ],
+                                    borderWidth: 1,
+                                    data: responses[{{ $category->id }}]
+                                },
+                            @endforeach
+                        ]
+                    };
+
+                    const config = {
+                        type: '{{ $chart_type }}',
+                        data: data,
+                        options: {
+                            responsive: true,
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
                             },
-                            title: {
-                                display: true,
-                                text: 'Division Wise Response Data'
+                            plugins: {
+                                legend: {
+                                    position: 'top',
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Division Wise Response Data'
+                                }
                             }
                         }
-                    }
-                };
-
-                const myChart = new Chart(
-                    document.getElementById('myChart'),
-                    config
-                );
+                    };
+                    const myChart = new Chart(
+                        document.getElementById('myChart'),
+                        config
+                    );
+                @endif
 
 
                 $(document).on('click', ".generate_btn", function() {
@@ -235,7 +292,6 @@
                     );
                 });
             </script>
-            
         @endpush
     @endcan
 </x-app-layout>

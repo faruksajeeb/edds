@@ -741,8 +741,8 @@
                                             <option value="2"
                                                 <?php echo e(request()->get('search_status') == '2' ? 'selected' : ''); ?>>Verified
                                             </option>
-                                            <option value="0"
-                                                <?php echo e(request()->get('search_status') == '0' ? 'selected' : ''); ?>>Pending
+                                            <option value="1"
+                                                <?php echo e(request()->get('search_status') == '1' ? 'selected' : ''); ?>>Pending
                                             </option>
                                         </select>
 
@@ -819,7 +819,13 @@
                                         <td><?php echo e(isset($val->registered_user) ? $val->registered_user->respondent_type : ''); ?>
 
                                         </td>
-                                        <td><?php echo App\Lib\Webspice::status($val->status); ?></td>
+                                        <td>
+                                            <?php if($val->status==1): ?>                                                
+                                            <span class="badge bg-info">Pending</span>
+                                            <?php elseif($val->status==2): ?>                                            
+                                            <span class="badge bg-success">Verified</span>
+                                            <?php endif; ?>
+                                        </td>
 
 
                                         <td class="text-nowrap">
@@ -860,7 +866,7 @@
                                                 <?php endif; ?>
                                                 
                                                 <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('user_response.verify')): ?>
-                                                    <?php if($val->status == 0): ?>
+                                                    <?php if($val->status == 1): ?>
                                                         <a href=""
                                                             class="btn btn-outline-success btn-sm btn-verify-<?php echo e($val->id); ?>"
                                                             onclick="event.preventDefault(); confirmVerify(<?php echo e($val->id); ?>)"><i
@@ -881,7 +887,7 @@
 
                                                 
                                                 <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('user_response.delete')): ?>
-                                                    <?php if($val->status == 0): ?>
+                                                    <?php if($val->status == 1): ?>
                                                         <a href=""
                                                             class="btn btn-outline-danger btn-sm btn-delete-<?php echo e($val->id); ?>"
                                                             onclick="event.preventDefault(); confirmDelete(<?php echo e($val->id); ?>)"><i

@@ -26,7 +26,8 @@ class SubQuestionObserver
         #Log
         $this->webspice->log('sub_questions', $sub_question->id, "INSERTED");
         # Cache Update
-        $this->cacheClear();
+        $this->cacheClear();       
+        $this->webspice->versionUpdate();
         #Message
         $this->webspice->message('insert_success');
     }
@@ -41,6 +42,8 @@ class SubQuestionObserver
         $this->webspice->log('sub_questions', $sub_question->id, "UPDATED");
         # Cache Update
         $this->cacheClear();
+        
+        $this->webspice->versionUpdate();
         #Message
         $this->webspice->message('update_success');
 
@@ -59,6 +62,8 @@ class SubQuestionObserver
         $this->webspice->log('sub_questions', $sub_question->id, "DELETED");
         # Cache Update
         $this->cacheClear();
+        
+        $this->webspice->versionUpdate();
         #Message
         $this->webspice->message('delete_success');
     }
@@ -73,6 +78,7 @@ class SubQuestionObserver
         #Message
         $this->webspice->message('restore_success');
 
+        $this->webspice->versionUpdate();
         // $sub_question->deleted_by = NULL;
         // $sub_question->save();
     }
@@ -83,7 +89,8 @@ class SubQuestionObserver
         #Log
         $this->webspice->log('sub_questions', $sub_question->id, "FORCE DELETED");
         # Cache Update
-        $this->cacheClear();
+        $this->cacheClear();        
+        $this->webspice->versionUpdate();
         #Message
         $this->webspice->message('force_delete_success');
     }

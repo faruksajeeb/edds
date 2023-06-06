@@ -69,9 +69,18 @@
                         <div class="form-group">
                             <label for=""
                                 class="@if ($errors->has('value_bangla')) has-error @endif fw-bold">Value
-                                Bangla</label><br />
+                                Bangla*</label><br />
                             <textarea name='value_bangla' id='value_bangla' class="form-control @error('value_bangla') is-invalid @enderror"
-                                placeholder="Enter question value in bangla" rows="3">{{ old('value_bangla') }}</textarea>
+                                placeholder="Enter question value in bangla" rows="3" required>{{ old('value_bangla') }}</textarea>
+                                @if ($errors->has('value_bangla'))
+                                @error('value_bangla')
+                                    <div class="alert alert-danger">{{ $message }}</div>
+                                @enderror
+                            @else
+                                <div class="invalid-feedback">
+                                    Please enter a value bangla.
+                                </div>
+                            @endif
                         </div>
 
                         <br />

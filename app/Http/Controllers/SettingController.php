@@ -89,10 +89,13 @@ class SettingController extends Controller
             $updateData = array(
                 'default_country' => $request->default_country,
                 'timezone' => $request->timezone,
-                'currency_code' => $request->currency_code,
+                // 'currency_code' => $request->currency_code,
                 'date_format' => $request->date_format,
                 'default_language' => $request->default_language,
-                'currency_symbol' => $request->currency_symbol,
+                // 'currency_symbol' => $request->currency_symbol,
+                'threshold_min' => $request->threshold_min,
+                'threshold_mid' => $request->threshold_mid,
+                'threshold_max' => $request->threshold_max,
                 'updated_at' => now()
             );
             try {

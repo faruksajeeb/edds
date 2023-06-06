@@ -22,6 +22,7 @@ class Options extends Component
     public $tableName = 'options';
     public $flag = 0;
 
+    
     public $searchTerm;
     public $status;
     public $pazeSize;
@@ -39,6 +40,12 @@ class Options extends Component
     public $export;
     use WithPagination;
     protected $paginationTheme = 'bootstrap';
+
+    public function __construct()
+    {
+        //$this->webspice = new Webspice();
+    }
+
     public function updatedSearchTerm()
     {
         $this->resetPage();
@@ -148,6 +155,8 @@ class Options extends Component
                 Cache::forget($this->tableName);
                 Cache::forget($this->option_group.'-options');
                 Cache::forget('active-'.$this->option_group.'-options');
+                $webspice = new Webspice();
+                $webspice->versionUpdate();
                 $this->emit('success', 'inserted');
             }
         } catch (\Exception $e) {
@@ -195,6 +204,8 @@ class Options extends Component
             # Cache Update
             Cache::forget($this->option_group.'-options');
             Cache::forget('active-'.$this->option_group.'-options');
+            $webspice = new Webspice();
+            $webspice->versionUpdate();
             # reset form
             $this->resetInputFields();
             # Return Message
@@ -218,6 +229,8 @@ class Options extends Component
             Cache::forget($this->tableName);
             Cache::forget($this->option_group_name.'-options');
             Cache::forget('active-'.$this->option_group_name.'-options');
+            $webspice = new Webspice();
+                $webspice->versionUpdate();
             # Success message
             $this->emit('success', 'deleted');
         } catch (\Exception $e) {
