@@ -39,7 +39,17 @@
         }
         *{
             /* font-family: myDefaultFont; */
-            font-family:'Times New Roman', Times, serif
+            /* font-family:'Times New Roman', Times, serif */
+            font-style:normal;
+            font-variant:normal;
+            font-weight:normal;
+            font-stretch:normal;
+            /* font-size:17.33333333px; */
+            font-family:Tahoma;-inkscape-font-specification:'Tahoma, Normal';
+            font-variant-ligatures:normal;
+            font-variant-caps:normal;
+            font-variant-numeric:normal;
+            font-feature-settings:normal;
         }
 
     </style>

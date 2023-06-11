@@ -30,7 +30,7 @@ class Question extends Model
 
     public function option() : BelongsTo
     {
-        return $this->belongsTo(Option::class,'category_id','id')->withTrashed();
+        return $this->belongsTo(Option::class,'category_id','id')->withTrashed()->withDefault(['option_value'=>'']);
     }
 
     function subQuestions() {

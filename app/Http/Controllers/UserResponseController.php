@@ -64,7 +64,13 @@ class UserResponseController extends Controller
             }
         });
         if ($request->search_area != null) {
-            $query->where('area_id', $request->search_area);
+            $query->where('response_division', $request->search_division);
+        }
+        if ($request->search_area != null) {
+            $query->where('response_district', $request->search_district);
+        }
+        if ($request->address_address != null) {
+            $query->where('formatted_address', 'LIKE', '%' . $request->address_address . '%');
         }
         if ($request->search_market != null) {
             $query->where('market_id', $request->search_market);

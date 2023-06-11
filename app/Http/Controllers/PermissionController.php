@@ -238,6 +238,7 @@ class PermissionController extends Controller
 
     public function forceDelete($id)
     {
+        return response()->json(['error' => 'Unauthenticated.'], 401);
         #permission verfy
         $this->webspice->permissionVerify('permission.force_delete');
         try {

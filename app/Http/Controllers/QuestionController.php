@@ -2,18 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use App\Interfaces\Crud;
+
 use App\Lib\Webspice;
-use App\Models\Option;
 use Illuminate\Http\Request;
 use App\Models\Question;
 use Exception;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\QuestionExport;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Validation\Rule;
+use App\Traits\MasterData;
+use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
 
-class QuestionController extends Controller
+
+
+class QuestionController extends Controller implements Crud
 {
+    use MasterData;
+
     public $webspice;
     public $tableName;
     protected $questions;
@@ -44,6 +50,12 @@ class QuestionController extends Controller
         } else {
             $query = $this->questions->orderBy('created_at', 'desc');
         }
+        if ($request->search_category != null) {
+            $query->where('category_id', $request->search_category);
+        }
+        if ($request->search_respondent != null) {
+            $query->where('respondent', $request->search_respondent);
+        }
         if ($request->search_status != null) {
             $query->where('status', $request->search_status);
         }
@@ -61,43 +73,34 @@ class QuestionController extends Controller
             $title = $fileTag . 'Question List';
             // $this->export($request->submit_btn,$query,$title);
             $fileName = str_replace(' ', '_', strtolower($title));
+            if ($type == 'pdf') {
+
+                return Excel::download(new QuestionExport($query->get(), $title), $fileName . '_' . time() . '.pdf', \Maatwebsite\Excel\Excel::DOMPDF);
+            }
             if ($type == 'csv') {
                 return Excel::download(new QuestionExport($query->get(), $title), $fileName . '_' . time() . '.csv', \Maatwebsite\Excel\Excel::CSV);
             }
             return Excel::download(new QuestionExport($query->get(), $title), $fileName . '_' . time() . '.xlsx');
         }
-
+        // $query->has('subQuestions'); # It means, get which questions has sub qestions.
         $questions = $query->paginate(5);
-        // });     
-        return view('question.index', compact('questions'));
-    }
 
-    public function export(String $type, $query, String $title)
-    {
+        $categories = MasterData::getCategory();
+        $respondents = MasterData::getRespondent();
+        return view('question.index', compact('questions', 'categories', 'respondents'));
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(): View
     {
 
         #permission verfy
         $this->webspice->permissionVerify('question.create');
-        if (!Cache::has('active-category-options')) {
-            $categories = Option::where(['option_group_name' => 'category', 'status' => 1])->get();
-            Cache::forever('active-category-options', $categories);
-        } else {
-            // $categories = Cache::get('categories-options')->where('status',1);
-            $categories = Cache::get('active-category-options');
-        }
-        if (!Cache::has('active-respondent-options')) {
-            $respondents = Option::where(['option_group_name' => 'respondent', 'status' => 1])->get();
-            Cache::forever('active-respondent-options', $respondents);
-        } else {
-            // $respondents = Cache::get('respondents-options')->where('status',1);
-            $respondents = Cache::get('active-respondent-options');
-        }
+
+        $categories = MasterData::getActiveCategory();
+        $respondents = MasterData::getActiveRespondent();
 
         return view('question.create', [
             'categories' => $categories,
@@ -108,11 +111,11 @@ class QuestionController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request) : RedirectResponse
     {
         #permission verfy
         $this->webspice->permissionVerify('question.create');
-        $respondent = implode(",",$request->respondent);
+        $respondent = implode(",", $request->respondent);
         $request->validate(
             [
                 // 'value' => [
@@ -137,9 +140,9 @@ class QuestionController extends Controller
             ],
             [
                 'value.required' => 'Value field is required.',
-                'value.unique' => 'This question has already been taken for this respondent ('.$respondent.')',
+                'value.unique' => 'This question has already been taken for this respondent (' . $respondent . ')',
                 'value_bagla.required' => 'Value Bangla field is required.',
-                'value_bagla.unique' => 'This question value bangla has already been taken for this respondent ('.$respondent.')',
+                'value_bagla.unique' => 'This question value bangla has already been taken for this respondent (' . $respondent . ')',
                 'category_id.required' => 'Category field is required.',
                 'respondent.required' => 'Respondent field is required.',
                 'input_method.required' => 'Input method field is required.',
@@ -178,15 +181,15 @@ class QuestionController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $id): View
     {
-        //
+        return view('question.view');
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(string $id): View
     {
         # permission verfy
         $this->webspice->permissionVerify('question.edit');
@@ -194,21 +197,10 @@ class QuestionController extends Controller
         $id = $this->webspice->encryptDecrypt('decrypt', $id);
 
         $questionInfo = $this->questions->find($id);
-        if (!Cache::has('active-category-options')) {
-            $categories = Option::where(['option_group_name' => 'category', 'status' => 1])->get();
-            Cache::forever('active-category-options', $categories);
-        } else {
-            // $categories = Cache::get('categories-options')->where('status',1);
-            $categories = Cache::get('active-category-options');
-        }
 
-        if (!Cache::has('active-respondent-options')) {
-            $respondents = Option::where(['option_group_name' => 'respondent', 'status' => 1])->get();
-            Cache::forever('active-respondent-options', $respondents);
-        } else {
-            // $respondents = Cache::get('respondents-options')->where('status',1);
-            $respondents = Cache::get('active-respondent-options');
-        }
+        $categories = MasterData::getActiveCategory();
+        $respondents = MasterData::getActiveRespondent();
+
         return view('question.edit', [
             'questionInfo' => $questionInfo,
             'categories' => $categories,
@@ -219,24 +211,24 @@ class QuestionController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, string $id) : RedirectResponse
     {
         # permission verfy
         $this->webspice->permissionVerify('question.edit');
 
         # decrypt value
         $id = $this->webspice->encryptDecrypt('decrypt', $id);
-        $respondent = implode(",",$request->respondent);
+        $respondent = implode(",", $request->respondent);
         $request->validate(
             [
-            //     'value' => ['required','min:3','max:1000',Rule::unique('questions')->ignore($id, 'id')->where(function ($query) use($request,$respondent) {
-            //         return $query->where('value', $request->value)
-            //             ->where('respondent', $respondent);
-            //     })],
-            //     'value_bangla' => ['required','min:3','max:1000',Rule::unique('questions')->ignore($id, 'id')->where(function ($query) use($request,$respondent) {
-            //         return $query->where('value_bangla', $request->value_bangla)
-            //             ->where('respondent', $respondent);
-            //     })],
+                //     'value' => ['required','min:3','max:1000',Rule::unique('questions')->ignore($id, 'id')->where(function ($query) use($request,$respondent) {
+                //         return $query->where('value', $request->value)
+                //             ->where('respondent', $respondent);
+                //     })],
+                //     'value_bangla' => ['required','min:3','max:1000',Rule::unique('questions')->ignore($id, 'id')->where(function ($query) use($request,$respondent) {
+                //         return $query->where('value_bangla', $request->value_bangla)
+                //             ->where('respondent', $respondent);
+                //     })],
                 'value' => 'required|min:1|max:1000|unique:questions,value,' . $id,
                 'value_bangla' => 'required|min:1|max:1000|unique:questions,value_bangla,' . $id,
                 'category_id' => 'required',
@@ -245,9 +237,9 @@ class QuestionController extends Controller
             ],
             [
                 'value.required' => 'Value field is required.',
-                'value.unique' => 'This question has already been taken for this respondent ('.$respondent.')',
+                'value.unique' => 'This question has already been taken for this respondent (' . $respondent . ')',
                 'value_bangla.required' => 'Value Bangla field is required.',
-                'value_bangla.unique' => 'This question value bangla has already been taken for this respondent ('.$respondent.')',
+                'value_bangla.unique' => 'This question value bangla has already been taken for this respondent (' . $respondent . ')',
                 'category_id.required' => 'Category field is required.',
                 'respondent.required' => 'Respondent field is required.',
                 'value.unique' => 'This value has already been taken for another record.',
@@ -274,7 +266,7 @@ class QuestionController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id) : RedirectResponse
     {
         # permission verfy
         $this->webspice->permissionVerify('question.delete');
@@ -292,8 +284,9 @@ class QuestionController extends Controller
     }
 
 
-    public function forceDelete($id)
+    public function forceDelete($id) : RedirectResponse
     {
+        abort(403, 'SORRY! unauthenticated access!');
         #permission verfy
         $this->webspice->permissionVerify('question.force_delete');
         try {
@@ -306,7 +299,7 @@ class QuestionController extends Controller
         }
         return redirect()->back();
     }
-    public function restore($id)
+    public function restore($id) : RedirectResponse
     {
         #permission verfy
         $this->webspice->permissionVerify('question.restore');
@@ -320,7 +313,7 @@ class QuestionController extends Controller
         return redirect()->route('questions.index');
     }
 
-    public function restoreAll()
+    public function restoreAll() : RedirectResponse
     {
         #permission verfy
         $this->webspice->permissionVerify('question.restore');

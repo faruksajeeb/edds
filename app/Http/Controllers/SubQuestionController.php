@@ -9,11 +9,16 @@ use App\Models\SubQuestion;
 use Exception;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\SubQuestionExport;
+use App\Interfaces\Crud;
+use App\Traits\MasterData;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Validation\Rule;
+use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
 
-class SubQuestionController extends Controller
+class SubQuestionController extends Controller implements Crud
 {
+    use MasterData;
     public $webspice;
     public $tableName;
     protected $sub_questions;
@@ -44,6 +49,9 @@ class SubQuestionController extends Controller
         } else {
             $query = $this->sub_questions->orderBy('created_at', 'desc');
         }
+        if ($request->search_question != null) {
+            $query->where('question_id', $request->search_question);
+        }
         if ($request->search_status != null) {
             $query->where('status', $request->search_status);
         }
@@ -59,7 +67,7 @@ class SubQuestionController extends Controller
         # elequent join with question model
         $query->with('question');
         # Export
-        if (in_array($type=$request->submit_btn, array('export', 'csv', 'pdf'))) {
+        if (in_array($type = $request->submit_btn, array('export', 'csv', 'pdf'))) {
             $title = $fileTag . 'SubQuestion List';
             // $this->export($request->submit_btn,$query,$title);
             $fileName = str_replace(' ', '_', strtolower($title));
@@ -71,30 +79,21 @@ class SubQuestionController extends Controller
 
         $sub_questions = $query->paginate(10);
         // });
-
-        return view('sub_question.index', compact('sub_questions'));
+        $questions = MasterData::getQuenstion();
+        return view('sub_question.index', compact('sub_questions', 'questions'));
     }
 
-    public function export(String $type, $query, String $title)
-    {
-    }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(): View
     {
 
         #permission verfy
         $this->webspice->permissionVerify('sub_question.create');
-        if (!Cache::has('active-questions')) {
-            $questions = Question::where(['status' => 1])->get();
-            Cache::forever('active-questions', $questions);
-        } else {
-            // $questions = Cache::get('sub_questions')->where('status',1);
-            $questions = Cache::get('active-questions');
-        }
 
+        $questions = MasterData::getActiveQuenstion();
         return view('sub_question.create', [
             'questions' => $questions
         ]);
@@ -103,18 +102,18 @@ class SubQuestionController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         #permission verfy
         $this->webspice->permissionVerify('sub_question.create');
 
         $request->validate(
             [
-                'value' => ['required','min:1','max:1000',Rule::unique('sub_questions')->where(function ($query) use($request) {
+                'value' => ['required', 'min:1', 'max:1000', Rule::unique('sub_questions')->where(function ($query) use ($request) {
                     return $query->where('value', $request->value)
                         ->where('question_id', $request->question_id);
                 })],
-                'value_bangla' => ['required','min:1','max:1000',Rule::unique('sub_questions')->where(function ($query) use($request) {
+                'value_bangla' => ['required', 'min:1', 'max:1000', Rule::unique('sub_questions')->where(function ($query) use ($request) {
                     return $query->where('value_bangla', $request->value_bangla)
                         ->where('question_id', $request->question_id);
                 })],
@@ -135,7 +134,7 @@ class SubQuestionController extends Controller
             'value' => $request->value,
             'value_bangla' => $request->value_bangla,
             'question_id' => $request->question_id,
-            'input_method' => $request->input_method,
+            // 'input_method' => $request->input_method,
             'created_at' => $this->webspice->now('datetime24'),
             'created_by' => $this->webspice->getUserId(),
         );
@@ -153,7 +152,7 @@ class SubQuestionController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $id): VIew
     {
         //
     }
@@ -161,7 +160,7 @@ class SubQuestionController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(string $id): View
     {
         # permission verfy
         $this->webspice->permissionVerify('sub_question.edit');
@@ -169,13 +168,7 @@ class SubQuestionController extends Controller
         $id = $this->webspice->encryptDecrypt('decrypt', $id);
 
         $sub_questionInfo = $this->sub_questions->find($id);
-        if (!Cache::has('active-questions')) {
-            $questions = Question::where(['status' => 1])->get();
-            Cache::forever('active-questions', $questions);
-        } else {
-            // $questions = Cache::get('sub_questions')->where('status',1);
-            $questions = Cache::get('active-questions');
-        }
+        $questions = MasterData::getActiveQuenstion();
         return view('sub_question.edit', [
             'sub_questionInfo' => $sub_questionInfo,
             'questions' => $questions
@@ -185,7 +178,7 @@ class SubQuestionController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, string $id): RedirectResponse
     {
         # permission verfy
         $this->webspice->permissionVerify('sub_question.edit');
@@ -195,11 +188,11 @@ class SubQuestionController extends Controller
 
         $request->validate(
             [
-                'value' => ['required','min:3','max:1000',Rule::unique('sub_questions')->ignore($id, 'id')->where(function ($query) use($request) {
+                'value' => ['required', 'min:1', 'max:1000', Rule::unique('sub_questions')->ignore($id, 'id')->where(function ($query) use ($request) {
                     return $query->where('value', $request->value)
                         ->where('question_id', $request->question_id);
                 })],
-                'value_bangla' => ['required','min:3','max:1000',Rule::unique('sub_questions')->ignore($id, 'id')->where(function ($query) use($request) {
+                'value_bangla' => ['required', 'min:1', 'max:1000', Rule::unique('sub_questions')->ignore($id, 'id')->where(function ($query) use ($request) {
                     return $query->where('value_bangla', $request->value_bangla)
                         ->where('question_id', $request->question_id);
                 })],
@@ -207,12 +200,12 @@ class SubQuestionController extends Controller
                 // 'input_method' => 'required',
             ],
             [
-                'value.required' => 'Value field is required.',                
+                'value.required' => 'Value field is required.',
                 'value.unique' => 'This value has already been taken for another record.',
-                'value_bangla.required' => 'Value Bangla field is required.',                
+                'value_bangla.required' => 'Value Bangla field is required.',
                 'value_bangla.unique' => 'This value bangla has already been taken for another record.',
                 'question_id.required' => 'Question field is required.',
-                'input_method.required' => 'Input method field is required.',
+                // 'input_method.required' => 'Input method field is required.',
             ]
         );
         try {
@@ -220,7 +213,7 @@ class SubQuestionController extends Controller
             $question->value = $request->value;
             $question->value_bangla = $request->value_bangla;
             $question->question_id = $request->question_id;
-            $question->input_method = $request->input_method;
+            // $question->input_method = $request->input_method;
             $question->updated_at = $this->webspice->now('datetime24');
             $question->updated_by = $this->webspice->getUserId();
             $question->save();
@@ -234,7 +227,7 @@ class SubQuestionController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id): RedirectResponse
     {
         # permission verfy
         $this->webspice->permissionVerify('sub_question.delete');
@@ -252,8 +245,9 @@ class SubQuestionController extends Controller
     }
 
 
-    public function forceDelete($id)
+    public function forceDelete($id): RedirectResponse
     {
+        abort(403, 'SORRY! unauthenticated access!');
         #permission verfy
         $this->webspice->permissionVerify('sub_question.force_delete');
         try {
@@ -266,7 +260,7 @@ class SubQuestionController extends Controller
         }
         return redirect()->back();
     }
-    public function restore($id)
+    public function restore($id): RedirectResponse
     {
         #permission verfy
         $this->webspice->permissionVerify('sub_question.restore');
@@ -280,7 +274,7 @@ class SubQuestionController extends Controller
         return redirect()->route('sub_questions.index');
     }
 
-    public function restoreAll()
+    public function restoreAll(): RedirectResponse
     {
         #permission verfy
         $this->webspice->permissionVerify('sub_question.restore');

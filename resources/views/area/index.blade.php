@@ -10,7 +10,7 @@
                         <div class="col-md-8">
                             <h5 class="card-title py-1"><i class="fa fa-table"></i>
                                 @if (request()->get('status') == 'archived')
-                                    Archived
+                                    Deleted
                                 @endif Areas
                             </h5>
                         </div>
@@ -20,7 +20,7 @@
                                     <li class="breadcrumb-item"><a href="#">Master Data</a></li>
                                     <li class="breadcrumb-item " aria-current="page">
                                         @if (request()->get('status') == 'archived')
-                                            Archived
+                                        Deleted
                                         @endif Areas
                                     </li>
                                 </ol>
@@ -30,11 +30,11 @@
                     <div class="row">
                         <div class="col-md-12">
                             @if (request()->get('status') != 'archived')
-                                <a href="{{ url('/areas?status=archived') }}">Archived Areas</a>
+                                <a href="{{ url('/areas?status=archived') }}">Deleted Areas</a>
                             @else
                                 <a href="{{ url('/areas') }}">Areas</a>
                             @endif
-                            @if ((request()->get('status') == 'archived') && ($areas->total() >0))
+                            @if (request()->get('status') == 'archived' && $areas->total() > 0)
                                 @can('area.restore')
                                     <div class="float-end">
                                         <a href="" class="btn btn-primary btn-sm btn-restore-all"
@@ -57,46 +57,39 @@
                             @csrf
                             <input type="hidden" name="status"
                                 value="{{ request()->get('status') == 'archived' ? 'archived' : '' }}">
-                            <div class="row">
-                                <div class="col-md-3 col-sm-12">
-                                    <select name="search_status" class="form-select" id="search_status">
+                            <div class="row mb-3">
+                                <div class="col-md-12 col-sm-12 input-group">
+                                    <select name="search_status" class="form-select " id="search_status">
                                         <option value="">Select Status</option>
                                         <option value="1">Active
                                         </option>
                                         <option value="-1">Inactive
                                         </option>
                                     </select>
-                                </div>
-                                <div class="col-md-6 col-sm-12 px-0">
-                                    <div class="input-group">
-                                        <input type="text" name="search_text" value="" class="form-control"
-                                            placeholder="Search by text">
-                                        <div class="input-group-append">
-                                            <button class="btn btn-secondary mx-1" name="submit_btn" type="submit"
-                                                value="search">
-                                                <i class="fa fa-search"></i> Search
-                                            </button>
-                                            <a href='{{ request()->get('status') == 'archived' ? url('/areas?status=archived') : url('/areas') }}'
-                                                class="btn btn-xs btn-primary me-1"><i class="fa fa-refresh"></i></a>
-                                            @can('area.export')
-                                                {{-- <button class="btn btn-xs btn-danger float-end " name="submit_btn"
+                                    <input type="text" name="search_text" value="" class="form-control"
+                                        placeholder="Search by text">
+                                    <button class="btn btn-secondary mx-1 filter_btn" name="submit_btn" type="submit"
+                                        value="search">
+                                        <i class="fa fa-search"></i> Filter Data
+                                    </button>
+                                    <a href='{{ request()->get('status') == 'archived' ? url('/areas?status=archived') : url('/areas') }}'
+                                        class="btn btn-xs btn-primary me-1 refresh_btn"><i class="fa fa-refresh"></i>
+                                        Refresh</a>
+                                    @can('area.export')
+                                        {{-- <button class="btn btn-xs btn-danger float-end export_btn" name="submit_btn"
                                                 value="pdf" type="submit">
                                                 <i class="fa-solid fa-download"></i> PDF
                                             </button> --}}
-                                                <button class="btn btn-xs btn-info float-end me-1" name="submit_btn"
+                                        {{-- <button class="btn btn-xs btn-info float-end me-1" name="submit_btn"
                                                     value="csv" type="submit">
                                                     <i class="fa-solid fa-download"></i> CSV
-                                                </button>
+                                                </button> --}}
 
-                                                <button class="btn btn-xs btn-success float-end me-1" name="submit_btn"
-                                                    value="export" type="submit">
-                                                    <i class="fa-solid fa-download"></i> Export
-                                                </button>
-                                            @endcan
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-3 col-sm-12">
+                                        <button class="btn btn-xs btn-success float-end me-1 export_btn" name="submit_btn"
+                                            value="export" type="submit">
+                                            <i class="fa-solid fa-download"></i> Export
+                                        </button>
+                                    @endcan
                                     @can('area.create')
                                         <a href="{{ route('areas.create') }}"
                                             class="btn btn-xs btn-outline-primary float-end" name="create_new"
@@ -105,7 +98,6 @@
                                         </a>
                                     @endcan
                                 </div>
-
                             </div>
                         </form>
                         <table class="table mb-0">
@@ -135,9 +127,8 @@
                                                 @else
                                                     @can('area.edit')
                                                         <input class="form-check-input active_inactive_btn "
-                                                            status="{{ $val->status }}"
-                                                            {{ $val->status == -1 ? '' : '' }} table="areas"
-                                                            type="checkbox" id="row_{{ $val->id }}"
+                                                            status="{{ $val->status }}" {{ $val->status == -1 ? '' : '' }}
+                                                            table="areas" type="checkbox" id="row_{{ $val->id }}"
                                                             value="{{ Crypt::encryptString($val->id) }}"
                                                             {{ $val->status == 1 ? 'checked' : '' }}
                                                             style="cursor:pointer">
@@ -153,8 +144,8 @@
                                         onclick="event.preventDefault(); restoreConfirmation({{ $val->id }})"><i
                                             class="fa-solid fa-trash-arrow-up"></i> Restore</a>
                                     <form id="restore-form-{{ $val->id }}"
-                                        action="{{ route('areas.restore', Crypt::encryptString($val->id)) }}"
-                                        method="POST" style="display: none">
+                                        action="{{ route('areas.restore', Crypt::encryptString($val->id)) }}" method="POST"
+                                        style="display: none">
                                         @method('POST')
                                         @csrf
                                     </form>
@@ -185,8 +176,7 @@
                                         onclick="event.preventDefault(); confirmDelete({{ $val->id }})"><i
                                             class="fa-solid fa-trash"></i> Delete</a>
                                     <form id="delete-form-{{ $val->id }}" style="display: none"
-                                        action="{{ route('areas.destroy', Crypt::encryptString($val->id)) }}"
-                                        method="POST">
+                                        action="{{ route('areas.destroy', Crypt::encryptString($val->id)) }}" method="POST">
                                         @method('DELETE')
                                         @csrf
                                     </form>
@@ -195,7 +185,7 @@
 
                         </td>
                         </tr>
-                        @empty
+                    @empty
                         <tr>
                             <td colspan="5" class="text-center">No records found. </td>
                         </tr>

@@ -10,7 +10,7 @@
                         <div class="col-md-8">
                             <h5 class="card-title py-1"><i class="fa fa-table"></i>
                                 @if (request()->get('status') == 'archived')
-                                    Archived
+                                    Deleted
                                 @endif User Responses
                             </h5>
                         </div>
@@ -20,17 +20,18 @@
                                     <li class="breadcrumb-item"><a href="#">Response</a></li>
                                     <li class="breadcrumb-item " aria-current="page">
                                         @if (request()->get('status') == 'archived')
-                                            Archived
+                                            Deleted
                                         @endif User Responses
                                     </li>
                                 </ol>
                             </nav>
                         </div>
                     </div>
+
                     <div class="row">
                         <div class="col-md-12">
                             @if (request()->get('status') != 'archived')
-                                <a href="{{ url('/user_responses?status=archived') }}">Archived User Responses</a>
+                                <a href="{{ url('/user_responses?status=archived') }}">Deleted User Responses</a>
                             @else
                                 <a href="{{ url('/user_responses') }}">User Responses</a>
                             @endif
@@ -140,7 +141,7 @@
                                             <option data-link="Sylhet" value="Sunamganj">Sunamganj</option>
                                             <option data-link="Sylhet" value="Sylhet">Sylhet</option>
                                         </select>
-                                        <select name="search_thana" class="form-select" id="drpUpazilla">
+                                        {{-- <select name="search_thana" class="form-select" id="drpUpazilla">
                                             <option value="">select district first</option>
                                             <option data-link="Dhaka" value="Dhamrai">Dhamrai</option>
                                             <option data-link="Dhaka" value="Dohar">Dohar</option>
@@ -699,22 +700,36 @@
                                             <option data-link="Sunamganj" value="Shalla">Shalla</option>
                                             <option data-link="Sunamganj" value="Dowarabazar">Dowarabazar</option>
                                             <option data-link="Sunamganj" value="Jamalganj">Jamalganj</option>
-                                        </select>
-                                        <select name="search_area" class="form-select" id="search_area">
+                                        </select> --}}
+                                        {{-- <select name="search_area" class="form-select" id="search_area">
                                             <option value="">select area</option>
                                             @foreach ($areas as $val)
-                                                <option value="{{ $val->id }}" {{ request()->get('search_area') == $val->id ? 'selected' : '' }}>{{ $val->value }}</option>
+                                                <option value="{{ $val->id }}"
+                                                    {{ request()->get('search_area') == $val->id ? 'selected' : '' }}>
+                                                    {{ $val->value }}</option>
                                             @endforeach
-                                        </select>
+                                        </select> --}}
+                                        <input type="text" class="form-control  map-input" id="address-input"
+                                            name="address_address" placeholder="Search by location">
+                                        <input type="hidden" name="address_latitude" id="address-latitude"
+                                            value="23.810332" />
+                                        <input type="hidden" name="address_longitude" id="address-longitude"
+                                            value="90.4125181" />
+
+                                        <div id="address-map-container" style="width:100%;height:400px;display:none ">
+                                            <div style="width: 100%; height: 100%" id="address-map"></div>
+                                        </div>
 
                                     </div>
                                     <div class="input-group">
-                                        <select name="search_market" class="form-select" id="search_market">
+                                        {{-- <select name="search_market" class="form-select" id="search_market">
                                             <option value="">select market</option>
                                             @foreach ($markets as $val)
-                                                <option value="{{ $val->id }}" {{ request()->get('search_market') == $val->id ? 'selected' : '' }}>{{ $val->value }}</option>
+                                                <option value="{{ $val->id }}"
+                                                    {{ request()->get('search_market') == $val->id ? 'selected' : '' }}>
+                                                    {{ $val->value }}</option>
                                             @endforeach
-                                        </select>
+                                        </select> --}}
                                         <select name="search_respodent" class="form-select" id="search_respodent">
                                             <option value="">Select respondent type</option>
                                             <option value="Customer"
@@ -750,10 +765,12 @@
                                                 placeholder="Search by name/mobile/email/gender">
 
                                             <input type="text" class="form-control datepicker" name="date_from"
-                                                placeholder="Date From" value="{{ request()->get('date_from') }}" aria-label="DateFrom">
+                                                placeholder="Date From" value="{{ request()->get('date_from') }}"
+                                                aria-label="DateFrom">
                                             <span class="input-group-text">to</span>
                                             <input type="text" class="form-control datepicker" name="date_to"
-                                                placeholder="Date To" value="{{ request()->get('date_to') }}" aria-label="DateTo">
+                                                placeholder="Date To" value="{{ request()->get('date_to') }}"
+                                                aria-label="DateTo">
 
                                             {{-- <input type="text" class="form-control" value="2012-04-05">
                                             <div class="input-group-addon">to</div>
@@ -785,6 +802,7 @@
                                             </div>
                                         </div>
                                     </div>
+
                                 </div>
                                 {{-- <div class="col-md-3 col-sm-12">
                                     @can('user_response.create')
@@ -828,10 +846,10 @@
                                         <td>{{ isset($val->registered_user) ? $val->registered_user->respondent_type : '' }}
                                         </td>
                                         <td>
-                                            @if ($val->status==1)                                                
-                                            <span class="badge bg-info">Pending</span>
-                                            @elseif($val->status==2)                                            
-                                            <span class="badge bg-success">Verified</span>
+                                            @if ($val->status == 1)
+                                                <span class="badge bg-info">Pending</span>
+                                            @elseif($val->status == 2)
+                                                <span class="badge bg-success">Verified</span>
                                             @endif
                                         </td>
 
@@ -880,8 +898,7 @@
                                                             class="btn btn-outline-success btn-sm btn-verify-{{ $val->id }}"
                                                             onclick="event.preventDefault(); confirmVerify({{ $val->id }})"><i
                                                                 class="fas fa-check"></i> Verify</a>
-                                                        <form id="verify-form-{{ $val->id }}"
-                                                            style="display: none"
+                                                        <form id="verify-form-{{ $val->id }}" style="display: none"
                                                             action="{{ route('user_responses.verify', Crypt::encryptString($val->id)) }}"
                                                             method="POST">
                                                             @method('PUT')
@@ -901,8 +918,7 @@
                                                             class="btn btn-outline-danger btn-sm btn-delete-{{ $val->id }}"
                                                             onclick="event.preventDefault(); confirmDelete({{ $val->id }})"><i
                                                                 class="fa-solid fa-trash"></i> Delete</a>
-                                                        <form id="delete-form-{{ $val->id }}"
-                                                            style="display: none"
+                                                        <form id="delete-form-{{ $val->id }}" style="display: none"
                                                             action="{{ route('user_responses.destroy', Crypt::encryptString($val->id)) }}"
                                                             method="POST">
                                                             @method('DELETE')
@@ -915,9 +931,9 @@
                                         </td>
                                     </tr>
                                 @empty
-                                <tr>
-                                    <td colspan="9" class="text-center">No records found. </td>
-                                </tr>
+                                    <tr>
+                                        <td colspan="9" class="text-center">No records found. </td>
+                                    </tr>
                                 @endforelse
                             </tbody>
                         </table>
@@ -953,14 +969,9 @@
             }
 
             $(document).ready(function() {
-
-
-
-
                 // if (!searchDistrict && !searchThana) {
                 $("#drpDistrict, #drpUpazilla").children('option').hide();
                 $("#drpDistrict, #drpUpazilla").val("");
-                // }
 
                 var searchDivision = "{{ request()->get('search_division') }}";
                 if (searchDivision) {
@@ -995,6 +1006,113 @@
                     }
                 });
             });
+        </script>
+
+
+        <script
+            src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_API_KEY') }}&libraries=places&callback=initialize"
+            async defer></script>
+        <script>
+            function initialize() {
+
+                $('form').on('keyup keypress', function(e) {
+                    var keyCode = e.keyCode || e.which;
+                    if (keyCode === 13) {
+                        e.preventDefault();
+                        return false;
+                    }
+                });
+                const locationInputs = document.getElementsByClassName("map-input");
+
+                const autocompletes = [];
+                const geocoder = new google.maps.Geocoder;
+                for (let i = 0; i < locationInputs.length; i++) {
+
+                    const input = locationInputs[i];
+                    const fieldKey = input.id.replace("-input", "");
+                    const isEdit = document.getElementById(fieldKey + "-latitude").value != '' && document.getElementById(
+                        fieldKey + "-longitude").value != '';
+
+                    const latitude = parseFloat(document.getElementById(fieldKey + "-latitude").value) || -33.8688;
+                    const longitude = parseFloat(document.getElementById(fieldKey + "-longitude").value) || 151.2195;
+
+                    const map = new google.maps.Map(document.getElementById(fieldKey + '-map'), {
+                        center: {
+                            lat: latitude,
+                            lng: longitude
+                        },
+                        zoom: 13
+                    });
+                    const marker = new google.maps.Marker({
+                        map: map,
+                        position: {
+                            lat: latitude,
+                            lng: longitude
+                        },
+                    });
+
+                    marker.setVisible(isEdit);
+                    var options = {
+                        // types: ['(cities)'],
+                        componentRestrictions: {
+                            country: "bd"
+                        } //Here bd for bangladesh location only
+                    };
+                    const autocomplete = new google.maps.places.Autocomplete(input, options);
+                    autocomplete.key = fieldKey;
+                    autocompletes.push({
+                        input: input,
+                        map: map,
+                        marker: marker,
+                        autocomplete: autocomplete
+                    });
+                }
+
+                for (let i = 0; i < autocompletes.length; i++) {
+                    const input = autocompletes[i].input;
+                    const autocomplete = autocompletes[i].autocomplete;
+                    const map = autocompletes[i].map;
+                    const marker = autocompletes[i].marker;
+
+                    google.maps.event.addListener(autocomplete, 'place_changed', function() {
+                        marker.setVisible(false);
+                        const place = autocomplete.getPlace();
+
+                        geocoder.geocode({
+                            'placeId': place.place_id
+                        }, function(results, status) {
+                            if (status === google.maps.GeocoderStatus.OK) {
+                                const lat = results[0].geometry.location.lat();
+                                const lng = results[0].geometry.location.lng();
+                                setLocationCoordinates(autocomplete.key, lat, lng);
+                            }
+                        });
+
+                        if (!place.geometry) {
+                            window.alert("No details available for input: '" + place.name + "'");
+                            input.value = "";
+                            return;
+                        }
+
+                        if (place.geometry.viewport) {
+                            map.fitBounds(place.geometry.viewport);
+                        } else {
+                            map.setCenter(place.geometry.location);
+                            map.setZoom(17);
+                        }
+                        marker.setPosition(place.geometry.location);
+                        marker.setVisible(true);
+
+                    });
+                }
+            }
+
+            function setLocationCoordinates(key, lat, lng) {
+                const latitudeField = document.getElementById(key + "-" + "latitude");
+                const longitudeField = document.getElementById(key + "-" + "longitude");
+                latitudeField.value = lat;
+                longitudeField.value = lng;
+            }
         </script>
     @endpush
 </x-app-layout>

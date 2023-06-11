@@ -9,10 +9,12 @@ use App\Models\Market;
 use Exception;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\MarketExport;
+use App\Traits\MasterData;
 use Illuminate\Support\Facades\Cache;
 
 class MarketController extends Controller
 {
+    use MasterData;
     public $webspice;
     public $tableName;
     protected $markets;
@@ -58,7 +60,7 @@ class MarketController extends Controller
         # elequent join with question model
         $query->with('area');
         # Export
-        if (in_array($type=$request->submit_btn, array('export', 'csv', 'pdf'))) {
+        if (in_array($type = $request->submit_btn, array('export', 'csv', 'pdf'))) {
             $title = $fileTag . 'Market List';
             // $this->export($request->submit_btn,$query,$title);
             $fileName = str_replace(' ', '_', strtolower($title));
@@ -71,12 +73,12 @@ class MarketController extends Controller
         $markets = $query->paginate(5);
         // });
 
-        return view('market.index', compact('markets'));
+        $areas = MasterData::getMarket();
+
+        return view('market.index', compact('markets','areas'));
     }
 
-    public function export(String $type, $query, String $title)
-    {
-    }
+   
 
     /**
      * Show the form for creating a new resource.
@@ -228,6 +230,7 @@ class MarketController extends Controller
 
     public function forceDelete($id)
     {
+        return response()->json(['error' => 'Unauthenticated.'], 401);
         #permission verfy
         $this->webspice->permissionVerify('market.force_delete');
         try {

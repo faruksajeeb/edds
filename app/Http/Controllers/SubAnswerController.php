@@ -228,6 +228,7 @@ class SubAnswerController extends Controller
 
     public function forceDelete($id)
     {
+        return response()->json(['error' => 'Unauthenticated.'], 401);
         #permission verfy
         $this->webspice->permissionVerify('sub_answer.force_delete');
         try {

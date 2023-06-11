@@ -10,7 +10,7 @@
                         <div class="col-md-8">
                             <h5 class="card-title py-1"><i class="fa fa-table"></i>
                                 @if (request()->get('status') == 'archived')
-                                    Archived
+                                    Deleted
                                 @endif Markets
                             </h5>
                         </div>
@@ -20,7 +20,7 @@
                                     <li class="breadcrumb-item"><a href="#">Master Data</a></li>
                                     <li class="breadcrumb-item " aria-current="page">
                                         @if (request()->get('status') == 'archived')
-                                            Archived
+                                            Deleted
                                         @endif Markets
                                     </li>
                                 </ol>
@@ -30,11 +30,11 @@
                     <div class="row">
                         <div class="col-md-12">
                             @if (request()->get('status') != 'archived')
-                                <a href="{{ url('/markets?status=archived') }}">Archived Markets</a>
+                                <a href="{{ url('/markets?status=archived') }}">Deleted Markets</a>
                             @else
                                 <a href="{{ url('/markets') }}">Markets</a>
                             @endif
-                            @if ( (request()->get('status') == 'archived') && ($markets->total() >0))
+                            @if (request()->get('status') == 'archived' && $markets->total() > 0)
                                 @can('market.restore')
                                     <div class="float-end">
                                         <a href="" class="btn btn-primary btn-sm btn-restore-all"
@@ -58,45 +58,50 @@
                             <input type="hidden" name="status"
                                 value="{{ request()->get('status') == 'archived' ? 'archived' : '' }}">
                             <div class="row">
-                                <div class="col-md-3 col-sm-12">
+                                <div class="col-md-12 col-sm-12 px-0 input-group">
+                                    <select name="search_market" class="form-select" id="search_market">
+                                        <option value="">Select Area</option>
+                                        @foreach ($areas as $area)
+                                            <option value="{{ $area->id }}"
+                                                {{ request()->get('search_market') == $area->id ? 'selected' : '' }}>
+                                                {{ $area->value }}</option>
+                                        @endforeach
+                                    </select>
                                     <select name="search_status" class="form-select" id="search_status">
                                         <option value="">Select Status</option>
-                                        <option value="1">Active
+                                        <option value="1"
+                                            {{ request()->get('search_status') == 1 ? 'selected' : '' }}>Active
                                         </option>
-                                        <option value="-1">Inactive
+                                        <option value="-1"
+                                            {{ request()->get('search_status') == -1 ? 'selected' : '' }}>Inactive
                                         </option>
                                     </select>
+                                    <input type="text" name="search_text" value="{{ request()->get('search_text') }}"
+                                        class="form-control" placeholder="Search by text">
                                 </div>
-                                <div class="col-md-6 col-sm-12 px-0">
-                                    <div class="input-group">
-                                        <input type="text" name="search_text" value="" class="form-control"
-                                            placeholder="Search by text">
-                                        <div class="input-group-append">
-                                            <button class="btn btn-secondary mx-1" name="submit_btn" type="submit"
-                                                value="search">
-                                                <i class="fa fa-search"></i> Search
-                                            </button>
-                                            <a href='{{ request()->get('status') == 'archived' ? url('/markets?status=archived') : url('/markets') }}'
-                                                class="btn btn-xs btn-primary me-1"><i class="fa fa-refresh"></i></a>
-                                            @can('market.export')
-                                                {{-- <button class="btn btn-xs btn-danger float-end " name="submit_btn"
+                                <div class="col-md-12 col-sm-12 px-0 mt-1 input-group">
+                                    <button class="btn btn-secondary me-1 filter_btn" name="submit_btn" type="submit"
+                                        value="search">
+                                        <i class="fa fa-search"></i> Filter Data
+                                    </button>
+                                    <a href='{{ request()->get('status') == 'archived' ? url('/markets?status=archived') : url('/markets') }}'
+                                        class="btn btn-xs btn-primary me-1 refresh_btn"><i class="fa fa-refresh"></i>
+                                        Refresh</a>
+                                    @can('market.export')
+                                        {{-- <button class="btn btn-xs btn-danger float-end " name="submit_btn"
                                                 value="pdf" type="submit">
                                                 <i class="fa-solid fa-download"></i> PDF
                                             </button> --}}
-                                                <button class="btn btn-xs btn-info float-end me-1" name="submit_btn"
+                                        {{-- <button class="btn btn-xs btn-info float-end me-1" name="submit_btn"
                                                     value="csv" type="submit">
                                                     <i class="fa-solid fa-download"></i> CSV
-                                                </button>
+                                                </button> --}}
 
-                                                <button class="btn btn-xs btn-success float-end me-1" name="submit_btn"
-                                                    value="export" type="submit">
-                                                    <i class="fa-solid fa-download"></i> Export
-                                                </button>
-                                            @endcan
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-3 col-sm-12">
+                                        <button class="btn btn-xs btn-success float-end me-1 export_btn" name="submit_btn"
+                                            value="export" type="submit">
+                                            <i class="fa-solid fa-download"></i> Export
+                                        </button>
+                                    @endcan
                                     @can('market.create')
                                         <a href="{{ route('markets.create') }}"
                                             class="btn btn-xs btn-outline-primary float-end" name="create_new"
@@ -105,7 +110,6 @@
                                         </a>
                                     @endcan
                                 </div>
-
                             </div>
                         </form>
                         <table class="table mb-0">
@@ -155,8 +159,8 @@
                                         onclick="event.preventDefault(); restoreConfirmation({{ $val->id }})"><i
                                             class="fa-solid fa-trash-arrow-up"></i> Restore</a>
                                     <form id="restore-form-{{ $val->id }}"
-                                        action="{{ route('markets.restore', Crypt::encryptString($val->id)) }}"
-                                        method="POST" style="display: none">
+                                        action="{{ route('markets.restore', Crypt::encryptString($val->id)) }}" method="POST"
+                                        style="display: none">
                                         @method('POST')
                                         @csrf
                                     </form>
@@ -197,7 +201,7 @@
 
                         </td>
                         </tr>
-                        @empty
+                    @empty
                         <tr>
                             <td colspan="8" class="text-center">No records found. </td>
                         </tr>

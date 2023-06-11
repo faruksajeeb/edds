@@ -46,7 +46,7 @@ class UserResponse extends Model
     public function getResponseDateAttribute()
     {
         if ($this->attributes['response_date']!=null) {
-            return Carbon::createFromFormat('Y-m-d',$this->attributes['response_date'])->format('d/m/Y');
+            return Carbon::createFromFormat('Y-m-d',$this->attributes['response_date'])->format('F j, Y');
         }
     }
 

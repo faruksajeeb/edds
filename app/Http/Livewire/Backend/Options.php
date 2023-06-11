@@ -2,7 +2,7 @@
 
 namespace App\Http\Livewire\Backend;
 
-use PDF;
+
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\OptionExport;
 use App\Lib\Webspice;
@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\Cache;
+use PDF;
 
 class Options extends Component
 {
@@ -101,13 +102,13 @@ class Options extends Component
         if ($export == 'excelExport') {
             return Excel::download(new OptionExport($query->get()), 'option_data_' . time() . '.xlsx');
         }
-        // if($export=='pdfExport'){
-        //     # Generate PDF  
-        //     $data['option'] = $query->get();          
-        //     $pdf = PDF::loadView('livewire.option-group.table',$data);
-        //     $pdf->set_paper('letter', 'landscape');
-        //     return $pdf->download('option-groups-' . time() . '.pdf');
-        // }
+        if($export=='pdfExport'){
+            # Generate PDF  
+            $data['option'] = $query->get();          
+            $pdf = PDF::loadView('livewire.option.table',$data);
+            $pdf->set_paper('letter', 'landscape');
+            return $pdf->download('options-' . time() . '.pdf');
+        }
 
         if ($this->pazeSize != null) {
             $paze_size = $this->pazeSize;

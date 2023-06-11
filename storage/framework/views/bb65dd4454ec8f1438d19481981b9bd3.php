@@ -6,7 +6,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel"><i class="fa-solid fa-magnifying-glass"></i> User
-                        Response Detail ( <?php echo e($val->id); ?>)
+                        Response Detail 
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
                         wire:click.prevent='resetInput'></button>
@@ -19,7 +19,7 @@
                     </div>
                     <?php if(isset($val)): ?>
                         <fieldset class="reset">
-                            <legend class="reset">User Information</legend>
+                            <legend class="reset">Respondent Information</legend>
                             <table class="table">
                                 <tr>
                                     <td class="">
@@ -33,35 +33,37 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>User Name</td>
+                                    <td>Respondent Name</td>
                                     <td>: <?php echo e(isset($val->registered_user) ? $val->registered_user->full_name : ''); ?>
 
                                     </td>
-                                    <td>Mobile</td>
+                                    <td>Respondent Mobile</td>
                                     <td>: <?php echo e(isset($val->registered_user) ? $val->registered_user->mobile_no : ''); ?>
 
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>Email</td>
+                                    <td>Respondent Email</td>
                                     <td>: <?php echo e(isset($val->registered_user) ? $val->registered_user->email : ''); ?></td>
-                                    <td>Division</td>
-                                    <td>: <?php echo e(isset($val->registered_user) ? $val->registered_user->division : ''); ?></td>
+                                    <td>Response Division</td>
+                                    
+                                    <td>: <?php echo e(isset($val->response_division) ? $val->response_division : ''); ?></td>
                                 </tr>
                                 <tr>
-                                    <td>District</td>
-                                    <td>: <?php echo e(isset($val->registered_user) ? $val->registered_user->district : ''); ?></td>
-                                    <td>Thana</td>
-                                    <td>: <?php echo e(isset($val->registered_user) ? $val->registered_user->thana : ''); ?></td>
+                                    <td>Response District</td>
+                                    
+                                    <td colspan="3">: <?php echo e(isset($val->response_district) ? $val->response_district : ''); ?></td>
+                                    
                                 </tr>
+                                
                                 <tr>
-                                    <td>Area</td>
-                                    <td>: <?php echo e(isset($val->area) ? $val->area->value : ''); ?></td>
-                                    <td>Market</td>
-                                    <td>: <?php echo e(isset($val->market) ? $val->market->value : (($val->market_id==-100)?$val->market_other:'')); ?></td>
+                                    <td>Response Area</td>
+                                    <td colspan="2">: <?php echo e(isset($val->formatted_address) ? $val->formatted_address : ''); ?></td>
+                                    <td > <a href="https://www.google.com/maps/search/?api=1&query=<?php echo $val->response_location ?>" target="_blank" class="float-end"><i class="fa-solid fa-location-dot"></i> Response Location</a></td>
                                 </tr>
                             </table>
-                            <a href="https://www.google.com/maps/search/?api=1&query=<?php echo $val->location ?>" target="_blank">Response Location</a>
+                            <a href="https://www.google.com/maps/search/?api=1&query=<?php echo $val->location ?>" target="_blank" class="float-start">User Location</a>
+                           
 
                         </fieldset>
                         <fieldset class="reset">

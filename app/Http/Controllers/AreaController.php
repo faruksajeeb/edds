@@ -204,6 +204,7 @@ class AreaController extends Controller
 
     public function forceDelete($id)
     {
+        return response()->json(['error' => 'Unauthenticated.'], 401);
         #permission verfy
         $this->webspice->permissionVerify('area.force_delete');
         try {
