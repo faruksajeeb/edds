@@ -86,7 +86,7 @@
                             // $val->userResponseDetails->count();
                             $quesId = '';
                             foreach($val->userResponseDetails as $item):
-                                    $file = $item->question_id.'_'.$item->sub_question_id.'.jpg';
+                                    $file = $val->id.'_'.$item->question_id.'.jpg';
                             ?>
                                     <tr>
                                         <td>
@@ -95,7 +95,7 @@
                                                 {{ isset($item->question) ? $item->question->value : '' }}
                                                 <br/>
                                                 @if (Storage::disk('external')->exists($file))
-                                                    <a href="../edds_app/tmp_img/{{ $item->question_id . '_' . $item->sub_question_id }}.jpg"
+                                                    <a href="../edds_app/tmp_img/{{ $val->id . '_' . $item->question_id }}.jpg"
                                                         target="_blank">Uploaded Image</a>
                                                     {{-- <img src="../edds_app/tmp_img/{{$item->question_id.'_'.$item->sub_question_id}}.jpg" width="250" height="250" alt="Low-Resolution Image"> --}}
                                                 @endif

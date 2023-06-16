@@ -37,6 +37,7 @@ class CreatePermissionTables extends Migration
             $table->tinyInteger('status')->default(1);
             $table->integer('sl_order')->nullable();
             $table->timestamps();
+            $table->softDeletes();
             $table->bigInteger('created_by')->unsigned()->nullable();
             $table->bigInteger('updated_by')->unsigned()->nullable();
 

@@ -62,25 +62,31 @@
                                     <select name="search_category" class="form-select" id="search_category">
                                         <option value="">Select Category</option>
                                         @foreach ($categories as $category)
-                                            <option value="{{ $category->id }}" {{ request()->get('search_category') == $category->id ? 'selected' : '' }}>{{ $category->option_value }}
+                                            <option value="{{ $category->id }}"
+                                                {{ request()->get('search_category') == $category->id ? 'selected' : '' }}>
+                                                {{ $category->option_value }}
                                             </option>
                                         @endforeach
                                     </select>
                                     <select name="search_respondent" class="form-select" id="search_respondent">
                                         <option value="">Select Respondent</option>
                                         @foreach ($respondents as $respondent)
-                                            <option value="{{ $respondent->option_value }}" {{ request()->get('search_respondent') == $respondent->option_value ? 'selected' : '' }}>
+                                            <option value="{{ $respondent->option_value }}"
+                                                {{ request()->get('search_respondent') == $respondent->option_value ? 'selected' : '' }}>
                                                 {{ $respondent->option_value }}</option>
                                         @endforeach
                                     </select>
                                     <select name="search_status" class="form-select" id="search_status">
                                         <option value="">Select Status</option>
-                                        <option value="1" {{ request()->get('search_status') == '1' ? 'selected' : '' }}>Active
+                                        <option value="1"
+                                            {{ request()->get('search_status') == '1' ? 'selected' : '' }}>Active
                                         </option>
-                                        <option value="-1" {{ request()->get('search_status') == '-1' ? 'selected' : '' }}>Inactive
+                                        <option value="-1"
+                                            {{ request()->get('search_status') == '-1' ? 'selected' : '' }}>Inactive
                                         </option>
                                     </select>
-                                    <input type="text" name="search_text" value="{{request()->get('search_text')}}" class="form-control"
+                                    <input type="text" name="search_text"
+                                        value="{{ request()->get('search_text') }}" class="form-control"
                                         placeholder="Search by value, value bangla">
                                 </div>
                                 <div class="col-md-12 col-sm-12 px-0 input-group mt-1">
@@ -89,7 +95,8 @@
                                         <i class="fa fa-search"></i> Filter Data
                                     </button>
                                     <a href='{{ request()->get('status') == 'archived' ? url('/questions?status=archived') : url('/questions') }}'
-                                        class="btn btn-xs btn-primary me-1 refresh_btn"><i class="fa fa-refresh"></i> Refresh</a>
+                                        class="btn btn-xs btn-primary me-1 refresh_btn"><i class="fa fa-refresh"></i>
+                                        Refresh</a>
                                     @can('question.export')
                                         {{-- <button class="btn btn-xs btn-danger float-end me-1 export_btn" name="submit_btn" value="pdf"
                                             type="submit">
@@ -134,6 +141,7 @@
                                     <th>Value Bangla</th>
                                     <th>Category</th>
                                     <th>Respondent</th>
+                                    <th>Sub Questions</th>
                                     <th>Input Method</th>
                                     {{-- <th>Created At</th>
                                     <th>Updated At</th> --}}
@@ -147,8 +155,23 @@
                                         <td>{{ $index + $questions->firstItem() }}</td>
                                         <td>{{ $val->value }}</td>
                                         <td>{{ $val->value_bangla }}</td>
-                                        <td>{{ optional($val->option)->option_value }}</td>
+                                        <td>{{ optional($val->category)->option_value }}</td>
                                         <td>{{ $val->respondent }}</td>
+                                        <td>
+                                            @if ($val->subQuestions->count() > 0)
+                                                <dl class="row mb-0 sub_question" style="height: 20px; overflow: hidden"
+                                                    id="sub_question{{ $index }}">
+                                                    @foreach ($val->subQuestions as $key => $subQuestion)
+                                                        <dd class="col-sm-12 pb-0 ">
+                                                            {{ $key + 1 }}. {{ optional($subQuestion)->value }}
+                                                        </dd>
+                                                    @endforeach
+                                                </dl>
+                                                <button
+                                                    onclick="$('#sub_question{{ $index }}').toggleClass('h-auto')"
+                                                    class="btn btn-sm btn-link">Show more >></button>
+                                            @endif
+                                        </td>
                                         <td>{{ $val->input_method }}</td>
                                         {{-- <td>{{ $val->created_at }}</td>
                                         <td>{{ $val->updated_at }}</td> --}}
@@ -185,7 +208,8 @@
                                 @endcan
                                 {{-- force delete button --}}
                                 @can('question.force_delete')
-                                    <a href="" class="disabled btn btn-danger btn-sm btn-force-delete-{{ $val->id }}"
+                                    <a href=""
+                                        class="disabled btn btn-danger btn-sm btn-force-delete-{{ $val->id }}"
                                         onclick="event.preventDefault(); forceDelete({{ $val->id }})"><i
                                             class="fa-solid fa-remove "></i> Force Delete</a>
                                     <form id="force-delete-form-{{ $val->id }}" style="display: none"
@@ -221,7 +245,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="text-center">No records found. </td>
+                            <td colspan="9" class="text-center">No records found. </td>
                         </tr>
                         @endforelse
                         </tbody>

@@ -44,7 +44,8 @@
                 </div>
                 <div class="card-body  p-3">
                     <form action="<?php echo e(route('users.store')); ?>" method="POST" class="needs-validation" novalidate>
-                        <?php echo csrf_field(); ?>
+                        <?php echo method_field('POST'); ?>
+                    <?php echo csrf_field(); ?>
                         <div class="row  p-3">
                             <div class="col-md-5 border border-1  p-3">
                                 <div class="form-group">

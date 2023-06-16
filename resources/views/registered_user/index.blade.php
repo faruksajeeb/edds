@@ -780,6 +780,7 @@
                                     <th>Division</th>
                                     <th>District</th>
                                     <th>Thana</th>
+                                    <th>Response Total</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -798,6 +799,7 @@
                                         <td>{{ $val->division }}</td>
                                         <td>{{ $val->district }}</td>
                                         <td>{{ $val->thana }}</td>
+                                        <td>{{ $val->responses->count() }}</td>
                                         <td class="text-nowrap">
                                             @if (request()->get('status') == 'archived')
                                                 {{-- restore button --}}

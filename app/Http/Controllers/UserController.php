@@ -15,9 +15,7 @@ use App\Exports\UserExport;
 
 class UserController extends Controller
 {
-    /**
-     * The user repository instance.
-     */
+
     protected $webspice;
     protected $user;
     protected $tableName;
@@ -34,11 +32,7 @@ class UserController extends Controller
         });
         $this->users = $users;
     }
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index(Request $request)
     {
         #permission verfy
@@ -78,12 +72,6 @@ class UserController extends Controller
     }
 
 
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create()
     {
         #permission verfy
@@ -96,14 +84,9 @@ class UserController extends Controller
         return view('users.create', compact('roles', 'permissions', 'permission_groups'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
+       
         #permission verfy
         $this->webspice->permissionVerify('user.create');
 
@@ -126,6 +109,7 @@ class UserController extends Controller
             $user = new User();
             $user->name = $request->name;
             $user->email = $request->email;
+
             $user->password = Hash::make($request->password);
             $user->created_at = $this->webspice->now('datetime24');
             $user->created_by = $this->webspice->getUserId();
@@ -153,24 +137,13 @@ class UserController extends Controller
         return redirect('users');
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+
     public function show($id)
     {
         #permission verfy
         $this->webspice->permissionVerify('user.view');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function edit($id)
     {
         #permission verfy
@@ -192,13 +165,7 @@ class UserController extends Controller
         ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+
     public function update(Request $request, $id)
     {
         #permission verfy
@@ -226,6 +193,7 @@ class UserController extends Controller
             $user->name = $request->name;
             $user->email = $request->email;
             if ($request->password) {
+               
                 $user->password = Hash::make($request->password);
             }
             $user->updated_at = $this->webspice->now('datetime24');
@@ -248,33 +216,11 @@ class UserController extends Controller
         return redirect('users');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        #permission verfy
-        $this->webspice->permissionVerify('user.delete');
-        try {
-            # decrypt value
-            $id = $this->webspice->encryptDecrypt('decrypt', $id);
-            $user = $this->users->find($id);
-            if (!is_null($user)) {
-                $user->delete();
-            }
-        } catch (Exception $e) {
-            $this->webspice->message('error', $e->getMessage());
-        }
-
-        return redirect()->back();
-    }
-
     public function changePassword(Request $request)
     {
+      
         if ($request->all()) {
+           
             $request->validate(
                 [
                     'old_password' => 'required',
@@ -299,6 +245,25 @@ class UserController extends Controller
         }
         return view('users.change-password');
     }
+
+    public function destroy($id)
+    {
+        #permission verfy
+        $this->webspice->permissionVerify('user.delete');
+        try {
+            # decrypt value
+            $id = $this->webspice->encryptDecrypt('decrypt', $id);
+            $user = $this->users->find($id);
+            if (!is_null($user)) {
+                $user->delete();
+            }
+        } catch (Exception $e) {
+            $this->webspice->message('error', $e->getMessage());
+        }
+
+        return redirect()->back();
+    }
+
 
     public function userProfile()
     {

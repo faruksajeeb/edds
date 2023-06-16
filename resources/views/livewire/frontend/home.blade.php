@@ -58,6 +58,12 @@
             /* transform: scale(1.1,1.1); */
             /* transition: 0.3s; */
         }
+        .slider-section{
+            background-image: url("{{asset('/uploads/')}}/edds_bg.png");
+            /* opacity: 0.75; */
+            /* style="background-color: #F5F0BB;" */
+            /* background-color: rgba(255, 0, 0, 0.5); */
+        }
     </style>
 @endpush
 
@@ -74,12 +80,12 @@
 @php
     //dd(\App\Lib\Webspice::appUrl());
 @endphp
-<div class="container-fluid mx-0 px-0">
+<div class="container-fluid mx-0 px-0 ">
     <div class="container-fluid header-section py-3">
-        <div class="container">
+        <div class="container" >
             <!-- navigation -->
             <header class="navigation">
-                <nav class="navbar navbar-expand-xl navbar-light text-center py-3">
+                <nav class="navbar sticky-top navbar-expand-xl navbar-light text-center py-3">
                     <div class="container">
                         <a class="navbar-brand" href="{{ route('/') }}">
                             <img loading="prelaod" decoding="async" class="img-fluid" width="160"
@@ -133,13 +139,13 @@
             <!-- /navigation -->
         </div>
     </div>
-    <div class="container-fluid slider-section h-100 mx-0 px-0 py-5 " style="background-color: #F5F0BB">
+    <div class="container-fluid slider-section h-100 mx-0 px-0 py-5 " >
 
         <div class="container my-3">
             <div class="row align-items-md-stretch">
                 @foreach ($categories as $category)
-                    <div class="col-md-4 my-3">
-                        <div class="h-100 p-4 text-dark bg-white rounded-3 text-center category-item">
+                    <div class="col-md-4 my-3 ">
+                        <div class="h-100 p-4 text-dark bg-white rounded-1 text-center category-item">
                             <div class="iconBox">
                                 {{-- <i class="fa fa-eye"></i> --}}
                                 <span
@@ -216,14 +222,14 @@
     <div class="container-fluid  map-section mx-0 px-2 py-5 " style="background-color: #EEEEEE">
         <div class="container">
             <div class="row m-0 p-0">
-                <div class="col-md-12 py-5">
+                <div class="col-md-12 py-4">
                     <h3 class="text-center">{{ __('text.map_section_title') }}</h3>
                 </div>
             </div>
             <div class="row m-0 p-0" id="gallery-section">
                 {{-- <div id="thumbnail-gallery-container"> --}}
                 @foreach ($categories as $category)
-                    <div class="col-md-4 text-center">
+                    <div class="col-md-4 text-center mt-3">
                         <div class="card border-0 rounded-0">
                             <div class="card-header fw-bold " style="background-color: #F2CD5C">
                                 {{ session()->get('locale') == 'bn' ? $category['category_name_bangla'] : $category['category_name'] }}
@@ -969,27 +975,27 @@
                                     </svg>
                                 </button>
                             </div>
+                            <div class="card-footer m-0 p-0">
+                                <div class="row m-0 p-0">
+                                    <div class="col-md-4 py-1 text-center" style="font-size:10px;background-color:#F8AFA6">
+                                        Threshold Min
+                                    </div>
+                                    <div class="col-md-4 py-1 text-center" style="font-size:10px;background-color:#fb6a4a">
+                                        Threshold Mid
+                                    </div>
+                                    <div class="col-md-4 py-1 text-center" style="font-size:10px;background-color:#de2d26;color:white">
+                                        Threshold Max
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 @endforeach
                 {{-- </div> --}}
-                <!-- thumbnail-gallery-container -->
-                <!--- Lightbox overlay. Below content is hidden until :target activated --->
-
 
                 <!-- partial -->
             </div>
-            <div class="row m-0 p-0">
-                <div class="col-md-12 py-2 text-center mt-2">
-                    <span class='thrashold_min p-2' style="width:100px; background-color:#F8AFA6">Threshold
-                        Min</span>
-                    <span class='thrashold_mid p-2' style="width:100px; background-color:#fb6a4a">Threshold
-                        Mid</span>
-                    <span class='thrashold_max p-2'
-                        style="width:100px; background-color:#de2d26; color:white">Threshold
-                        Max</span>
-                </div>
-            </div>
+
             <div class="row m-0 p-0">
                 @foreach ($categories as $category)
                     <div class="modal fade" id="details-modal-{{ $category['category_id'] }}" tabindex="-1"

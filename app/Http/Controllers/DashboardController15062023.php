@@ -61,9 +61,9 @@ class DashboardController extends Controller
             foreach($divisions as $key=>$division){
                 $query = UserResponseDetail::leftJoin('user_responses','user_responses.id','=','user_response_details.response_id')
                 ->leftJoin('questions','questions.id','=','user_response_details.question_id')
-                // ->leftJoin('registered_users','registered_users.id','=','user_responses.registered_user_id')
+                ->leftJoin('registered_users','registered_users.id','=','user_responses.registered_user_id')
                 ->where('questions.category_id',$category->id)
-                ->where('user_responses.response_division',$division->division_name);
+                ->where('registered_users.division',$division->division_name);
                 $query->where('user_responses.status', 2);
                 $query->whereBetween('user_responses.response_date',[$date_from,$date_to]);
                 if ($category->option_value == 'LBM Worker') {

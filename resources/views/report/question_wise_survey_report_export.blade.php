@@ -51,8 +51,8 @@
             <td colspan="2">
                 District: {{ $district }}
             </td>
-            <td colspan="2">
-                Thana: {{ $thana }}
+            <td colspan="1">
+                {{-- Thana: {{ $thana }} --}}
             </td>
             <td colspan="2" style="text-align:right!important">
                 Date From: {{ $date_from }} Date To: {{ $date_to }}
@@ -60,7 +60,7 @@
         </tr>
         @foreach ($records as $key => $category)
             <tr style="">
-                <td colspan="8" style="padding:15px;background-color: #F5DEB3;"><b># Category:
+                <td colspan="7" style="padding:15px;background-color: #F5DEB3;"><b># Category:
                         {{ $category['category_name'] != '' ? $category['category_name'] : 'Not Assigned' }}</b>
                 </td>
             </tr>
@@ -68,7 +68,7 @@
 
             @foreach ($category['category_records'] as $k => $question)
                 <tr style="">
-                    <td colspan="8" style="padding:15px;background-color: #F5DEB3;"><b>## Question:
+                    <td colspan="7" style="padding:15px;background-color: #F5DEB3;"><b>## Question:
                             {{ $question['question'] != '' ? $question['question'] : 'Not Assigned' }}</b>
                     </td>
                 </tr>
@@ -78,8 +78,9 @@
                     <td>Response Date</td>
                     <td>Response By</td>
                     <td>Mobile No</td>
-                    <td>Area</td>
-                    <td>Market</td>
+                    <td>Location</td>
+                    {{-- <td>Area</td>
+                    <td>Market</td> --}}
                     {{-- <td>Category</td>
             <td>Question</td> --}}
                     {{-- <td>Question ID</td> --}}
@@ -109,8 +110,9 @@
                         <td>{{ $val->response_date }}</td>
                         <td>{{ $val->full_name }}</td>
                         <td>{{ $val->mobile_no }}</td>
-                        <td>{{ $val->area_name }}</td>
-                        <td>{{ $val->market_name }}</td>
+                        <td>{{ $val->formatted_address }}</td>
+                        {{-- <td>{{ $val->area_name }}</td>
+                        <td>{{ $val->market_name }}</td> --}}
                         {{-- <td>{{ $val->category_name }}</td>
                     <td>{{ $val->question }}</td> --}}
                         {{-- <td>{{ $val->question_id }}</td>

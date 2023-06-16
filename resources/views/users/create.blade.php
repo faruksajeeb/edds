@@ -36,7 +36,8 @@
                 </div>
                 <div class="card-body  p-3">
                     <form action="{{ route('users.store') }}" method="POST" class="needs-validation" novalidate>
-                        @csrf
+                        @method('POST')
+                    @csrf
                         <div class="row  p-3">
                             <div class="col-md-5 border border-1  p-3">
                                 <div class="form-group">
@@ -69,7 +70,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="">Password</label>
-                                    <input type="password" name='password' value="{{ old('password') }}"
+                                    <input type="password" name='password' value="{{old('password')}}"
                                         class="form-control" required>
                                     @if ($errors->has('password'))
                                         @error('password')

@@ -753,7 +753,7 @@ class Webspice
 	function convertToBanglaDivision($division)
 	{
 		if ($division) {
-			$englishDivisions = array('Dhaka', "Chattogram", 'Barishal', 'Khulna', 'Mymensingh', 'Rajshahi', 'Rangpur', 'Sylhet');
+			$englishDivisions = array('Dhaka', "Chittagong", 'Barishal', 'Khulna', 'Mymensingh', 'Rajshahi', 'Rangpur', 'Sylhet');
 			$banglaDivisions = array('ঢাকা', "চট্টগ্রাম", 'বরিশাল', 'খুলনা', 'ময়মনসিংহ', 'রাজশাহী', 'রংপুর', 'সিলেট');
 
 			$converted = str_replace($englishDivisions, $banglaDivisions, $division);

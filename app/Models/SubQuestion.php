@@ -31,6 +31,6 @@ class SubQuestion extends Model
     
     public function question() : BelongsTo
     {
-        return $this->belongsTo(Question::class,'question_id','id')->withTrashed()->withDefault(['value'=>'']);
+        return $this->belongsTo(Question::class)->withTrashed()->withDefault(['value'=>'']);
     }
 }

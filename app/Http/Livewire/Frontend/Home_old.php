@@ -29,7 +29,6 @@ class Home extends Component
         }
 
         $cacheName = 'active-divisions';
-        $this->webspice->forgetCache($cacheName);
         if (!$this->webspice->getCache($cacheName)) {
             $divisions = Division::where(['status' => 1])->get();
             $this->webspice->createCache($cacheName, $divisions);
@@ -66,10 +65,9 @@ class Home extends Component
             foreach ($categories as $category) :
                 $query = UserResponseDetail::leftJoin('questions', 'questions.id', '=', 'user_response_details.question_id');
                 $query->leftJoin('user_responses', 'user_responses.id', '=', 'user_response_details.response_id');
-                // $query->leftJoin('registered_users', 'registered_users.id', '=', 'user_responses.registered_user_id');
+                $query->leftJoin('registered_users', 'registered_users.id', '=', 'user_responses.registered_user_id');
                 $query->where('questions.category_id', $category->id);
-                // $query->where('registered_users.division', $division->division_name);
-                $query->where('user_responses.response_division', $division->division_name);
+                $query->where('registered_users.division', $division->division_name);
                 $query->where('user_responses.status', 2);
                 $query->whereBetween('user_responses.response_date',[Carbon::today()->subDays(7)->toDateString(),Carbon::today()->toDateString()]);
                 if ($category->option_value == 'LBM Worker') {
@@ -89,8 +87,8 @@ class Home extends Component
         // if($request->category){
         //     $selectedCategory = $request->category;
         // }
-        $regionWiseColorMapRecords = DB::select("SELECT district, 
-        SUM(CASE WHEN category='Poultry' THEN response ELSE 0 END) TOTAL_POULTRY,
+        $regionWiseColorMapRecords = DB::select("
+        SELECT district, SUM(CASE WHEN category='Poultry' THEN response ELSE 0 END) TOTAL_POULTRY,
         SUM(CASE WHEN category='Wild Bird' THEN response ELSE 0 END) TOTAL_WILD_BIRD,
         COUNT(DISTINCT(CASE WHEN category='LBM Worker' THEN response_id END)) TOTAL_LBM_WORKER
         FROM(
@@ -98,15 +96,16 @@ class Home extends Component
         user_responses.status,user_responses.registered_user_id, user_responses.response_date,
         questions.category_id,
         options.option_value AS category,
-        user_responses.response_division as division, user_responses.response_district as district
+        registered_users.division, registered_users.district
         FROM user_response_details
         LEFT JOIN user_responses ON user_responses.id = user_response_details.response_id
         LEFT JOIN questions ON questions.id = user_response_details.question_id
         LEFT JOIN `options` ON options.id = questions.category_id
-        -- LEFT JOIN registered_users ON registered_users.id = user_responses.registered_user_id
+        LEFT JOIN registered_users ON registered_users.id = user_responses.registered_user_id
         ) TBL_RES
         WHERE status=2 AND response_date >= DATE(NOW() - INTERVAL 7 DAY)
         GROUP BY district");
+
       
         return view('livewire.frontend.home', [
             'selectedCategory' => $selectedCategory,

@@ -5,12 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Option extends Model
 {
-    use HasFactory,SoftDeletes;
+    use HasFactory, SoftDeletes;
 
-    public $fillable=[
+    public $fillable = [
         'id',
         'option_group_name',
         'option_value',
@@ -22,4 +23,9 @@ class Option extends Model
     ];
 
     protected $dates = ['deleted_at'];
+
+    public function questions()
+    {
+        return $this->hasMany(Question::class, 'category_id', 'id')->withTrashed();
+    }
 }

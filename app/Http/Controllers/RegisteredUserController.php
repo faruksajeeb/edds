@@ -45,6 +45,7 @@ class RegisteredUserController extends Controller
         } else {
             $query = $this->registered_users->orderBy('created_at', 'desc');
         }
+        $query->with('responses');
         # Start Filter Section        
 
         if ($request->respondent_type != null) {

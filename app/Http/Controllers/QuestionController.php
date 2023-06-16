@@ -68,7 +68,7 @@ class QuestionController extends Controller implements Crud
                     ->orWhere('value_bangla', 'LIKE', '%' . $searchText . '%');
             });
         }
-        $query->with('option');
+        $query->with('category','subQuestions');
         if (in_array($type = $request->submit_btn, array('export', 'csv', 'pdf'))) {
             $title = $fileTag . 'Question List';
             // $this->export($request->submit_btn,$query,$title);

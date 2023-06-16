@@ -59,7 +59,6 @@
                             <input type="hidden" name="status"
                                 value="{{ request()->get('status') == 'archived' ? 'archived' : '' }}">
                             <div class="row">
-
                                 <div class="col-md-12 col-sm-12 px-0">
                                     <div class="input-group my-1">
                                         <select name="search_division" class="form-select" id="drpDivision">
@@ -756,55 +755,49 @@
                                                 {{ request()->get('search_status') == '1' ? 'selected' : '' }}>Pending
                                             </option>
                                         </select>
+                                        <input type="text" name="search_text"
+                                            value="{{ request()->get('search_text') }}" class="form-control"
+                                            placeholder="Search by name/mobile/email/gender">
+                                    </div>
+                                    <div class="input-group input-daterange my-1">
+                                        <input type="text" class="form-control datepicker" name="date_from"
+                                            placeholder="Date From" value="{{ request()->get('date_from') }}"
+                                            aria-label="DateFrom">
+                                        <span class="input-group-text">to</span>
+                                        <input type="text" class="form-control datepicker" name="date_to"
+                                            placeholder="Date To" value="{{ request()->get('date_to') }}"
+                                            aria-label="DateTo">
 
-
-
-                                        <div class="input-group input-daterange my-1">
-                                            <input type="text" name="search_text"
-                                                value="{{ request()->get('search_text') }}" class="form-control"
-                                                placeholder="Search by name/mobile/email/gender">
-
-                                            <input type="text" class="form-control datepicker" name="date_from"
-                                                placeholder="Date From" value="{{ request()->get('date_from') }}"
-                                                aria-label="DateFrom">
-                                            <span class="input-group-text">to</span>
-                                            <input type="text" class="form-control datepicker" name="date_to"
-                                                placeholder="Date To" value="{{ request()->get('date_to') }}"
-                                                aria-label="DateTo">
-
-                                            {{-- <input type="text" class="form-control" value="2012-04-05">
+                                        {{-- <input type="text" class="form-control" value="2012-04-05">
                                             <div class="input-group-addon">to</div>
                                             <input type="text" class="form-control" value="2012-04-19"> --}}
-
-                                            <div class="input-group-append">
-                                                <button class="btn btn-secondary mx-1 filter_btn" name="submit_btn"
-                                                    type="submit" value="search">
-                                                    <i class="fa fa-search"></i> Filter Data
-                                                </button>
-                                                <a href='{{ request()->get('status') == 'archived' ? url('/user_responses?status=archived') : url('/user_responses') }}'
-                                                    class="btn btn-xs btn-primary me-1 refresh_btn"><i
-                                                        class="fa fa-refresh"></i> Refresh</a>
-                                                @can('user_response.export')
-                                                    {{-- <button class="btn btn-xs btn-danger float-end " name="submit_btn"
+                                        <button class="btn btn-secondary mx-1 filter_btn" name="submit_btn"
+                                            type="submit" value="search">
+                                            <i class="fa fa-search"></i> Filter Data
+                                        </button>
+                                        <a href='{{ request()->get('status') == 'archived' ? url('/user_responses?status=archived') : url('/user_responses') }}'
+                                            class="btn btn-xs btn-primary me-1 refresh_btn"><i
+                                                class="fa fa-refresh"></i> Refresh</a>
+                                        @can('user_response.export')
+                                            {{-- <button class="btn btn-xs btn-danger float-end " name="submit_btn"
                                                     value="pdf" type="submit">
                                                     <i class="fa-solid fa-download"></i> PDF
                                                 </button> --}}
-                                                    {{-- <button class="btn btn-xs btn-info float-end me-1 export_btn" name="submit_btn"
+                                            {{-- <button class="btn btn-xs btn-info float-end me-1 export_btn" name="submit_btn"
                                                         value="csv" type="submit">
                                                         <i class="fa-solid fa-download"></i> CSV
                                                     </button> --}}
 
-                                                    <button class="btn btn-xs btn-success float-end me-1 export_btn"
-                                                        name="submit_btn" value="export" type="submit">
-                                                        <i class="fa-solid fa-download"></i> Export
-                                                    </button>
-                                                @endcan
-                                            </div>
-                                        </div>
+                                            <button class="btn btn-xs btn-success float-end export_btn"
+                                                name="submit_btn" value="export" type="submit">
+                                                <i class="fa-solid fa-download"></i> Export
+                                            </button>
+                                        @endcan
                                     </div>
-
                                 </div>
-                                {{-- <div class="col-md-3 col-sm-12">
+
+                            </div>
+                            {{-- <div class="col-md-3 col-sm-12">
                                     @can('user_response.create')
                                          <a href="{{ route('user_responses.create') }}"
                                             class="btn btn-xs btn-outline-primary float-end" name="create_new"
@@ -814,134 +807,132 @@
                                     @endcan
                                 </div> --}}
 
-                            </div>
-                        </form>
-                        <table class="table mb-0">
-                            <thead>
+                    </div>
+                    </form>
+                    <table class="table mb-0">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Response Date</th>
+                                <th>User Name</th>
+                                <th>Email</th>
+                                <th>Mobile</th>
+                                <th>Gender</th>
+                                <th>Respondent</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($user_responses as $index => $val)
                                 <tr>
-                                    <th>#</th>
-                                    <th>Response Date</th>
-                                    <th>User Name</th>
-                                    <th>Email</th>
-                                    <th>Mobile</th>
-                                    <th>Gender</th>
-                                    <th>Respondent</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse ($user_responses as $index => $val)
-                                    <tr>
-                                        <td>{{ $index + $user_responses->firstItem() }}</td>
-                                        <td>{{ $val->response_date }}</td>
-                                        <td>{{ isset($val->registered_user) ? $val->registered_user->full_name : '' }}
-                                        </td>
-                                        <td>{{ isset($val->registered_user) ? $val->registered_user->email : '' }}</td>
-                                        <td>{{ isset($val->registered_user) ? $val->registered_user->mobile_no : '' }}
-                                        </td>
-                                        <td>{{ isset($val->registered_user) ? $val->registered_user->gender : '' }}
-                                        </td>
-                                        {{-- <td>{{ isset($val->registered_user->respondent) ? $val->registered_user->respondent->option_value : '' }} --}}
-                                        <td>{{ isset($val->registered_user) ? $val->registered_user->respondent_type : '' }}
-                                        </td>
-                                        <td>
-                                            @if ($val->status == 1)
-                                                <span class="badge bg-info">Pending</span>
-                                            @elseif($val->status == 2)
-                                                <span class="badge bg-success">Verified</span>
-                                            @endif
-                                        </td>
+                                    <td>{{ $index + $user_responses->firstItem() }}</td>
+                                    <td>{{ $val->response_date }}</td>
+                                    <td>{{ isset($val->registered_user) ? $val->registered_user->full_name : '' }}
+                                    </td>
+                                    <td>{{ isset($val->registered_user) ? $val->registered_user->email : '' }}</td>
+                                    <td>{{ isset($val->registered_user) ? $val->registered_user->mobile_no : '' }}
+                                    </td>
+                                    <td>{{ isset($val->registered_user) ? $val->registered_user->gender : '' }}
+                                    </td>
+                                    {{-- <td>{{ isset($val->registered_user->respondent) ? $val->registered_user->respondent->option_value : '' }} --}}
+                                    <td>{{ isset($val->registered_user) ? $val->registered_user->respondent_type : '' }}
+                                    </td>
+                                    <td>
+                                        @if ($val->status == 1)
+                                            <span class="badge bg-info">Pending</span>
+                                        @elseif($val->status == 2)
+                                            <span class="badge bg-success">Verified</span>
+                                        @endif
+                                    </td>
 
 
-                                        <td class="text-nowrap">
-                                            @if (request()->get('status') == 'archived')
-                                                {{-- restore button --}}
-                                                @can('user_response.restore')
+                                    <td class="text-nowrap">
+                                        @if (request()->get('status') == 'archived')
+                                            {{-- restore button --}}
+                                            @can('user_response.restore')
+                                                <a href=""
+                                                    class="btn btn-primary btn-sm btn-restore-{{ $val->id }}"
+                                                    onclick="event.preventDefault(); restoreConfirmation({{ $val->id }})"><i
+                                                        class="fa-solid fa-trash-arrow-up"></i> Restore</a>
+                                                <form id="restore-form-{{ $val->id }}"
+                                                    action="{{ route('user_responses.restore', Crypt::encryptString($val->id)) }}"
+                                                    method="POST" style="display: none">
+                                                    @method('POST')
+                                                    @csrf
+                                                </form>
+                                            @endcan
+                                            {{-- force delete button --}}
+                                            @can('user_response.force_delete')
+                                                <a href=""
+                                                    class="btn btn-danger btn-sm btn-force-delete-{{ $val->id }}"
+                                                    onclick="event.preventDefault(); forceDelete({{ $val->id }})"><i
+                                                        class="fa-solid fa-remove"></i> Force Delete</a>
+                                                <form id="force-delete-form-{{ $val->id }}" style="display: none"
+                                                    action="{{ route('user_responses.force-delete', Crypt::encryptString($val->id)) }}"
+                                                    method="POST">
+                                                    @method('DELETE')
+                                                    @csrf
+                                                </form>
+                                            @endcan
+                                        @else
+                                            {{-- edit button --}}
+                                            @can('user_response.edit')
+                                                @if ($val->status == 1)
+                                                    {{-- <a href="{{ route('user_responses.edit', Crypt::encryptString($val->id)) }}"
+                                            class="btn btn-outline-warning btn-sm"><i class="fa-solid fa-pencil"></i> Edit</a> --}}
+                                                @endif
+                                            @endcan
+                                            {{-- edit button --}}
+                                            @can('user_response.verify')
+                                                @if ($val->status == 1)
                                                     <a href=""
-                                                        class="btn btn-primary btn-sm btn-restore-{{ $val->id }}"
-                                                        onclick="event.preventDefault(); restoreConfirmation({{ $val->id }})"><i
-                                                            class="fa-solid fa-trash-arrow-up"></i> Restore</a>
-                                                    <form id="restore-form-{{ $val->id }}"
-                                                        action="{{ route('user_responses.restore', Crypt::encryptString($val->id)) }}"
-                                                        method="POST" style="display: none">
-                                                        @method('POST')
+                                                        class="btn btn-outline-success btn-sm btn-verify-{{ $val->id }}"
+                                                        onclick="event.preventDefault(); confirmVerify({{ $val->id }})"><i
+                                                            class="fas fa-check"></i> Verify</a>
+                                                    <form id="verify-form-{{ $val->id }}" style="display: none"
+                                                        action="{{ route('user_responses.verify', Crypt::encryptString($val->id)) }}"
+                                                        method="POST">
+                                                        @method('PUT')
                                                         @csrf
                                                     </form>
-                                                @endcan
-                                                {{-- force delete button --}}
-                                                @can('user_response.force_delete')
+                                                @endif
+                                            @endcan
+                                            <button class="btn btn-sm btn-secondary me-1 mt-1" data-bs-toggle="modal"
+                                                data-bs-target="#details-modal-{{ $val->id }}">
+                                                <i class="fa-solid fa-magnifying-glass-plus"></i></button>
+
+                                            {{-- delete button --}}
+                                            @can('user_response.delete')
+                                                @if ($val->status == 1)
                                                     <a href=""
-                                                        class="btn btn-danger btn-sm btn-force-delete-{{ $val->id }}"
-                                                        onclick="event.preventDefault(); forceDelete({{ $val->id }})"><i
-                                                            class="fa-solid fa-remove"></i> Force Delete</a>
-                                                    <form id="force-delete-form-{{ $val->id }}"
-                                                        style="display: none"
-                                                        action="{{ route('user_responses.force-delete', Crypt::encryptString($val->id)) }}"
+                                                        class="btn btn-outline-danger btn-sm btn-delete-{{ $val->id }}"
+                                                        onclick="event.preventDefault(); confirmDelete({{ $val->id }})"><i
+                                                            class="fa-solid fa-trash"></i> Delete</a>
+                                                    <form id="delete-form-{{ $val->id }}" style="display: none"
+                                                        action="{{ route('user_responses.destroy', Crypt::encryptString($val->id)) }}"
                                                         method="POST">
                                                         @method('DELETE')
                                                         @csrf
                                                     </form>
-                                                @endcan
-                                            @else
-                                                {{-- edit button --}}
-                                                @can('user_response.edit')
-                                                    @if ($val->status == 1)
-                                                        {{-- <a href="{{ route('user_responses.edit', Crypt::encryptString($val->id)) }}"
-                                            class="btn btn-outline-warning btn-sm"><i class="fa-solid fa-pencil"></i> Edit</a> --}}
-                                                    @endif
-                                                @endcan
-                                                {{-- edit button --}}
-                                                @can('user_response.verify')
-                                                    @if ($val->status == 1)
-                                                        <a href=""
-                                                            class="btn btn-outline-success btn-sm btn-verify-{{ $val->id }}"
-                                                            onclick="event.preventDefault(); confirmVerify({{ $val->id }})"><i
-                                                                class="fas fa-check"></i> Verify</a>
-                                                        <form id="verify-form-{{ $val->id }}" style="display: none"
-                                                            action="{{ route('user_responses.verify', Crypt::encryptString($val->id)) }}"
-                                                            method="POST">
-                                                            @method('PUT')
-                                                            @csrf
-                                                        </form>
-                                                    @endif
-                                                @endcan
-                                                <button class="btn btn-sm btn-secondary me-1 mt-1"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#details-modal-{{ $val->id }}">
-                                                    <i class="fa-solid fa-magnifying-glass-plus"></i></button>
+                                                @endif
+                                            @endcan
+                                        @endif
 
-                                                {{-- delete button --}}
-                                                @can('user_response.delete')
-                                                    @if ($val->status == 1)
-                                                        <a href=""
-                                                            class="btn btn-outline-danger btn-sm btn-delete-{{ $val->id }}"
-                                                            onclick="event.preventDefault(); confirmDelete({{ $val->id }})"><i
-                                                                class="fa-solid fa-trash"></i> Delete</a>
-                                                        <form id="delete-form-{{ $val->id }}" style="display: none"
-                                                            action="{{ route('user_responses.destroy', Crypt::encryptString($val->id)) }}"
-                                                            method="POST">
-                                                            @method('DELETE')
-                                                            @csrf
-                                                        </form>
-                                                    @endif
-                                                @endcan
-                                            @endif
-
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="9" class="text-center">No records found. </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                        {{ $user_responses->withQueryString()->links() }}
-                    </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="9" class="text-center">No records found. </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                    {{ $user_responses->withQueryString()->links() }}
                 </div>
             </div>
         </div>
+    </div>
     </div>
     @include('user_response.detail')
     @push('scripts')

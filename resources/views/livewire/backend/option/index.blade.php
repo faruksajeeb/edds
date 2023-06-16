@@ -30,8 +30,7 @@
                                 {{-- @if ($loggedUser && $loggedUser->can('option_group.create')) --}}
                                 <!-- Button trigger modal -->
                                 <button type="button" class="btn btn-sm btn-outline-primary float-end me-1"
-                                    data-bs-toggle="modal" data-bs-target="#addModal"
-                                    wire:click="resetInputFields()">
+                                    data-bs-toggle="modal" data-bs-target="#addModal" wire:click="resetInputFields()">
                                     <i class="fa-solid fa-plus"></i> Create New
                                 </button>
                                 {{-- <a href="{{ route('users.create') }}" class="btn btn-xs btn-outline-primary float-end"
@@ -113,6 +112,7 @@
                                     <th>Option Value</th>
                                     <th>Option Value2</th>
                                     <th>Option Value3</th>
+                                    {{-- <th>Questions</th> --}}
                                     <th>Status</th>
                                     {{-- <th>Created At</th>
                                     <th>Updated At</th> --}}
@@ -127,6 +127,13 @@
                                         <td>{{ str_replace('_', ' ', $val->option_value) }}</td>
                                         <td>{{ str_replace('_', ' ', $val->option_value2) }}</td>
                                         <td>{{ str_replace('_', ' ', $val->option_value3) }}</td>
+                                        <td>
+                                            {{-- @if (isset($val->questions))
+                                                @foreach ($val->questions as $question)
+                                                    {{ $question->value }}
+                                                @endforeach
+                                            @endif --}}
+                                        </td>
                                         <td>
                                             <div class="form-check form-switch">
                                                 <input class="form-check-input active_inactive_btn "
@@ -152,11 +159,11 @@
                                                     class="fa-solid fa-trash-can"></i></button>
                                         </td>
                                     </tr>
-                                    @empty
+                                @empty
                                     <tr>
                                         <td colspan="7" class="text-center">No records found. </td>
                                     </tr>
-                                    @endforelse
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -196,7 +203,7 @@
             $('#option_group_name').select2();
             $('#option_group_name').on('change', function(e) {
                 var data = $('#option_group_name').select2("val");
-                Livewire.emit('listenerReferenceHere',data);               
+                Livewire.emit('listenerReferenceHere', data);
                 @this.set('option_group_name', data);
             });
         });

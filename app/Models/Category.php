@@ -24,5 +24,9 @@ class Category extends Model
         
     protected $dates = ['deleted_at'];
 
+    public function images(){
+        return $this->morphMany(Image::class,'imageable');
+    }
+
     
 }

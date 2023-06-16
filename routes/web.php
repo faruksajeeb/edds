@@ -45,7 +45,8 @@ Route::match(['get', 'post'], 'district-wise-warnings-report',Home::class)->name
 Route::get('lang/change', [LanguageController::class, 'change'])->name('changeLang');
 Route::middleware('auth')->group(function () {
     Route::get('active-inactive', [Webspice::class, 'activeInactive'])->name('active.inactive');
-    Route::match(['get','post'],'/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
+    // Route::match(['get','post'],'/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
+    Route::match(['get','post'],'/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::any('change-password', [UserController::class, 'changePassword'])->name('change-password');
     Route::get('user-profile', [UserController::class, 'userProfile'])->name('user-profile');
 

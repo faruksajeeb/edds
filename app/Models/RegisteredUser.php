@@ -35,4 +35,18 @@ class RegisteredUser extends Model
     // {
     //     return $this->belongsTo(Option::class,'respondent_id','id')->withTrashed();
     // }
+
+    function responses()
+    {
+        return $this->hasMany(UserResponse::class)->orderBy('created_at','DESC');;
+    }
+
+    function pendingResponses()
+    {
+        return $this->hasMany(UserResponse::class)->where('status', 1);
+    }
+    function verifiedResponses()
+    {
+        return $this->hasMany(UserResponse::class)->where('status', 2);
+    }
 }

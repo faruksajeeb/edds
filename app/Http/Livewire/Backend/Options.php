@@ -79,7 +79,7 @@ class Options extends Component
                 $query->orWhere('option_value2', 'LIKE', $searchTerm);
                 $query->orWhere('option_value3', 'LIKE', $searchTerm);
             });
-        }
+        }    
         # By Option Group 
         if ($this->option_group_name != null) {
             $query->where('option_group_name', $this->option_group_name);

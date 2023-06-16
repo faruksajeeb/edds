@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Question extends Model
 {
@@ -28,14 +30,43 @@ class Question extends Model
 
     protected $dates = ['deleted_at'];
 
-    public function option() : BelongsTo
+    public function category(): HasOne
     {
-        return $this->belongsTo(Option::class,'category_id','id')->withTrashed()->withDefault(['option_value'=>'']);
+        return $this->hasOne(Option::class, 'id', 'category_id')->withTrashed()->withDefault(['option_value' => '']);
     }
 
-    function subQuestions() {
+    function subQuestions(): HasMany
+    {
         return $this->hasMany(SubQuestion::class);
     }
 
+    function activeSubQuestions()
+    {
+        return $this->hasMany(SubQuestion::class)->where('status', 1);
+    }
 
+    public function latestSubQuestion(): HasOne
+    {
+        return $this->hasOne(SubQuestion::class)->latestOfMany();
+    }
+
+    public function oldestSubQuestion(): HasOne
+    {
+        return $this->hasOne(SubQuestion::class)->oldestOfMany();
+    }
+
+    public function largestSubQuestion(): HasOne
+    {
+        return $this->hasOne(SubQuestion::class)->ofMany('id', 'max');
+    }
+
+    public function currentSubQuestion(): HasOne
+    {
+        return $this->hasOne(SubQuestion::class)->ofMany([
+            'created_at' => 'max',
+            'id' => 'max',
+        ], function (Builder $query) {
+            $query->where('published_at', '<', now());
+        });
+    }
 }
