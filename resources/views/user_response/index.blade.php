@@ -788,8 +788,8 @@
                                                         <i class="fa-solid fa-download"></i> CSV
                                                     </button> --}}
 
-                                            <button class="btn btn-xs btn-success float-end export_btn"
-                                                name="submit_btn" value="export" type="submit">
+                                            <button class="btn btn-xs btn-success float-end export_btn" name="submit_btn"
+                                                value="export" type="submit">
                                                 <i class="fa-solid fa-download"></i> Export
                                             </button>
                                         @endcan
@@ -809,125 +809,129 @@
 
                     </div>
                     </form>
-                    <table class="table mb-0">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Response Date</th>
-                                <th>User Name</th>
-                                <th>Email</th>
-                                <th>Mobile</th>
-                                <th>Gender</th>
-                                <th>Respondent</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse ($user_responses as $index => $val)
+                    <div class="table-responsive">
+                        <table class="table mb-0 table-sm">
+                            <thead>
                                 <tr>
-                                    <td>{{ $index + $user_responses->firstItem() }}</td>
-                                    <td>{{ $val->response_date }}</td>
-                                    <td>{{ isset($val->registered_user) ? $val->registered_user->full_name : '' }}
-                                    </td>
-                                    <td>{{ isset($val->registered_user) ? $val->registered_user->email : '' }}</td>
-                                    <td>{{ isset($val->registered_user) ? $val->registered_user->mobile_no : '' }}
-                                    </td>
-                                    <td>{{ isset($val->registered_user) ? $val->registered_user->gender : '' }}
-                                    </td>
-                                    {{-- <td>{{ isset($val->registered_user->respondent) ? $val->registered_user->respondent->option_value : '' }} --}}
-                                    <td>{{ isset($val->registered_user) ? $val->registered_user->respondent_type : '' }}
-                                    </td>
-                                    <td>
-                                        @if ($val->status == 1)
-                                            <span class="badge bg-info">Pending</span>
-                                        @elseif($val->status == 2)
-                                            <span class="badge bg-success">Verified</span>
-                                        @endif
-                                    </td>
+                                    <th>#</th>
+                                    <th>Response Date</th>
+                                    <th>User Name</th>
+                                    <th>Email</th>
+                                    <th>Mobile</th>
+                                    <th>Gender</th>
+                                    <th>Respondent</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse ($user_responses as $index => $val)
+                                    <tr>
+                                        <td>{{ $index + $user_responses->firstItem() }}</td>
+                                        <td>{{ $val->response_date }}</td>
+                                        <td>{{ isset($val->registered_user) ? $val->registered_user->full_name : '' }}
+                                        </td>
+                                        <td>{{ isset($val->registered_user) ? $val->registered_user->email : '' }}</td>
+                                        <td>{{ isset($val->registered_user) ? $val->registered_user->mobile_no : '' }}
+                                        </td>
+                                        <td>{{ isset($val->registered_user) ? $val->registered_user->gender : '' }}
+                                        </td>
+                                        {{-- <td>{{ isset($val->registered_user->respondent) ? $val->registered_user->respondent->option_value : '' }} --}}
+                                        <td>{{ isset($val->registered_user) ? $val->registered_user->respondent_type : '' }}
+                                        </td>
+                                        <td>
+                                            @if ($val->status == 1)
+                                                <span class="badge bg-info">Pending</span>
+                                            @elseif($val->status == 2)
+                                                <span class="badge bg-success">Verified</span>
+                                            @endif
+                                        </td>
 
 
-                                    <td class="text-nowrap">
-                                        @if (request()->get('status') == 'archived')
-                                            {{-- restore button --}}
-                                            @can('user_response.restore')
-                                                <a href=""
-                                                    class="btn btn-primary btn-sm btn-restore-{{ $val->id }}"
-                                                    onclick="event.preventDefault(); restoreConfirmation({{ $val->id }})"><i
-                                                        class="fa-solid fa-trash-arrow-up"></i> Restore</a>
-                                                <form id="restore-form-{{ $val->id }}"
-                                                    action="{{ route('user_responses.restore', Crypt::encryptString($val->id)) }}"
-                                                    method="POST" style="display: none">
-                                                    @method('POST')
-                                                    @csrf
-                                                </form>
-                                            @endcan
-                                            {{-- force delete button --}}
-                                            @can('user_response.force_delete')
-                                                <a href=""
-                                                    class="btn btn-danger btn-sm btn-force-delete-{{ $val->id }}"
-                                                    onclick="event.preventDefault(); forceDelete({{ $val->id }})"><i
-                                                        class="fa-solid fa-remove"></i> Force Delete</a>
-                                                <form id="force-delete-form-{{ $val->id }}" style="display: none"
-                                                    action="{{ route('user_responses.force-delete', Crypt::encryptString($val->id)) }}"
-                                                    method="POST">
-                                                    @method('DELETE')
-                                                    @csrf
-                                                </form>
-                                            @endcan
-                                        @else
-                                            {{-- edit button --}}
-                                            @can('user_response.edit')
-                                                @if ($val->status == 1)
-                                                    {{-- <a href="{{ route('user_responses.edit', Crypt::encryptString($val->id)) }}"
-                                            class="btn btn-outline-warning btn-sm"><i class="fa-solid fa-pencil"></i> Edit</a> --}}
-                                                @endif
-                                            @endcan
-                                            {{-- edit button --}}
-                                            @can('user_response.verify')
-                                                @if ($val->status == 1)
+                                        <td class="text-nowrap">
+                                            @if (request()->get('status') == 'archived')
+                                                {{-- restore button --}}
+                                                @can('user_response.restore')
                                                     <a href=""
-                                                        class="btn btn-outline-success btn-sm btn-verify-{{ $val->id }}"
-                                                        onclick="event.preventDefault(); confirmVerify({{ $val->id }})"><i
-                                                            class="fas fa-check"></i> Verify</a>
-                                                    <form id="verify-form-{{ $val->id }}" style="display: none"
-                                                        action="{{ route('user_responses.verify', Crypt::encryptString($val->id)) }}"
-                                                        method="POST">
-                                                        @method('PUT')
+                                                        class="btn btn-primary btn-sm btn-restore-{{ $val->id }}"
+                                                        onclick="event.preventDefault(); restoreConfirmation({{ $val->id }})"><i
+                                                            class="fa-solid fa-trash-arrow-up"></i> Restore</a>
+                                                    <form id="restore-form-{{ $val->id }}"
+                                                        action="{{ route('user_responses.restore', Crypt::encryptString($val->id)) }}"
+                                                        method="POST" style="display: none">
+                                                        @method('POST')
                                                         @csrf
                                                     </form>
-                                                @endif
-                                            @endcan
-                                            <button class="btn btn-sm btn-secondary me-1 mt-1" data-bs-toggle="modal"
-                                                data-bs-target="#details-modal-{{ $val->id }}">
-                                                <i class="fa-solid fa-magnifying-glass-plus"></i></button>
-
-                                            {{-- delete button --}}
-                                            @can('user_response.delete')
-                                                @if ($val->status == 1)
+                                                @endcan
+                                                {{-- force delete button --}}
+                                                @can('user_response.force_delete')
                                                     <a href=""
-                                                        class="btn btn-outline-danger btn-sm btn-delete-{{ $val->id }}"
-                                                        onclick="event.preventDefault(); confirmDelete({{ $val->id }})"><i
-                                                            class="fa-solid fa-trash"></i> Delete</a>
-                                                    <form id="delete-form-{{ $val->id }}" style="display: none"
-                                                        action="{{ route('user_responses.destroy', Crypt::encryptString($val->id)) }}"
+                                                        class="btn btn-danger btn-sm btn-force-delete-{{ $val->id }}"
+                                                        onclick="event.preventDefault(); forceDelete({{ $val->id }})"><i
+                                                            class="fa-solid fa-remove"></i> Force Delete</a>
+                                                    <form id="force-delete-form-{{ $val->id }}"
+                                                        style="display: none"
+                                                        action="{{ route('user_responses.force-delete', Crypt::encryptString($val->id)) }}"
                                                         method="POST">
                                                         @method('DELETE')
                                                         @csrf
                                                     </form>
-                                                @endif
-                                            @endcan
-                                        @endif
+                                                @endcan
+                                            @else
+                                                {{-- edit button --}}
+                                                @can('user_response.edit')
+                                                    @if ($val->status == 1)
+                                                        {{-- <a href="{{ route('user_responses.edit', Crypt::encryptString($val->id)) }}"
+                                            class="btn btn-outline-warning btn-sm"><i class="fa-solid fa-pencil"></i> Edit</a> --}}
+                                                    @endif
+                                                @endcan
+                                                {{-- edit button --}}
+                                                @can('user_response.verify')
+                                                    @if ($val->status == 1)
+                                                        <a href=""
+                                                            class="btn btn-outline-success btn-sm btn-verify-{{ $val->id }}"
+                                                            onclick="event.preventDefault(); confirmVerify({{ $val->id }})"><i
+                                                                class="fas fa-check"></i> Verify</a>
+                                                        <form id="verify-form-{{ $val->id }}" style="display: none"
+                                                            action="{{ route('user_responses.verify', Crypt::encryptString($val->id)) }}"
+                                                            method="POST">
+                                                            @method('PUT')
+                                                            @csrf
+                                                        </form>
+                                                    @endif
+                                                @endcan
+                                                <button class="btn btn-sm btn-secondary me-1 mt-1"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#details-modal-{{ $val->id }}">
+                                                    <i class="fa-solid fa-magnifying-glass-plus"></i></button>
 
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="9" class="text-center">No records found. </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                                                {{-- delete button --}}
+                                                @can('user_response.delete')
+                                                    @if ($val->status == 1)
+                                                        <a href=""
+                                                            class="btn btn-outline-danger btn-sm btn-delete-{{ $val->id }}"
+                                                            onclick="event.preventDefault(); confirmDelete({{ $val->id }})"><i
+                                                                class="fa-solid fa-trash"></i> Delete</a>
+                                                        <form id="delete-form-{{ $val->id }}" style="display: none"
+                                                            action="{{ route('user_responses.destroy', Crypt::encryptString($val->id)) }}"
+                                                            method="POST">
+                                                            @method('DELETE')
+                                                            @csrf
+                                                        </form>
+                                                    @endif
+                                                @endcan
+                                            @endif
+
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="9" class="text-center">No records found. </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
                     {{ $user_responses->withQueryString()->links() }}
                 </div>
             </div>
