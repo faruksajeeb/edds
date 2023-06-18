@@ -45,6 +45,8 @@ Route::match(['get', 'post'], 'district-wise-warnings-report', Home::class)->nam
 Route::get('lang/change', [LanguageController::class, 'change'])->name('changeLang');
 Route::middleware('auth')->group(function () {
     Route::get('active-inactive', [Webspice::class, 'activeInactive'])->name('active.inactive');
+    Route::post('change-order', [Webspice::class, 'changeOrder'])->name('change-order');
+
     // Route::match(['get','post'],'/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
     Route::match(['get', 'post'], '/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::any('change-password', [UserController::class, 'changePassword'])->name('change-password');
@@ -207,6 +209,8 @@ Route::middleware('auth')->group(function () {
     // Route::match(['get', 'post'], 'district-wise-warnings-report', [ReportController::class, 'districtWiseWarningsReport'])->name('district-wise-warnings-report');
     // Route::get('district-wise-warnings-report/category', [ReportController::class, 'change'])->name('changeLang');
     Route::match(['get', 'post'], 'division-wise-counting-report', [ReportController::class, 'divisionWiseCountingReport'])->name('division-wise-counting-report');
+
+    
 });
 Route::get('/clear', function () {
     // Artisan::call('optimize:clear');

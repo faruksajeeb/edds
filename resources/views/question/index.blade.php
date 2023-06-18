@@ -1,3 +1,12 @@
+@push('styles')
+    <style>
+        .drag-icon {
+            font-size: 35px;
+            color: darkgray;
+            cursor: pointer;
+        }
+    </style>
+@endpush
 <x-app-layout>
     <x-slot name="title">
         Questions
@@ -89,16 +98,21 @@
                                         value="{{ request()->get('search_text') }}" class="form-control"
                                         placeholder="Search by value, value bangla">
                                 </div>
-                                <div class="col-md-12 col-sm-12 px-0 input-group mt-1">
-                                    <button class="btn btn-secondary me-1 filter_btn" name="submit_btn" type="submit"
-                                        value="search">
-                                        <i class="fa fa-search"></i> Filter Data
-                                    </button>
-                                    <a href='{{ request()->get('status') == 'archived' ? url('/questions?status=archived') : url('/questions') }}'
-                                        class="btn btn-xs btn-primary me-1 refresh_btn"><i class="fa fa-refresh"></i>
-                                        Refresh</a>
-                                    @can('question.export')
-                                        {{-- <button class="btn btn-xs btn-danger float-end me-1 export_btn" name="submit_btn" value="pdf"
+                            </div>
+                            <div class="row">
+                                <div class="col-md-9 col-sm-9 px-0 mt-1">
+                                    <div class="input-group">
+
+                                        <button class="btn btn-secondary me-1 filter_btn" name="submit_btn"
+                                            type="submit" value="search">
+                                            <i class="fa fa-search"></i> Filter Data
+                                        </button>
+                                        <a href='{{ request()->get('status') == 'archived' ? url('/questions?status=archived') : url('/questions') }}'
+                                            class="btn btn-xs btn-primary me-1 refresh_btn"><i
+                                                class="fa fa-refresh"></i>
+                                            Refresh</a>
+                                        @can('question.export')
+                                            {{-- <button class="btn btn-xs btn-danger float-end me-1 export_btn" name="submit_btn" value="pdf"
                                             type="submit">
                                             <i class="fa-solid fa-download"></i> PDF
                                         </button>
@@ -107,35 +121,50 @@
                                             <i class="fa-solid fa-download"></i> CSV
                                         </button> --}}
 
-                                        <button class="btn btn-xs btn-success float-end me-1 export_btn" name="submit_btn"
-                                            value="export" type="submit">
-                                            <i class="fa-solid fa-download"></i> Export
-                                        </button>
-                                    @endcan
-                                    @can('question.create')
-                                        <a href="{{ route('questions.create') }}"
-                                            class="btn btn-xs btn-outline-primary float-end" name="create_new"
-                                            type="button">
-                                            <i class="fa-solid fa-plus"></i> Create Question
-                                        </a>
-                                    @endcan
-                                </div>
-                                <div class="col-md-3 col-sm-12 px-0">
-                                    <div class="input-group">
-                                        <div class="input-group-append">
-
-                                        </div>
+                                            <button class="btn btn-xs btn-success float-end me-1 export_btn"
+                                                name="submit_btn" value="export" type="submit">
+                                                <i class="fa-solid fa-download"></i> Export
+                                            </button>
+                                        @endcan
+                                        @can('question.create')
+                                            <a href="{{ route('questions.create') }}"
+                                                class="btn btn-xs btn-outline-primary float-end" name="create_new"
+                                                type="button">
+                                                <i class="fa-solid fa-plus"></i> Create Question
+                                            </a>
+                                        @endcan
                                     </div>
                                 </div>
-                                <div class="col-md-3 col-sm-12">
-
+                                <div class="col-md-3">
+                                    <!-- Show entries dropdown -->
+                                    <div class="float-end mt-2">
+                                        <form action="{{ url()->current() }}" method="GET">
+                                            <label for="perPage">Show
+                                                <select name="perPage" id="perPage" onchange="this.form.submit()">
+                                                    <option value="5"
+                                                        {{ Request::get('perPage') == 5 ? 'selected' : '' }}>5</option>
+                                                    <option value="10"
+                                                        {{ Request::get('perPage') == 10 ? 'selected' : '' }}>10
+                                                    </option>
+                                                    <option value="25"
+                                                        {{ Request::get('perPage') == 25 ? 'selected' : '' }}>25
+                                                    </option>
+                                                    <option value="50"
+                                                        {{ Request::get('perPage') == 50 ? 'selected' : '' }}>50
+                                                    </option>
+                                                    <!-- Add more options if needed -->
+                                                </select> entries</label>
+                                        </form>
+                                    </div>
                                 </div>
-
                             </div>
                         </form>
                         <table class="table mb-0">
                             <thead>
                                 <tr>
+                                    <th>
+                                        DRAG
+                                    </th>
                                     <th>Sl No.</th>
                                     <th>Value</th>
                                     <th>Value Bangla</th>
@@ -149,9 +178,15 @@
                                     <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="sortable" tablename="questions">
                                 @forelse ($questions as $index => $val)
-                                    <tr>
+                                    <tr id="{{ $val->id }}">
+                                        <td class=''>
+                                            <span class="sort bg-red">
+                                                <i class="fa-solid fa-up-down-left-right drag-icon"></i>
+                                            </span>
+
+                                        </td>
                                         <td>{{ $index + $questions->firstItem() }}</td>
                                         <td>{{ $val->value }}</td>
                                         <td>{{ $val->value_bangla }}</td>
@@ -159,7 +194,8 @@
                                         <td>{{ $val->respondent }}</td>
                                         <td>
                                             @if ($val->subQuestions->count() > 0)
-                                                <dl class="row mb-0 sub_question" style="height: 20px; overflow: hidden"
+                                                <dl class="row mb-0 sub_question"
+                                                    style="height: 25px; overflow: hidden"
                                                     id="sub_question{{ $index }}">
                                                     @foreach ($val->subQuestions as $key => $subQuestion)
                                                         <dd class="col-sm-12 pb-0 ">
@@ -167,9 +203,9 @@
                                                         </dd>
                                                     @endforeach
                                                 </dl>
-                                                <button
-                                                    onclick="$('#sub_question{{ $index }}').toggleClass('h-auto')"
-                                                    class="btn btn-sm btn-link">Show more >></button>
+                                                <button onclick="seeMore({{ $index }})"
+                                                    class="btn btn-sm btn-link" id="expandbtn{{ $index }}">see
+                                                    more &#187;</button>
                                             @endif
                                         </td>
                                         <td>{{ $val->input_method }}</td>
@@ -245,12 +281,14 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="9" class="text-center">No records found. </td>
+                            <td colspan="10" class="text-center">No records found. </td>
                         </tr>
                         @endforelse
                         </tbody>
                         </table>
-                        {{ $questions->withQueryString()->links() }}
+                        <span class="mt-2">
+                            {{ $questions->withQueryString()->links() }}
+                        </span>
                     </div>
                 </div>
             </div>
@@ -258,6 +296,71 @@
         </div>
 
         @push('scripts')
-            <script></script>
+            <script>
+                let seeMore = (key) => {
+                    $('#sub_question' + key).toggleClass('h-auto');
+                    if ($('#expandbtn' + key).hasClass("seemore")) {
+                        $('#expandbtn' + key).html('see more &#187;');
+                        $('#expandbtn' + key).removeClass("seemore");
+                    } else {
+                        $('#expandbtn' + key).html('see less &#171;');
+                        $('#expandbtn' + key).addClass("seemore");
+                    }
+                }
+
+                $(function() {
+                    //....................................Sortable...................................
+                    $('#sortable').sortable({
+                        axis: 'y',
+                        opacity: 0.9,
+                        handle: 'span',
+                        update: function(event, ui) {
+                            var list_sortable = $(this).sortable('toArray').toString();
+                            var tablename = $(this).attr('tablename');
+                            // change order in the database using Ajax
+                            //    alert(tablename);
+                            processing('Reordering...');
+                            $.ajax({
+
+                                url: "{{ route('change-order') }}",
+                                type: 'POST',
+                                dataType: "json",
+                                data: {
+                                    "_token": "{{ csrf_token() }}",
+                                    list_order: list_sortable,
+                                    table_name: tablename
+                                },
+                                success: function(response) {
+                                    if (response.status == 'success') {
+                                        Swal.fire({
+                                            position: 'top-end',
+                                            icon: 'success',
+                                            title: response.message,
+                                            showConfirmButton: false,
+                                            timer: 5000
+                                        });
+                                    } else if (response.status == 'not_success') {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Oops...',
+                                            text: response.message,
+                                        });
+                                        return false;
+                                    }
+                                },
+                                error: function(xhr, status, error) {
+                                    // handle error
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Oops...',
+                                        text: error,
+                                    });
+                                    return false;
+                                }
+                            });
+                        }
+                    }); // finished sortable
+                });
+            </script>
         @endpush
     </x-app-layout>

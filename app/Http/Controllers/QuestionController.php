@@ -48,7 +48,8 @@ class QuestionController extends Controller implements Crud
             $query = $this->questions->orderBy('deleted_at', 'desc');
             $query->onlyTrashed();
         } else {
-            $query = $this->questions->orderBy('created_at', 'desc');
+            // $query = $this->questions->orderBy('created_at', 'desc');
+            $query = $this->questions->orderBy('sl_order', 'asc');
         }
         if ($request->search_category != null) {
             $query->where('category_id', $request->search_category);
@@ -83,7 +84,8 @@ class QuestionController extends Controller implements Crud
             return Excel::download(new QuestionExport($query->get(), $title), $fileName . '_' . time() . '.xlsx');
         }
         // $query->has('subQuestions'); # It means, get which questions has sub qestions.
-        $questions = $query->paginate(5);
+        $perPage = request()->input('perPage', 5); 
+        $questions = $query->paginate($perPage);
 
         $categories = MasterData::getCategory();
         $respondents = MasterData::getRespondent();

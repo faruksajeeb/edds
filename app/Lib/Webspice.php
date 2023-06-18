@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Session;
 use Mail;
 use Intervention\Image\Facades\Image;
 use App\Traits\Setting as S;
+
 class Webspice
 {
 	use S;
@@ -23,11 +24,11 @@ class Webspice
 	public $emailFrom = 'dev4nns@gmail.com';
 	public $adminEmail = 'ofsajeeb@gmail.com';
 	public $emailFromName = "EDDS ADMIN";
-	
+
 	public static function appUrl()
-    {
-        return S::appUrl();
-    }
+	{
+		return S::appUrl();
+	}
 	public function settings()
 	{
 	}
@@ -586,7 +587,8 @@ class Webspice
 		}
 	}
 
-	public static function testStaticMethod(){
+	public static function testStaticMethod()
+	{
 		return "Hello, I am static";
 	}
 
@@ -652,18 +654,18 @@ class Webspice
 
 
 
-	static function getColorCodeForMapArea(array $dbResultArray,$category, $areaName)
+	static function getColorCodeForMapArea(array $dbResultArray, $category, $areaName)
 	{
 		// dd($category);
 		# static value
 		if (Cache::has('basic_settings')) {
-            # get from file cache
-            $basicSettings = Cache::get('basic_settings');
-        } else {
-            # get from database
-            $basicSettings = DB::table('basic_settings')->first();
-            Cache::put('basic_settings', $basicSettings);
-        }
+			# get from file cache
+			$basicSettings = Cache::get('basic_settings');
+		} else {
+			# get from database
+			$basicSettings = DB::table('basic_settings')->first();
+			Cache::put('basic_settings', $basicSettings);
+		}
 		$thresholdMin = $basicSettings->threshold_min;
 		$thresholdMid = $basicSettings->threshold_mid;
 		$thresholdMax = $basicSettings->threshold_max;
@@ -673,11 +675,11 @@ class Webspice
 		$defaultColor = '#F9F1F0';
 		$value = 0;
 		foreach ($dbResultArray as $k => $v) {
-			if($category=='Poultry'){
+			if ($category == 'Poultry') {
 				$value = $v->TOTAL_POULTRY;
-			}elseif($category=='Wild Bird'){
+			} elseif ($category == 'Wild Bird') {
 				$value = $v->TOTAL_WILD_BIRD;
-			}elseif($category=='LBM Worker'){
+			} elseif ($category == 'LBM Worker') {
 				$value = $v->TOTAL_LBM_WORKER;
 			}
 
@@ -783,20 +785,57 @@ class Webspice
 		return $converted;
 	}
 
-	
-    public static function imageShow($filename)
-    {
-        $path = public_path('images/' . $filename);
-        $image = Image::make($path);
 
-        // Resize the image to a lower resolution
-        $image->resize(320, 240); // Adjust the dimensions as needed
+	public static function imageShow($filename)
+	{
+		$path = public_path('images/' . $filename);
+		$image = Image::make($path);
 
-        // Set the response header and output the image
-        return $image->response();
-    }
+		// Resize the image to a lower resolution
+		$image->resize(320, 240); // Adjust the dimensions as needed
 
-	public function versionUpdate(){
-		DB::update('UPDATE tbl_data_version SET version =version+.1 WHERE id = ?',[1]);
+		// Set the response header and output the image
+		return $image->response();
+	}
+
+	public function versionUpdate()
+	{
+		DB::update('UPDATE tbl_data_version SET version =version+.1 WHERE id = ?', [1]);
+	}
+
+	public function changeOrder(Request $request)
+	{
+		// return $request->all();
+		// get the list of items id separated by cama (,)
+		$table_name = $request->table_name;
+		$list_order = $request->list_order;
+
+		// convert the string list to an array   
+		try{  
+			$list = explode(',', $list_order);
+			self::updateTableOrder($list, $table_name);
+			$queryStatus = [
+				'status' => 'success',
+				'message' => "Order has been changed successfully."
+			];
+			$this->versionUpdate();
+		} catch (Exception $e) {
+			$queryStatus = [
+				'status' => 'not_success',
+				'message' => 'SORRY! Order has not changed.' . $e->getMessage()
+			];
+		}
+		return response()->json($queryStatus);
+	}
+
+	public static function updateTableOrder($list, $tableName)
+	{
+		$i = 1;
+		foreach ($list as $id) {
+			$result = DB::update("UPDATE $tableName SET sl_order =$i WHERE id = ?", [$id]);
+			$i++;
+			self::log($tableName, $id, 'ORDER_UPDATED');
+		}
+		return $result;
 	}
 }

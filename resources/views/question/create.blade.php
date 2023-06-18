@@ -53,10 +53,11 @@
                         <div class="form-group my-1">
                             <label for=""
                                 class="@if ($errors->has('value_bangla')) has-error @endif fw-bold">Respondent*</label>
-                            <select name="respondent[]" id="respondent" class="form-select  js-states select2"  multiple="multiple"  data-placeholder="Select one or more..." required>
-                                 @foreach ($respondents as $val)
+                            <select name="respondent[]" id="respondent" class="form-select  js-states select2"
+                                multiple="multiple" data-placeholder="Select one or more..." required>
+                                @foreach ($respondents as $val)
                                     <option value="{{ $val->option_value }}"
-                                        {{ ((old('respondent') !== NULL) && in_array($val->option_value,old('respondent'))) ? 'selected' : '' }}>
+                                        {{ old('respondent') !== null && in_array($val->option_value, old('respondent')) ? 'selected' : '' }}>
                                         {{ $val->option_value }}
                                     </option>
                                 @endforeach
@@ -129,6 +130,31 @@
                             @else
                                 <div class="invalid-feedback">
                                     Please select input method.
+                                </div>
+                            @endif
+                        </div>
+
+                        <div class="form-group my-1">
+                            <label for=""
+                                class="@if ($errors->has('value_bangla')) has-error @endif fw-bold">Input Type
+                                *</label>
+                            <select name="input_type" id="input_type" class="form-select" required>
+                                <option value="">--select input type--</option>
+                                <option value="alphabetic" {{ old('input_type') == 'alphabetic' ? 'selected' : '' }}>Alphabetic
+                                </option>
+                                <option value="alphanumeric" {{ old('input_type') == 'alphanumeric' ? 'selected' : '' }}>
+                                    Alphanumeric</option>
+                                <option value="numeric" {{ old('input_type') == 'numeric' ? 'selected' : '' }}>
+                                    Numeric
+                                </option>
+                            </select>
+                            @if ($errors->has('input_type'))
+                                @error('input_type')
+                                    <div class="alert alert-danger">{{ $message }}</div>
+                                @enderror
+                            @else
+                                <div class="invalid-feedback">
+                                    Please select input type.
                                 </div>
                             @endif
                         </div>
