@@ -8,17 +8,21 @@
                 <div class="card-header bg-white">
                     <div class="row">
                         <div class="col-md-8">
-                            <h3 class="card-title py-1"><i class="fa fa-list"></i> @if (request()->get('status') == 'archived')
-                                Archived
-                             @endif Roles</h3>
+                            <h3 class="card-title py-1"><i class="fa fa-list"></i>
+                                @if (request()->get('status') == 'archived')
+                                    Deleted
+                                @endif Roles
+                            </h3>
                         </div>
                         <div class="col-md-4">
                             <nav aria-label="breadcrumb" class="float-end">
                                 <ol class="breadcrumb">
                                     <li class="breadcrumb-item"><a href="#">User Management</a></li>
-                                    <li class="breadcrumb-item " aria-current="page">@if (request()->get('status') == 'archived')
-                                        Archived
-                                   @endif Roles</li>
+                                    <li class="breadcrumb-item " aria-current="page">
+                                        @if (request()->get('status') == 'archived')
+                                            Deleted
+                                        @endif Roles
+                                    </li>
                                 </ol>
                             </nav>
                         </div>
@@ -26,11 +30,11 @@
                     <div class="row">
                         <div class="col-md-12">
                             @if (request()->get('status') != 'archived')
-                                <a href="{{ url('/roles?status=archived') }}">Archived roles</a>
+                                <a href="{{ url('/roles?status=archived') }}">Deleted roles</a>
                             @else
                                 <a href="{{ url('/roles') }}">Roles</a>
                             @endif
-                            @if ((request()->get('status') == 'archived') && ($roles->total() >0))
+                            @if (request()->get('status') == 'archived' && $roles->total() > 0)
                                 @can('role.restore')
                                     <div class="float-end">
                                         <a href="" class="btn btn-primary btn-sm btn-restore-all"
@@ -98,13 +102,13 @@
 
                             </div>
                         </form>
-                        <table class="table mb-0">
+                        <table class="table table-sm mb-0">
                             <thead>
                                 <tr>
                                     <th>Sl No.</th>
                                     <th>Name</th>
-                                    <th style="min-width:500px">Permissions</th>
-                                    <th>Guard Name</th>
+                                    <th style="min-width:250px">Permissions</th>
+                                    <th class="text-center">Guard Name</th>
                                     {{-- <th>Created At</th>
                                     <th>Updated At</th> --}}
                                     <th>Status</th>
@@ -116,13 +120,28 @@
                                     <tr>
                                         <td>{{ $key + 1 }}</td>
                                         <td>{{ $val->name }}</td>
-                                        <td width="30%">
-                                            @foreach ($val->permissions as $permission)
-                                                <span class="badge bg-info text-dark">{{ $permission->name }}</span>
-                                                {{-- <br /> --}}
-                                            @endforeach
+                                        <td width="15%">
+                                            @if ($val->permissions->count() > 0)
+                                                <dl class="row mb-0 sub_question "
+                                                    style="height: 30px; overflow: hidden"
+                                                    id="permission{{ $key }}">
+                                                    @foreach ($val->permissions as $index => $permission)
+                                                        <dd class="col-sm-12 badge bg-info text-dark text-start p-2">
+                                                            {{ $index + 1 }}. {{ optional($permission)->name }}
+                                                        </dd>
+                                                    @endforeach
+                                                </dl>
+                                                @if ($val->permissions->count() > 1)
+                                                    <button onclick="seeMore({{ $key }})"
+                                                        class="btn btn-sm btn-link"
+                                                        id="expandbtn{{ $key }}">see
+                                                        more &#187;</button>
+                                                @endif
+                                            @endif
+                                            {{-- <span class="badge bg-info text-dark">{{ $permission->name }}</span> --}}
+
                                         </td>
-                                        <td>{{ $val->guard_name }}</td>
+                                        <td class="text-center">{{ $val->guard_name }}</td>
                                         {{-- <td>{{ $val->created_at }}</td>
                                         <td>{{ $val->updated_at }}</td> --}}
                                         <td class="text-end">
@@ -176,20 +195,24 @@
                                 @endcan
                                 {{-- delete button --}}
                                 @can('role.delete')
-                                    <a href="" class="btn btn-outline-danger btn-sm btn-delete-{{ $val->id }}"
-                                        onclick="event.preventDefault(); confirmDelete({{ $val->id }})"><i
-                                            class="fa-solid fa-trash"></i> Delete</a>
-                                    <form id="delete-form-{{ $val->id }}" style="display: none"
-                                        action="{{ route('roles.destroy', Crypt::encryptString($val->id)) }}" method="POST">
-                                        @method('DELETE')
-                                        @csrf
-                                    </form>
-                                @endcan
+                                    @if (!in_array($val->name, ['superadmin', 'developer']))
+                                        <a href=""
+                                            class="btn btn-outline-danger btn-sm btn-delete-{{ $val->id }}"
+                                            onclick="event.preventDefault(); confirmDelete({{ $val->id }})"><i
+                                                class="fa-solid fa-trash"></i> Delete</a>
+                                        <form id="delete-form-{{ $val->id }}" style="display: none"
+                                            action="{{ route('roles.destroy', Crypt::encryptString($val->id)) }}"
+                                            method="POST">
+                                            @method('DELETE')
+                                            @csrf
+                                        </form>
+                                    @endcan
+                                @endif
                             @endif
 
                         </td>
                         </tr>
-                        @empty
+                    @empty
                         <tr>
                             <td colspan="8" class="text-center">No records found. </td>
                         </tr>
@@ -205,7 +228,16 @@
 
         @push('scripts')
             <script>
-       
+                let seeMore = (key) => {
+                    $('#permission' + key).toggleClass('h-auto');
+                    if ($('#expandbtn' + key).hasClass("seemore")) {
+                        $('#expandbtn' + key).html('see more &#187;');
+                        $('#expandbtn' + key).removeClass("seemore");
+                    } else {
+                        $('#expandbtn' + key).html('see less &#171;');
+                        $('#expandbtn' + key).addClass("seemore");
+                    }
+                }
             </script>
         @endpush
     </x-app-layout>

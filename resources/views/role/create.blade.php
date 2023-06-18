@@ -2,12 +2,12 @@
     <style>
         ul {
             list-style: none;
-            font-size: 20px;
+            font-size: 15px;
         }
 
         input.largerCheckbox {
-            width: 20px;
-            height: 20px;
+            width: 15px;
+            height: 15px;
         }
 
         label {}
@@ -42,7 +42,7 @@
                         <div class="form-group">
                             <label for=""
                                 class="@if ($errors->has('name')) has-error @endif fw-bold">Role
-                                Name</label><br />
+                                Name <span class="text-danger">*<span></label><br />
                             <input type="text" name='name' value="{{ old('name') }}"
                                 class="form-control-lg @error('name') is-invalid @enderror" required>
                             @if ($errors->has('name'))
@@ -64,7 +64,14 @@
                             </label>
 
                             <div class="row row-cols-1 row-cols-md-4 gx-4 m-1">
+                                @php
+                                    $tatalActivePermissions = 0;
+                                @endphp
                                 @foreach ($permission_groups as $groupIndex => $permission_group)
+                                    @php
+                                        $groupWiseTotalActivePermmissions = $permission_group->activePermissions->count();
+                                        $tatalActivePermissions += $groupWiseTotalActivePermmissions;
+                                    @endphp
                                     <div class="col themed-grid-col text-start">
                                         <label for="permission_group{{ $groupIndex }}"
                                             class="checkbox group-permission fw-bold {{ $permission_group->name }}"
@@ -74,23 +81,14 @@
                                             {{ ucfirst($permission_group->name) }}
 
                                         </label>
-
                                         <hr>
-                                        @php
-                                            $groupWisePermissions = \DB::table('permissions')
-                                                ->where('group_name', $permission_group->name)
-                                                ->get();
-                                        @endphp
                                         <ul>
-                                            @php
-                                                $permissinCount = count($groupWisePermissions);
-                                            @endphp
-                                            @foreach ($groupWisePermissions as $index => $permission)
+                                            @foreach ($permission_group->activePermissions as $index => $permission)
                                                 <li
-                                                    class="@php echo ($index+1<$permissinCount) ? 'border-bottom':'' @endphp  p-2">
+                                                    class="@php echo ($index+1<$groupWiseTotalActivePermmissions) ? 'border-bottom':'' @endphp  p-2">
                                                     <label
                                                         class="checkbox single-permission per-{{ $permission_group->name }}"
-                                                        onclick="checkUncheckModuleByPermission('per-{{ $permission_group->name }}', '{{ $permission_group->name }}', {{ count($groupWisePermissions) }})">
+                                                        onclick="checkUncheckModuleByPermission('per-{{ $permission_group->name }}', '{{ $permission_group->name }}', {{ $groupWiseTotalActivePermmissions }})">
                                                         <input type="checkbox" value="{{ $permission->name }}"
                                                             class="largerCheckbox" name="permissions[]"
                                                             id="permission{{ $permission->id }}">
@@ -107,8 +105,8 @@
 
                         <br />
                         <div class="form-group">
-                            <button type="submit" name="submit-btn"
-                                class="btn btn-lg btn-success   btn-submit">Submit</button>
+                            <button type="submit" name="submit-btn" class="btn btn-lg btn-success   btn-submit">Save
+                                Role</button>
                         </div>
                     </form>
                 </div>
@@ -154,7 +152,7 @@
             }
 
             function allChecked() {
-                const countTotalPermission = {{ count($permissions) }}
+                const countTotalPermission = {{ $tatalActivePermissions }}
                 //alert($(".permission input:checked").length);
                 if ($(".single-permission input:checked").length == countTotalPermission) {
                     $('.select-all-permission input').prop("checked", true);

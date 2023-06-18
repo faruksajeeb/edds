@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\RoleExport;
-
+use App\Models\PermissionGroup;
 
 class RoleController extends Controller
 {
@@ -65,7 +65,7 @@ class RoleController extends Controller
             return Excel::download(new RoleExport($query->get(), $title), $fileName . '_' . time() . '.xlsx');
         }
 
-        $roles = $query->paginate(10);
+        $roles = $query->paginate(5);
         return view('role.index', compact('roles'));
     }
 
@@ -75,11 +75,9 @@ class RoleController extends Controller
         #permission verfy
         $this->webspice->permissionVerify('role.create');
 
-        $permissions = Permission::all();
-        // $permission_groups = Permission::select('group_name')->groupBy('group_name')->get();
-        $permission_groups = DB::table('permission_groups')->where('status', 1)->get();
+        $permission_groups = PermissionGroup::with('activePermissions')->where('status', 1)->orderBy('order')->get();
+
         return view('role.create', [
-            'permissions' => $permissions,
             'permission_groups' => $permission_groups,
         ]);
     }
@@ -137,15 +135,12 @@ class RoleController extends Controller
 
             $roleInfo = $this->roles->findById($id);
 
-            $permissions = Permission::all();
-            // $permission_groups = Permission::select('group_name')->groupBy('group_name')->get();
-            $permission_groups = DB::table('permission_groups')->where('status', 1)->get();
+            $permission_groups = PermissionGroup::with('activePermissions')->where('status', 1)->orderBy('order')->get();
         } catch (Exception $e) {
             $this->webspice->message('error', $e->getMessage());
         }
         return view('role.edit', [
             'roleInfo' => $roleInfo,
-            'permissions' => $permissions,
             'permission_groups' => $permission_groups,
         ]);
     }
@@ -153,6 +148,7 @@ class RoleController extends Controller
 
     public function update(Request $request, $id)
     {
+
         #permission verfy
         $this->webspice->permissionVerify('role.edit');
         try {
@@ -177,7 +173,11 @@ class RoleController extends Controller
             if (!empty($permissions)) {
                 $role->syncPermissions($permissions);
             }
-            $role->name = $request->name;
+            if (!in_array($role->name, ['superadmin', 'developer'])) {
+                $role->name = $role->name;
+            } else {
+                $role->name = $request->name;
+            }
             $role->save();
         } catch (Exception $e) {
             $this->webspice->message('error', $e->getMessage());
@@ -194,9 +194,8 @@ class RoleController extends Controller
             # decrypt value
             $id = $this->webspice->encryptDecrypt('decrypt', $id);
 
-            $role = $this->roles->findById($id);            
+            $role = $this->roles->findById($id);
             $role->delete();
-            
         } catch (Exception $e) {
             $this->webspice->message('error', $e->getMessage());
         }

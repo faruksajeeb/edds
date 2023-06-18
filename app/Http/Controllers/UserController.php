@@ -12,6 +12,7 @@ use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\UserExport;
+use App\Models\PermissionGroup;
 
 class UserController extends Controller
 {
@@ -76,17 +77,15 @@ class UserController extends Controller
     {
         #permission verfy
         $this->webspice->permissionVerify('user.create');
+        $roles = Role::where('status', 1)->get();
+        $permission_groups = PermissionGroup::with('activePermissions')->where('status', 1)->orderBy('order')->get();
 
-        $roles = Role::all();
-        $permissions = Permission::all();
-        $permission_groups = Permission::select('group_name')->groupBy('group_name')->get();
-
-        return view('users.create', compact('roles', 'permissions', 'permission_groups'));
+        return view('users.create', compact('roles', 'permission_groups'));
     }
 
     public function store(Request $request)
     {
-       
+
         #permission verfy
         $this->webspice->permissionVerify('user.create');
 
@@ -151,16 +150,13 @@ class UserController extends Controller
 
         # decrypt value
         $id = $this->webspice->encryptDecrypt('decrypt', $id);
-
         $user = $this->users->find($id);
-        $roles = Role::all();
-        $permissions = Permission::all();
-        $permission_groups = Permission::select('group_name')->groupBy('group_name')->get();
+        $roles = Role::where('status', 1)->get();
+        $permission_groups = PermissionGroup::with('activePermissions')->where('status', 1)->orderBy('order')->get();
 
         return view('users.edit', [
             'user' => $user,
             'roles' => $roles,
-            'permissions' => $permissions,
             'permission_groups' => $permission_groups
         ]);
     }
@@ -193,7 +189,7 @@ class UserController extends Controller
             $user->name = $request->name;
             $user->email = $request->email;
             if ($request->password) {
-               
+
                 $user->password = Hash::make($request->password);
             }
             $user->updated_at = $this->webspice->now('datetime24');
@@ -218,9 +214,9 @@ class UserController extends Controller
 
     public function changePassword(Request $request)
     {
-      
+
         if ($request->all()) {
-           
+
             $request->validate(
                 [
                     'old_password' => 'required',

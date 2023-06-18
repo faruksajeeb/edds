@@ -37,11 +37,11 @@
                 <div class="card-body  p-3">
                     <form action="{{ route('users.store') }}" method="POST" class="needs-validation" novalidate>
                         @method('POST')
-                    @csrf
+                        @csrf
                         <div class="row  p-3">
                             <div class="col-md-5 border border-1  p-3">
                                 <div class="form-group">
-                                    <label for="">User Name</label>
+                                    <label for="">User Name <span class="text-danger">*<span></label>
                                     <input type="text" name='name' value="{{ old('name') }}"
                                         class="form-control" required>
                                     @if ($errors->has('name'))
@@ -55,7 +55,7 @@
                                     @endif
                                 </div>
                                 <div class="form-group">
-                                    <label for="">User Email</label>
+                                    <label for="">User Email <span class="text-danger">*<span></label>
                                     <input type="text" name='email' value="{{ old('email') }}"
                                         class="form-control" required>
                                     @if ($errors->has('email'))
@@ -69,8 +69,8 @@
                                     @endif
                                 </div>
                                 <div class="form-group">
-                                    <label for="">Password</label>
-                                    <input type="password" name='password' value="{{old('password')}}"
+                                    <label for="">Password <span class="text-danger">*<span></label>
+                                    <input type="password" name='password' value="{{ old('password') }}"
                                         class="form-control" required>
                                     @if ($errors->has('password'))
                                         @error('password')
@@ -83,8 +83,8 @@
                                     @endif
                                 </div>
                                 <div class="form-group">
-                                    <label for="">Confirm Password</label>
-                                    <input type="password" name='password_confirmation' class="form-control">
+                                    <label for="">Confirm Password <span class="text-danger">*<span></label>
+                                    <input type="password" name='password_confirmation' class="form-control" required>
                                     @if ($errors->has('password_confirmation'))
                                         @error('password_confirmation')
                                             <div class="alert alert-danger">{{ $message }}</div>
@@ -96,15 +96,15 @@
                                     @endif
                                 </div>
                                 <div class="form-group">
-                                    <label for="roles">Assign Roles</label>
-                                   @php 
-                                   //dd(gettype(old('roles')))
-                                   @endphp
-                                    <select name="roles[]" id="" class="form-control select2"   data-placeholder="Select one or more..."  multiple
-                                        required>
+                                    <label for="roles">Assign Roles <span class="text-danger">*<span></label>
+                                    @php
+                                        //dd(gettype(old('roles')))
+                                    @endphp
+                                    <select name="roles[]" id="" class="form-control select2"
+                                        data-placeholder="Select one or more..." multiple required>
                                         @foreach ($roles as $role)
                                             <option value="{{ $role->id }}"
-                                                @if(old('roles')){{ (in_array($role->id, old('roles')) ) ? 'selected' : '' }} @endif>
+                                                @if (old('roles')) {{ in_array($role->id, old('roles')) ? 'selected' : '' }} @endif>
                                                 {{ ucwords($role->name) }}</option>
                                         @endforeach
                                     </select>
@@ -133,33 +133,32 @@
                                     </label>
 
                                     <hr>
+                                    @php
+                                        $tatalActivePermissions = 0;
+                                    @endphp
                                     @foreach ($permission_groups as $groupIndex => $permission_group)
+                                    @php
+                                        $groupWiseTotalActivePermmissions = $permission_group->activePermissions->count();
+                                        $tatalActivePermissions += $groupWiseTotalActivePermmissions;
+                                    @endphp
                                         <div class="row">
                                             <div class="col-md-4">
                                                 <label for="permission_group{{ $groupIndex }}"
-                                                    class="checkbox group-permission {{ $permission_group->group_name }}"
-                                                    onclick="checkPermissionByGroup('{{ $permission_group->group_name }}')">
+                                                    class="checkbox group-permission {{ $permission_group->name }}"
+                                                    onclick="checkPermissionByGroup('{{ $permission_group->name }}')">
                                                     <input type="checkbox" class="group" name="group-permission[]">
-                                                    {{ ucfirst($permission_group->group_name) }}
+                                                    {{ ucfirst($permission_group->name) }}
 
                                                 </label>
                                             </div>
                                             <div class="col-md-8">
-                                                @php
-                                                    $groupWisePermissions = \DB::table('permissions')
-                                                        ->where('group_name', $permission_group->group_name)
-                                                        ->get();
-                                                @endphp
                                                 <ul>
-                                                    @php
-                                                        $permissinCount = count($groupWisePermissions);
-                                                    @endphp
-                                                    @foreach ($groupWisePermissions as $index => $permission)
+                                                    @foreach ($permission_group->activePermissions as $index => $permission)
                                                         <li
-                                                            class="@php echo ($index+1<$permissinCount) ? 'border-bottom':'' @endphp  p-2">
+                                                            class="@php echo ( ($index+1) < $groupWiseTotalActivePermmissions ) ? 'border-bottom':'' @endphp  p-2">
                                                             <label
-                                                                class="checkbox single-permission per-{{ $permission_group->group_name }}"
-                                                                onclick="checkUncheckModuleByPermission('per-{{ $permission_group->group_name }}', '{{ $permission_group->group_name }}', {{ count($groupWisePermissions) }})">
+                                                                class="checkbox single-permission per-{{ $permission_group->name }}"
+                                                                onclick="checkUncheckModuleByPermission('per-{{ $permission_group->name }}', '{{ $permission_group->name }}', {{ $groupWiseTotalActivePermmissions }})">
                                                                 <input type="checkbox" value="{{ $permission->name }}"
                                                                     name="permissions[]"
                                                                     id="permission{{ $permission->id }}">
@@ -171,7 +170,7 @@
 
                                             </div>
                                         </div>
-                                        @php echo ($groupIndex+1<count($permission_groups)) ? '<hr>':'' @endphp
+                                        @php echo ($groupIndex+1<$permission_groups->count()) ? '<hr>':'' @endphp
                                     @endforeach
                                 </div>
                             </div>
@@ -179,7 +178,7 @@
 
                         <br />
                         <div class="form-group">
-                            <button type="submit" name="submit-btn" class="btn btn-success btn-submit">Submit</button>
+                            <button type="submit" name="submit-btn" class="btn btn-success btn-lg btn-submit">Save User</button>
                         </div>
                     </form>
                 </div>
@@ -225,7 +224,7 @@
             }
 
             function allChecked() {
-                const countTotalPermission = {{ count($permissions) }}
+                const countTotalPermission = {{ $tatalActivePermissions }}
                 //alert($(".permission input:checked").length);
                 if ($(".single-permission input:checked").length == countTotalPermission) {
                     $('.select-all-permission input').prop("checked", true);

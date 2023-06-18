@@ -2,7 +2,7 @@
     <style>
         ul {
             list-style: none;
-            font-size:17px;
+            font-size: 17px;
         }
 
         input.largerCheckbox {
@@ -43,20 +43,21 @@
                     </div>
                 </div>
                 <div class="card-body  p-3">
-                    <form action="<?php echo e(route('users.update', Crypt::encryptString($user->id))); ?>" method="POST" class="needs-validation" novalidate>
+                    <form action="<?php echo e(route('users.update', Crypt::encryptString($user->id))); ?>" method="POST"
+                        class="needs-validation" novalidate>
                         <?php echo method_field('PUT'); ?>
                         <?php echo csrf_field(); ?>
                         <div class="row  p-3">
                             <div class="col-md-5 border border-1  p-3">
                                 <div class="form-group">
-                                    <label for="">User Name</label>
+                                    <label for="">User Name <span class="text-danger">*<span></label>
                                     <input type="text" name='name' value="<?php echo e(old('name', $user->name)); ?>"
-                                        class="form-control">
+                                        class="form-control" required>
                                 </div>
                                 <div class="form-group">
-                                    <label for="">User Email</label>
+                                    <label for="">User Email <span class="text-danger">*<span></label>
                                     <input type="text" name='email' value="<?php echo e(old('email', $user->email)); ?>"
-                                        class="form-control">
+                                        class="form-control" required>
                                 </div>
                                 <div class="form-group">
                                     <label for="">Password</label>
@@ -68,12 +69,13 @@
                                     <input type="password" name='password_confirmation' class="form-control">
                                 </div>
                                 <div class="form-group">
-                                    <label for="roles">Assign Roles</label>
-                                    <select name="roles[]" id="" class="form-control select2" data-placeholder="Select one or more..."  multiple
-                                        required>
+                                    <label for="roles">Assign Roles <span class="text-danger">*<span></label>
+                                    <select name="roles[]" id="" class="form-control select2"
+                                        data-placeholder="Select one or more..." multiple required>
                                         <?php $__currentLoopData = $roles; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $role): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                             <option value="<?php echo e($role->id); ?>"
-                                                <?php echo e($user->hasRole($role->id) ? 'selected' : ''); ?>><?php echo e(ucwords($role->name)); ?>
+                                                <?php echo e($user->hasRole($role->id) ? 'selected' : ''); ?>>
+                                                <?php echo e(ucwords($role->name)); ?>
 
                                             </option>
                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
@@ -88,39 +90,38 @@
                                         <input type="checkbox" name="permission_all" id="permission_all">
                                         All
                                     </label>
-
                                     <hr>
+                                    <?php
+                                        $tatalActivePermissions = 0;
+                                    ?>
                                     <?php $__currentLoopData = $permission_groups; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $groupIndex => $permission_group): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <?php
+                                            $groupWiseTotalActivePermmissions = $permission_group->activePermissions->count();
+                                            $tatalActivePermissions += $groupWiseTotalActivePermmissions;
+                                        ?>
                                         <div class="row">
                                             <div class="col-md-4">
                                                 <label for="permission_group<?php echo e($groupIndex); ?>"
-                                                    class="checkbox group-permission <?php echo e($permission_group->group_name); ?>"
-                                                    onclick="checkPermissionByGroup('<?php echo e($permission_group->group_name); ?>')">
+                                                    class="checkbox group-permission <?php echo e($permission_group->name); ?>"
+                                                    onclick="checkPermissionByGroup('<?php echo e($permission_group->name); ?>')">
                                                     <input type="checkbox" class="group" name="group-permission[]">
-                                                    <?php echo e(ucfirst($permission_group->group_name)); ?>
+                                                    <?php echo e(ucfirst($permission_group->name)); ?>
 
 
                                                 </label>
                                             </div>
                                             <div class="col-md-8">
-                                                <?php
-                                                    $groupWisePermissions = \DB::table('permissions')
-                                                        ->where('group_name', $permission_group->group_name)
-                                                        ->get();
-                                                ?>
                                                 <ul>
-                                                    <?php
-                                                        $permissinCount = count($groupWisePermissions);
-                                                    ?>
-                                                    <?php $__currentLoopData = $groupWisePermissions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $permission): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                    <?php $__currentLoopData = $permission_group->activePermissions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $permission): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                                         <li
-                                                            class="<?php echo ($index+1<$permissinCount) ? 'border-bottom':'' ?>  p-2">
+                                                            class="<?php echo ($index+1<$groupWiseTotalActivePermmissions) ? 'border-bottom':'' ?>  p-2">
                                                             <label
-                                                                class="checkbox single-permission per-<?php echo e($permission_group->group_name); ?>"
-                                                                onclick="checkUncheckModuleByPermission('per-<?php echo e($permission_group->group_name); ?>', '<?php echo e($permission_group->group_name); ?>', <?php echo e(count($groupWisePermissions)); ?>)">
+                                                                class="checkbox single-permission per-<?php echo e($permission_group->name); ?>"
+                                                                onclick="checkUncheckModuleByPermission('per-<?php echo e($permission_group->name); ?>', '<?php echo e($permission_group->name); ?>', <?php echo e($groupWiseTotalActivePermmissions); ?>)">
                                                                 <input type="checkbox" value="<?php echo e($permission->name); ?>"
                                                                     name="permissions[]"
-                                                                    id="permission<?php echo e($permission->id); ?>"  <?php echo e(($user->hasPermissionTo($permission->name)? 'checked':'')); ?>>
+                                                                    id="permission<?php echo e($permission->id); ?>"
+                                                                    <?php echo e($user->hasPermissionTo($permission->name) ? 'checked' : ''); ?>>
                                                                 <?php echo e(ucwords(str_replace('.', ' ', $permission->name))); ?>
 
                                                             </label>
@@ -138,7 +139,8 @@
 
                         <br />
                         <div class="form-group">
-                            <button type="submit" name="submit-btn" class="btn btn-success btn-submit">Save Changes</button>
+                            <button type="submit" name="submit-btn" class="btn btn-success btn-lg btn-submit">Save
+                                Changes</button>
                         </div>
                     </form>
                 </div>
@@ -184,7 +186,7 @@
             }
 
             function allChecked() {
-                const countTotalPermission = <?php echo e(count($permissions)); ?>
+                const countTotalPermission = <?php echo e($tatalActivePermissions); ?>
 
                 //alert($(".permission input:checked").length);
                 if ($(".single-permission input:checked").length == countTotalPermission) {

@@ -40,13 +40,13 @@ use App\Http\Livewire\Frontend\Home;
 */
 
 Route::get('/', Home::class)->name('/');
-Route::match(['get', 'post'], 'district-wise-warnings-report',Home::class)->name('district-wise-warnings-report');
-    
+Route::match(['get', 'post'], 'district-wise-warnings-report', Home::class)->name('district-wise-warnings-report');
+
 Route::get('lang/change', [LanguageController::class, 'change'])->name('changeLang');
 Route::middleware('auth')->group(function () {
     Route::get('active-inactive', [Webspice::class, 'activeInactive'])->name('active.inactive');
     // Route::match(['get','post'],'/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
-    Route::match(['get','post'],'/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::match(['get', 'post'], '/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::any('change-password', [UserController::class, 'changePassword'])->name('change-password');
     Route::get('user-profile', [UserController::class, 'userProfile'])->name('user-profile');
 
@@ -55,19 +55,16 @@ Route::middleware('auth')->group(function () {
     Route::get('categories', CategoryComponent::class)->name('categories');
     Route::get('sub_categories', SubCategoryComponent::class)->name('sub_categories');
 
-    Route::group(['middleware' => ['role:superadmin|developer']], function () { //user & role only created by superadmin
+    Route::group([
+        'middleware' =>
+        [
+            'role:superadmin|developer' #user & role only created by superadmin or developer
+        ]
+    ], function () {
         Route::resources([
             'roles' => RoleController::class,
             'users' => UserController::class,
-            'permissions' => PermissionController::class,
-            'questions' => QuestionController::class,
-            'sub_questions' => SubQuestionController::class,
-            'answers' => AnswerController::class,
-            'sub_answers' => SubAnswerController::class,
-            'user_responses' => UserResponseController::class,
-            'areas' => AreaController::class,
-            'markets' => MarketController::class,
-            'registered_users' => RegisteredUserController::class
+            'permissions' => PermissionController::class
         ]);
         Route::match(['get', 'put'], 'company-setting', [SettingController::class, 'companySetting'])->name('company-setting');
         Route::match(['get', 'put'], 'basic-setting', [SettingController::class, 'basicSetting'])->name('basic-setting');
@@ -81,6 +78,17 @@ Route::middleware('auth')->group(function () {
         Route::match(['get', 'put'], 'toxbox-setting', [SettingController::class, 'toxboxSetting'])->name('toxbox-setting');
         Route::match(['get', 'put'], 'cron-setting', [SettingController::class, 'cronSetting'])->name('cron-setting');
     });
+    Route::resources([
+        'questions' => QuestionController::class,
+        'sub_questions' => SubQuestionController::class,
+        'answers' => AnswerController::class,
+        'sub_answers' => SubAnswerController::class,
+        'user_responses' => UserResponseController::class,
+        'areas' => AreaController::class,
+        'markets' => MarketController::class,
+        'registered_users' => RegisteredUserController::class
+    ]);
+
 
     # User
     Route::group([
@@ -199,7 +207,6 @@ Route::middleware('auth')->group(function () {
     // Route::match(['get', 'post'], 'district-wise-warnings-report', [ReportController::class, 'districtWiseWarningsReport'])->name('district-wise-warnings-report');
     // Route::get('district-wise-warnings-report/category', [ReportController::class, 'change'])->name('changeLang');
     Route::match(['get', 'post'], 'division-wise-counting-report', [ReportController::class, 'divisionWiseCountingReport'])->name('division-wise-counting-report');
-
 });
 Route::get('/clear', function () {
     // Artisan::call('optimize:clear');

@@ -17,7 +17,10 @@
 
         <div class="side-menu h-100 ">
             <ul class="p-0 mb-3" id="menu">
-                @if (Auth::guard('web')->user()->can('option_group.view') ||
+                @if (Auth::guard('web')->user()->can('option_group.view') || 
+                Auth::guard('web')->user()->can('area.view') || 
+                Auth::guard('web')->user()->can('market.view') ||
+                Auth::guard('web')->user()->can('category.view') ||
                         Auth::guard('web')->user()->can('option.view'))
                     <li>
                         <a href="#master_submenu1" data-bs-toggle="collapse" class="nav-link ps-1 align-middle">
