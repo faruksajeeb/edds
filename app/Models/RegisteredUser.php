@@ -49,4 +49,12 @@ class RegisteredUser extends Model
     {
         return $this->hasMany(UserResponse::class)->where('status', 2);
     }
+
+    /**
+     * Get all of the post's logs.
+     */
+    public function logs()
+    {
+        return $this->morphMany('App\Models\Log', 'loggable');
+    }
 }

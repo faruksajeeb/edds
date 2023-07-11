@@ -33,7 +33,7 @@
                         @csrf
                         <div class="form-group mb-3">
                             <label for=""
-                                class="@if ($errors->has('value')) has-error @endif fw-bold">Value *</label><br />
+                                class="@if ($errors->has('value')) has-error @endif fw-bold">Value  <span class="text-danger">*</span></label><br />
                             <textarea name='value' id='value' class="form-control @error('value') is-invalid @enderror"
                                 placeholder="Enter  value" rows="3" required>{{ old('value',$areaInfo->value) }}</textarea>
                             @if ($errors->has('value'))
@@ -46,12 +46,44 @@
                                 </div>
                             @endif
                         </div>
-                        <div class="form-group">
+                        <div class="form-group mb-3">
                             <label for=""
                                 class="@if ($errors->has('value_bangla')) has-error @endif fw-bold">Value
                                 Bangla</label><br />
                             <textarea name='value_bangla' id='value_bangla' class="form-control @error('value_bangla') is-invalid @enderror"
                                 placeholder="Enter  value in bangla" rows="3">{{ old('value_bangla',$areaInfo->value_bangla) }}</textarea>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="latitude" class="@if ($errors->has('latitude')) has-error @endif fw-bold">
+                                Latitude  <span class="text-danger">*</span></label><br />
+                            <input type="text" name='latitude' id='latitude'
+                                class="form-control @error('latitude') is-invalid @enderror"
+                                placeholder="Enter Latitude" value="{{ old('latitude',$areaInfo->latitude) }}" required>
+                            @if ($errors->has('latitude'))
+                                @error('latitude')
+                                    <div class="alert alert-danger">{{ $message }}</div>
+                                @enderror
+                            @else
+                                <div class="invalid-feedback">
+                                    Please enter a latitude.
+                                </div>
+                            @endif
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="longitude" class="@if ($errors->has('longitude')) has-error @endif fw-bold">
+                                Longitude <span class="text-danger">*</span></label><br />
+                            <input type="text" name='longitude' id='longitude'
+                                class="form-control @error('longitude') is-invalid @enderror"
+                                placeholder="Enter longitude" value="{{ old('longitude',$areaInfo->longitude) }}" required>
+                            @if ($errors->has('longitude'))
+                                @error('longitude')
+                                    <div class="alert alert-danger">{{ $message }}</div>
+                                @enderror
+                            @else
+                                <div class="invalid-feedback">
+                                    Please enter a longitude.
+                                </div>
+                            @endif
                         </div>
                         <br />
                         <div class="form-group">

@@ -1,3 +1,12 @@
+@push('styles')
+    <style>
+        .drag-icon {
+            font-size: 25px;
+            color: darkgray;
+            cursor: pointer;
+        }
+    </style>
+@endpush
 <x-app-layout>
     <x-slot name="title">
         Sub Questions
@@ -20,7 +29,7 @@
                                     <li class="breadcrumb-item"><a href="#">Question & Answer</a></li>
                                     <li class="breadcrumb-item " aria-current="page">
                                         @if (request()->get('status') == 'archived')
-                                        Deleted
+                                            Deleted
                                         @endif Sub Questions
                                     </li>
                                 </ol>
@@ -77,20 +86,23 @@
                                             {{ request()->get('search_status') == '-1' ? 'selected' : '' }}>Inactive
                                         </option>
                                     </select>
-                                    <input type="text" name="search_text"
-                                        value="{{ request()->get('search_text') }}" class="form-control"
-                                        placeholder="Search by value, value bangla">
+                                    <input type="text" name="search_text" value="{{ request()->get('search_text') }}"
+                                        class="form-control" placeholder="Search by value, value bangla">
                                 </div>
-                                <div class="col-md-12 col-sm-12 px-0 input-group mt-1">
-                                    <button class="btn btn-secondary me-1 filter_btn" name="submit_btn" type="submit"
-                                        value="search">
-                                        <i class="fa fa-search"></i> Filter Data
-                                    </button>
-                                    <a href='{{ request()->get('status') == 'archived' ? url('/sub_questions?status=archived') : url('/sub_questions') }}'
-                                        class="btn btn-xs btn-primary me-1 refresh_btn"><i class="fa fa-refresh"></i>
-                                        Refresh</a>
-                                    @can('sub_question.export')
-                                        {{-- <button class="btn btn-xs btn-danger float-end me-1 export_btn" name="submit_btn" value="pdf"
+                            </div>
+                            <div class="row">
+                                <div class="col-md-9 col-sm-9 px-0 mt-1">
+                                    <div class="input-group">
+                                        <button class="btn btn-secondary me-1 filter_btn" name="submit_btn"
+                                            type="submit" value="search">
+                                            <i class="fa fa-search"></i> Filter Data
+                                        </button>
+                                        <a href='{{ request()->get('status') == 'archived' ? url('/sub_questions?status=archived') : url('/sub_questions') }}'
+                                            class="btn btn-xs btn-primary me-1 refresh_btn"><i
+                                                class="fa fa-refresh"></i>
+                                            Refresh</a>
+                                        @can('sub_question.export')
+                                            {{-- <button class="btn btn-xs btn-danger float-end me-1 export_btn" name="submit_btn" value="pdf"
                                                 type="submit">
                                                 <i class="fa-solid fa-download"></i> PDF
                                             </button>
@@ -99,53 +111,78 @@
                                                 <i class="fa-solid fa-download"></i> CSV
                                             </button> --}}
 
-                                        <button class="btn btn-xs btn-success float-end me-1 export_btn" name="submit_btn"
-                                            value="export" type="submit">
-                                            <i class="fa-solid fa-download"></i> Export
-                                        </button>
-                                    @endcan
-                                    @can('sub_question.create')
-                                        <a href="{{ route('sub_questions.create') }}" class="btn btn-xs btn-outline-primary float-end"
-                                            name="create_new" type="button">
-                                            <i class="fa-solid fa-plus"></i> Create Sub-Question
-                                        </a>
-                                    @endcan
-                                </div>
-                                <div class="col-md-3 col-sm-12 px-0">
-                                    <div class="input-group">
-                                        <div class="input-group-append">
-
-                                        </div>
+                                            <button class="btn btn-xs btn-success float-end me-1 export_btn"
+                                                name="submit_btn" value="export" type="submit">
+                                                <i class="fa-solid fa-download"></i> Export
+                                            </button>
+                                        @endcan
+                                        @can('sub_question.create')
+                                            <a href="{{ route('sub_questions.create') }}"
+                                                class="btn btn-xs btn-outline-primary float-end" name="create_new"
+                                                type="button">
+                                                <i class="fa-solid fa-plus"></i> Create Sub-Question
+                                            </a>
+                                        @endcan
                                     </div>
                                 </div>
-                                <div class="col-md-3 col-sm-12">
-
+                                <div class="col-md-3">
+                                    <!-- Show entries dropdown -->
+                                    <div class="float-end mt-2">
+                                        <form action="{{ url()->current() }}" method="GET">
+                                            <label for="perPage">Show
+                                                <select name="perPage" id="perPage" onchange="this.form.submit()">
+                                                    <option value="5"
+                                                        {{ Request::get('perPage') == 5 ? 'selected' : '' }}>5</option>
+                                                    <option value="10"
+                                                        {{ Request::get('perPage') == 10 ? 'selected' : '' }}>10
+                                                    </option>
+                                                    <option value="25"
+                                                        {{ Request::get('perPage') == 25 ? 'selected' : '' }}>25
+                                                    </option>
+                                                    <option value="50"
+                                                        {{ Request::get('perPage') == 50 ? 'selected' : '' }}>50
+                                                    </option>
+                                                    <option value="100"
+                                                        {{ Request::get('perPage') == 100 ? 'selected' : '' }}>100
+                                                    </option>
+                                                    <!-- Add more options if needed -->
+                                                </select> entries</label>
+                                        </form>
+                                    </div>
                                 </div>
-
                             </div>
                         </form>
-                        <table class="table mb-0">
+                        <div class="table-responsive">
+                        <table class="table mb-0 table-sm table-striped ">
                             <thead>
                                 <tr>
-                                    <th>Sl No.</th>
+                                    <th colspan="2">Sl Order</th>
                                     <th>Value</th>
                                     <th>Value Bangla</th>
                                     <th>Question</th>
                                     {{-- <th>Input Method</th> --}}
+                                    <th>Is Required</th>
                                     <th>Created At</th>
                                     <th>Updated At</th>
                                     <th>Status</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="sortable" tablename="sub_questions">
                                 @forelse ($sub_questions as $index => $val)
-                                    <tr>
-                                        <td>{{ $index + $sub_questions->firstItem() }}</td>
+                                    <tr id="{{ $val->id }}">
+                                        <td class=''>
+                                            <span class="sort bg-red">
+                                                <i class="fa-solid fa-up-down-left-right drag-icon"></i>
+                                            </span>
+                                        </td>
+                                        {{-- <td>{{ $index + $sub_questions->firstItem() }}</td> --}}
+                                        <td>{{ $val->sl_order }}</td>
                                         <td>{{ $val->value }}</td>
                                         <td>{{ $val->value_bangla }}</td>
                                         <td>{{ optional($val->question)->value }}</td>
                                         {{-- <td>{{ $val->input_method }}</td> --}}
+                                        <td>{{ ucwords($val->is_required) }}</td>
                                         <td>{{ $val->created_at }}</td>
                                         <td>{{ $val->updated_at }}</td>
                                         <td class="text-center">
@@ -181,7 +218,8 @@
                                 @endcan
                                 {{-- force delete button --}}
                                 @can('sub_question.force_delete')
-                                    <a href="" class="disabled btn btn-danger btn-sm btn-force-delete-{{ $val->id }}"
+                                    <a href=""
+                                        class="disabled btn btn-danger btn-sm btn-force-delete-{{ $val->id }}"
                                         onclick="event.preventDefault(); forceDelete({{ $val->id }})"><i
                                             class="fa-solid fa-remove"></i> Force Delete</a>
                                     <form id="force-delete-form-{{ $val->id }}" style="display: none"
@@ -217,11 +255,12 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="text-center">No records found. </td>
+                            <td colspan="10" class="text-center">No records found. </td>
                         </tr>
                         @endforelse
                         </tbody>
                         </table>
+                    </div>
                         {{ $sub_questions->withQueryString()->links() }}
                     </div>
                 </div>

@@ -143,6 +143,7 @@
                         } else {
                             $('.btn-submit').prop('disabled', true);
                             $('.btn-submit').html('Saving...');
+                            $('.btn-import').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Importing...');
                         }
                         form.classList.add('was-validated')
                     }, false)
@@ -253,6 +254,58 @@
             })
 
         });
+
+        //....................................Sortable...................................
+        $('#sortable').sortable({
+            axis: 'y',
+            opacity: 0.9,
+            handle: 'span',
+            update: function(event, ui) {
+                var list_sortable = $(this).sortable('toArray').toString();
+                var tablename = $(this).attr('tablename');
+                // change order in the database using Ajax
+                //    alert(tablename);
+                processing('Reordering...');
+                $.ajax({
+
+                    url: "<?php echo e(route('change-order')); ?>",
+                    type: 'POST',
+                    dataType: "json",
+                    data: {
+                        "_token": "<?php echo e(csrf_token()); ?>",
+                        list_order: list_sortable,
+                        table_name: tablename
+                    },
+                    success: function(response) {
+                        if (response.status == 'success') {
+                            Swal.fire({
+                                position: 'top-end',
+                                icon: 'success',
+                                title: response.message,
+                                showConfirmButton: false,
+                                timer: 5000
+                            });
+                        } else if (response.status == 'not_success') {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops...',
+                                text: response.message,
+                            });
+                            return false;
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        // handle error
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: error,
+                        });
+                        return false;
+                    }
+                });
+            }
+        }); // finished sortable
 
         let confirmDelete = (id) => {
             Swal.fire({

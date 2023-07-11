@@ -16,6 +16,9 @@
                         <div class="col-sm-12">
                             <h3 class="page-title">User Profile</h3>
                             <hr>
+                            User Name: {{Auth::user()->name}}
+                            <br>
+                            User Email: {{Auth::user()->email}}
                         </div>
                     </div>
                 </div>

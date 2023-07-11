@@ -38,7 +38,7 @@ class QuestionExport implements FromArray, WithHeadings, Responsable,  WithStyle
                     ->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_PORTRAIT);
             },
             AfterSheet::class    => function (AfterSheet $event) {
-                $cellRange = 'A1:F1'; // All headers
+                $cellRange = 'A1:H1'; // All headers
                $event->sheet->getDelegate()->getStyle($cellRange)->getFont()->setSize(14);
                 
             },
@@ -50,7 +50,7 @@ class QuestionExport implements FromArray, WithHeadings, Responsable,  WithStyle
         // $sheet = $spreadsheet->getActiveSheet();
         $sheet->setCellValue('A1', $this->title);
         $sheet->getStyle('A1')->getFont()->setBold(true);
-        $sheet->mergeCells('A1:F2');
+        $sheet->mergeCells('A1:H2');
         $styleArray = [
             'font' => [
                 'bold' => true,
@@ -68,7 +68,7 @@ class QuestionExport implements FromArray, WithHeadings, Responsable,  WithStyle
             //     ],
             // ],
             'fill' => [
-                // 'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_GRADIENT_LINEAR,
+                // 'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::HILL_GRADIENT_LINEAR,
                 'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
                 'rotation' => 90,
                 'startColor' => [
@@ -79,13 +79,13 @@ class QuestionExport implements FromArray, WithHeadings, Responsable,  WithStyle
                 ],
             ],
         ];
-        $sheet->getStyle('A1:F1')->applyFromArray($styleArray);
+        $sheet->getStyle('A1:H1')->applyFromArray($styleArray);
         $headerStyleArray = [
             'font' => [
                 'bold' => true,
             ]
         ];
-        $sheet->getStyle('A3:F3')->applyFromArray($headerStyleArray);
+        $sheet->getStyle('A3:H3')->applyFromArray($headerStyleArray);
     }
     public function headings(): array
     {
@@ -97,6 +97,8 @@ class QuestionExport implements FromArray, WithHeadings, Responsable,  WithStyle
                 "Category",
                 "Respondent",
                 "Input method",
+                "Is Required",
+                "Image Require",
                 // "Created At",
                 // "Updated At",
                 // "Created By",
@@ -119,6 +121,8 @@ class QuestionExport implements FromArray, WithHeadings, Responsable,  WithStyle
                 isset($val['option']['option_value']) ? $val['option']['option_value'] : '',
                 $val['respondent'],
                 $val['input_method'],
+                $val['is_required'],
+                $val['image_require'],
                 // $val['created_at'],
                 // $val['updated_at'],
                 // $val['created_by'],

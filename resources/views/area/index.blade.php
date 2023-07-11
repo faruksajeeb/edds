@@ -106,6 +106,8 @@
                                     <th>Sl No.</th>
                                     <th>Area</th>
                                     <th>Value Bangla</th>
+                                    <th>Latitude </th>
+                                    <th>Longitude </th>
                                     {{-- <th>Created At</th>
                                     <th>Updated At</th> --}}
                                     <th>Status</th>
@@ -118,6 +120,8 @@
                                         <td>{{ $index + $areas->firstItem() }}</td>
                                         <td>{{ $val->value }}</td>
                                         <td>{{ $val->value_bangla }}</td>
+                                        <td>{{ $val->latitude }}</td>
+                                        <td>{{ $val->longitude }}</td>
                                         {{-- <td>{{ $val->created_at }}</td>
                                         <td>{{ $val->updated_at }}</td> --}}
                                         <td>
@@ -187,7 +191,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="text-center">No records found. </td>
+                            <td colspan="7" class="text-center">No records found. </td>
                         </tr>
                         @endforelse
                         </tbody>

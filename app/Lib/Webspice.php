@@ -838,4 +838,24 @@ class Webspice
 		}
 		return $result;
 	}
+
+	public static function isValidCoordinates($latitude, $longitude) {
+		// Check if the values are numeric
+		if (!is_numeric($latitude) || !is_numeric($longitude)) {
+			return false;
+		}
+		
+		// Check if the latitude is within the valid range (-90 to 90)
+		if ($latitude < -90 || $latitude > 90) {
+			return false;
+		}
+		
+		// Check if the longitude is within the valid range (-180 to 180)
+		if ($longitude < -180 || $longitude > 180) {
+			return false;
+		}
+		
+		// All checks passed, the coordinates are valid
+		return true;
+	}	
 }

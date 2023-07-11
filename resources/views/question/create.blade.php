@@ -31,7 +31,7 @@
                         @csrf
                         <div class="form-group my-1">
                             <label for=""
-                                class="@if ($errors->has('value_bangla')) has-error @endif fw-bold">Category*</label>
+                                class="@if ($errors->has('value_bangla')) has-error @endif fw-bold">Category <span class='text-danger'>*<span></label>
                             <select name="category_id" id="category_id" class="form-select" required>
                                 <option value="">--select category--</option>
                                 @foreach ($categories as $val)
@@ -46,13 +46,13 @@
                                 @enderror
                             @else
                                 <div class="invalid-feedback">
-                                    Please select category.
+                                    Please select a category.
                                 </div>
                             @endif
                         </div>
                         <div class="form-group my-1">
                             <label for=""
-                                class="@if ($errors->has('value_bangla')) has-error @endif fw-bold">Respondent*</label>
+                                class="@if ($errors->has('value_bangla')) has-error @endif fw-bold">Respondent <span class='text-danger'>*<span></label>
                             <select name="respondent[]" id="respondent" class="form-select  js-states select2"
                                 multiple="multiple" data-placeholder="Select one or more..." required>
                                 @foreach ($respondents as $val)
@@ -74,7 +74,7 @@
                         </div>
                         <div class="form-group mb-3">
                             <label for=""
-                                class="@if ($errors->has('value')) has-error @endif fw-bold">Value *</label><br />
+                                class="@if ($errors->has('value')) has-error @endif fw-bold">Value <span class='text-danger'>*<span></label><br />
                             <textarea name='value' id='value' class="form-control @error('value') is-invalid @enderror"
                                 placeholder="Enter question value" rows="3" required>{{ old('value') }}</textarea>
                             @if ($errors->has('value'))
@@ -90,7 +90,7 @@
                         <div class="form-group">
                             <label for=""
                                 class="@if ($errors->has('value_bangla')) has-error @endif fw-bold">Value
-                                Bangla*</label><br />
+                                Bangla <span class='text-danger'>*<span></label><br />
                             <textarea name='value_bangla' id='value_bangla' class="form-control @error('value_bangla') is-invalid @enderror"
                                 placeholder="Enter question value in bangla" rows="3" required>{{ old('value_bangla') }}</textarea>
                             @if ($errors->has('value_bangla'))
@@ -106,7 +106,7 @@
                         <div class="form-group my-1">
                             <label for=""
                                 class="@if ($errors->has('value_bangla')) has-error @endif fw-bold">Input Method
-                                *</label>
+                                <span class='text-danger'>*<span></label>
                             <select name="input_method" id="input_method" class="form-select" required>
                                 <option value="">--select input method--</option>
                                 <option value="text_box" {{ old('input_method') == 'text_box' ? 'selected' : '' }}>Text
@@ -136,8 +136,8 @@
 
                         <div class="form-group my-1">
                             <label for=""
-                                class="@if ($errors->has('value_bangla')) has-error @endif fw-bold">Input Type
-                                *</label>
+                                class="@if ($errors->has('input_type')) has-error @endif fw-bold">Input Type
+                                <span class='text-danger'>*<span></label>
                             <select name="input_type" id="input_type" class="form-select" required>
                                 <option value="">--select input type--</option>
                                 <option value="alphabetic" {{ old('input_type') == 'alphabetic' ? 'selected' : '' }}>Alphabetic
@@ -155,6 +155,46 @@
                             @else
                                 <div class="invalid-feedback">
                                     Please select input type.
+                                </div>
+                            @endif
+                        </div>
+                        <div class="form-group my-1">
+                            <label for=""
+                                class="@if ($errors->has('is_required')) has-error @endif fw-bold">Is Required? <span class='text-danger'>*<span></label>
+                            <select name="is_required" id="is_required" class="form-select" required>
+                                <option value="">--select one--</option>
+                                <option value="yes" {{ old('is_required') == 'yes' ? 'selected' : '' }}>Yes
+                                </option>
+                                <option value="no" {{ old('is_required') == 'no' ? 'selected' : '' }}>
+                                    No</option>
+                            </select>
+                            @if ($errors->has('is_required'))
+                                @error('is_required')
+                                    <div class="alert alert-danger">{{ $message }}</div>
+                                @enderror
+                            @else
+                                <div class="invalid-feedback">
+                                    Please select one.
+                                </div>
+                            @endif
+                        </div>
+                        <div class="form-group my-1">
+                            <label for=""
+                                class="@if ($errors->has('image_require')) has-error @endif fw-bold">Image Required? <span class='text-danger'>*<span></label>
+                            <select name="image_require" id="image_require" class="form-select" required>
+                                <option value="">--select one--</option>
+                                <option value="yes" {{ old('image_require') == 'yes' ? 'selected' : '' }}>Yes
+                                </option>
+                                <option value="no" {{ old('image_require') == 'no' ? 'selected' : '' }}>
+                                    No</option>
+                            </select>
+                            @if ($errors->has('image_require'))
+                                @error('image_require')
+                                    <div class="alert alert-danger">{{ $message }}</div>
+                                @enderror
+                            @else
+                                <div class="invalid-feedback">
+                                    Please select one.
                                 </div>
                             @endif
                         </div>

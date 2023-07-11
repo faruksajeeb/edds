@@ -183,12 +183,13 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{area}/force-delete', [AreaController::class, 'forceDelete'])->name('force-delete');
         Route::post('/restore-all', [AreaController::class, 'restoreAll'])->name('restore-all');
     });
-
+    Route::match(['get', 'post'],'/markets_import', [MarketController::class, 'import'])->name('markets.import');
     # Market
     Route::group([
         'prefix' => '/markets',
         'as' => 'markets.',
     ], function () {
+        
         Route::post('/{market}/restore', [MarketController::class, 'restore'])->name('restore');
         Route::delete('/{market}/force-delete', [MarketController::class, 'forceDelete'])->name('force-delete');
         Route::post('/restore-all', [MarketController::class, 'restoreAll'])->name('restore-all');

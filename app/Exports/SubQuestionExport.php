@@ -26,7 +26,7 @@ class SubQuestionExport implements FromArray, WithHeadings, Responsable, ShouldA
         // $sheet = $spreadsheet->getActiveSheet();
         $sheet->setCellValue('A1', $this->title);
         $sheet->getStyle('A1')->getFont()->setBold(true);
-        $sheet->mergeCells('A1:F2');
+        $sheet->mergeCells('A1:G2');
         $styleArray = [
             'font' => [
                 'bold' => true,
@@ -44,7 +44,7 @@ class SubQuestionExport implements FromArray, WithHeadings, Responsable, ShouldA
             //     ],
             // ],
             'fill' => [
-                // 'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_GRADIENT_LINEAR,
+                // 'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::GILL_GRADIENT_LINEAR,
                 'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
                 'rotation' => 90,
                 'startColor' => [
@@ -55,12 +55,12 @@ class SubQuestionExport implements FromArray, WithHeadings, Responsable, ShouldA
                 ],
             ],
         ];
-        $sheet->getStyle('A1:F1')->applyFromArray($styleArray);
+        $sheet->getStyle('A1:G1')->applyFromArray($styleArray);
         $headerStyleArray = [
             'font' => [
                 'bold' => true,
             ]];
-        $sheet->getStyle('A3:F3')->applyFromArray($headerStyleArray);
+        $sheet->getStyle('A3:G3')->applyFromArray($headerStyleArray);
     }
     public function headings(): array
     {
@@ -70,6 +70,7 @@ class SubQuestionExport implements FromArray, WithHeadings, Responsable, ShouldA
                 "Value",
                 "Value Bangla",
                 "Question",
+                "is Required",
                 "Created At",
                 "Updated At",
                 // "Created By",
@@ -90,6 +91,7 @@ class SubQuestionExport implements FromArray, WithHeadings, Responsable, ShouldA
                 $val['value'],
                 $val['value_bangla'],
                 isset($val['question']['value']) ? $val['question']['value'] : '',
+                $val['is_required'],
                 $val['created_at'],
                 $val['updated_at'],
                 // $val['created_by'],

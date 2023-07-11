@@ -14,6 +14,8 @@ class Market extends Model
         'value',
         'value_bangla',
         'area_id',
+        'latitude',
+        'longitude',
         'created_by',
         'updated_by',
         'status'
@@ -26,9 +28,24 @@ class Market extends Model
 
     protected $dates = ['deleted_at'];
 
+
+
     public function area() : BelongsTo
     {
         return $this->belongsTo(Area::class,'area_id','id')->withTrashed();
     }
+
+
+    public function toSearchableArray()
+{
+    return [
+        'value' => '',
+        'value_bangla' => '',
+        'latitude' => '',
+        'latitude' => '',
+        'markets.value' => '',
+        'markets.value_bangla' => '',
+    ];
+}
 
 }

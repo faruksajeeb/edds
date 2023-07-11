@@ -84,7 +84,26 @@
                                 </div>
                             @endif
                         </div>
-
+                        <div class="form-group my-1">
+                            <label for=""
+                                class="@if ($errors->has('is_required')) has-error @endif fw-bold">Is Required? *</label>
+                            <select name="is_required" id="is_required" class="form-select" required>
+                                <option value="">--select one--</option>
+                                <option value="yes" {{ old('is_required',$sub_questionInfo->is_required) == 'yes' ? 'selected' : '' }}>Yes
+                                </option>
+                                <option value="no" {{ old('is_required',$sub_questionInfo->is_required) == 'no' ? 'selected' : '' }}>
+                                    No</option>
+                            </select>
+                            @if ($errors->has('is_required'))
+                                @error('is_required')
+                                    <div class="alert alert-danger">{{ $message }}</div>
+                                @enderror
+                            @else
+                                <div class="invalid-feedback">
+                                    Please select one.
+                                </div>
+                            @endif
+                        </div>
                         <br />
                         <div class="form-group">
                             <button type="submit" name="submit-btn" class="btn btn-lg btn-success btn-submit">Save

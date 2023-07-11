@@ -99,6 +99,8 @@ class AreaController extends Controller
         $request->validate(
             [
                 'value' => 'required|min:3|max:1000|unique:areas',
+                'latitude' => 'required',
+                'longitude' => 'required',
             ],
             [
                 'value.required' => 'Value field is required.',
@@ -108,6 +110,8 @@ class AreaController extends Controller
         $data = array(
             'value' => $request->value,
             'value_bangla' => $request->value_bangla,
+            'latitude' => $request->latitude,
+            'longitude' => $request->longitude,
             'created_at' => $this->webspice->now('datetime24'),
             'created_by' => $this->webspice->getUserId(),
         );
@@ -161,6 +165,8 @@ class AreaController extends Controller
         $request->validate(
             [
                 'value' => 'required|min:3|max:1000|unique:areas,value,' . $id,
+                'latitude' => 'required',
+                'longitude' => 'required'
             ],
             [
                 'value.required' => 'Value field is required.',
@@ -171,6 +177,8 @@ class AreaController extends Controller
             $area = $this->areas->find($id);
             $area->value = $request->value;
             $area->value_bangla = $request->value_bangla;
+            $area->latitude = $request->latitude;
+            $area->longitude = $request->longitude;
             $area->updated_at = $this->webspice->now('datetime24');
             $area->updated_by = $this->webspice->getUserId();
             $area->save();

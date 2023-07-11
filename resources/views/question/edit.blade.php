@@ -138,6 +138,70 @@
                                 </div>
                             @endif
                         </div>
+                        <div class="form-group my-1">
+                            <label for=""
+                                class="@if ($errors->has('input_type')) has-error @endif fw-bold">Input Type
+                                *</label>
+                            <select name="input_type" id="input_type" class="form-select" required>
+                                <option value="">--select input type--</option>
+                                <option value="alphabetic" {{ old('input_type', $questionInfo->input_type) == 'alphabetic' ? 'selected' : '' }}>Alphabetic
+                                </option>
+                                <option value="alphanumeric" {{ old('input_type', $questionInfo->input_type) == 'alphanumeric' ? 'selected' : '' }}>
+                                    Alphanumeric</option>
+                                <option value="numeric" {{ old('input_type', $questionInfo->input_type) == 'numeric' ? 'selected' : '' }}>
+                                    Numeric
+                                </option>
+                            </select>
+                            @if ($errors->has('input_type'))
+                                @error('input_type')
+                                    <div class="alert alert-danger">{{ $message }}</div>
+                                @enderror
+                            @else
+                                <div class="invalid-feedback">
+                                    Please select input type.
+                                </div>
+                            @endif
+                        </div>
+                        <div class="form-group my-1">
+                            <label for=""
+                                class="@if ($errors->has('is_required')) has-error @endif fw-bold">Is Required? *</label>
+                            <select name="is_required" id="is_required" class="form-select" required>
+                                <option value="">--select one--</option>
+                                <option value="yes" {{ old('is_required',$questionInfo->is_required) == 'yes' ? 'selected' : '' }}>Yes
+                                </option>
+                                <option value="no" {{ old('is_required',$questionInfo->is_required) == 'no' ? 'selected' : '' }}>
+                                    No</option>
+                            </select>
+                            @if ($errors->has('is_required'))
+                                @error('is_required')
+                                    <div class="alert alert-danger">{{ $message }}</div>
+                                @enderror
+                            @else
+                                <div class="invalid-feedback">
+                                    Please select one.
+                                </div>
+                            @endif
+                        </div>
+                        <div class="form-group my-1">
+                            <label for=""
+                                class="@if ($errors->has('image_require')) has-error @endif fw-bold">Image Required? *</label>
+                            <select name="image_require" id="image_require" class="form-select" required>
+                                <option value="">--select one--</option>
+                                <option value="yes" {{ old('image_require',$questionInfo->image_require) == 'yes' ? 'selected' : '' }}>Yes
+                                </option>
+                                <option value="no" {{ old('image_require',$questionInfo->image_require) == 'no' ? 'selected' : '' }}>
+                                    No</option>
+                            </select>
+                            @if ($errors->has('image_require'))
+                                @error('image_require')
+                                    <div class="alert alert-danger">{{ $message }}</div>
+                                @enderror
+                            @else
+                                <div class="invalid-feedback">
+                                    Please select one.
+                                </div>
+                            @endif
+                        </div>
                         <br />
                         <div class="form-group">
                             <button type="submit" name="submit-btn" class="btn btn-lg btn-success btn-submit">Save

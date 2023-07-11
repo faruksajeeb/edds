@@ -1,7 +1,7 @@
 <?php $__env->startPush('styles'); ?>
     <style>
         .drag-icon {
-            font-size: 35px;
+            font-size: 25px;
             color: darkgray;
             cursor: pointer;
         }
@@ -154,6 +154,9 @@
                                                     <option value="50"
                                                         <?php echo e(Request::get('perPage') == 50 ? 'selected' : ''); ?>>50
                                                     </option>
+                                                    <option value="100"
+                                                        <?php echo e(Request::get('perPage') == 100 ? 'selected' : ''); ?>>100
+                                                    </option>
                                                     <!-- Add more options if needed -->
                                                 </select> entries</label>
                                         </form>
@@ -161,133 +164,142 @@
                                 </div>
                             </div>
                         </form>
-                        <table class="table mb-0">
-                            <thead>
-                                <tr>
-                                    <th>
-                                        DRAG
-                                    </th>
-                                    <th>Sl No.</th>
-                                    <th>Value</th>
-                                    <th>Value Bangla</th>
-                                    <th>Category</th>
-                                    <th>Respondent</th>
-                                    <th>Sub Questions</th>
-                                    <th>Input Method</th>
-                                    
-                                    <th>Status</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="sortable" tablename="questions">
-                                <?php $__empty_1 = true; $__currentLoopData = $questions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $val): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-                                    <tr id="<?php echo e($val->id); ?>">
-                                        <td class=''>
-                                            <span class="sort bg-red">
-                                                <i class="fa-solid fa-up-down-left-right drag-icon"></i>
-                                            </span>
-
-                                        </td>
-                                        <td><?php echo e($index + $questions->firstItem()); ?></td>
-                                        <td><?php echo e($val->value); ?></td>
-                                        <td><?php echo e($val->value_bangla); ?></td>
-                                        <td><?php echo e(optional($val->category)->option_value); ?></td>
-                                        <td><?php echo e($val->respondent); ?></td>
-                                        <td>
-                                            <?php if($val->subQuestions->count() > 0): ?>
-                                                <dl class="row mb-0 sub_question"
-                                                    style="height: 25px; overflow: hidden"
-                                                    id="sub_question<?php echo e($index); ?>">
-                                                    <?php $__currentLoopData = $val->subQuestions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $subQuestion): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                                        <dd class="col-sm-12 pb-0 ">
-                                                            <?php echo e($key + 1); ?>. <?php echo e(optional($subQuestion)->value); ?>
-
-                                                        </dd>
-                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                                </dl>
-                                                <button onclick="seeMore(<?php echo e($index); ?>)"
-                                                    class="btn btn-sm btn-link" id="expandbtn<?php echo e($index); ?>">see
-                                                    more &#187;</button>
-                                            <?php endif; ?>
-                                        </td>
-                                        <td><?php echo e($val->input_method); ?></td>
+                        <div class="table-responsive">
+                            <table class="table table-sm mb-0 table-bordered table-striped ">
+                                <thead>
+                                    <tr>
+                                        <th colspan="2">Sl Order</th>
+                                        <th>Value</th>
+                                        <th>Value Bangla</th>
+                                        <th>Category</th>
+                                        <th>Respondent</th>
+                                        <th>Sub Questions</th>
+                                        <th>Input Method</th>
+                                        <th>Input Type</th>
+                                        <th>Is Required</th>
+                                        <th>Image Required</th>
                                         
-                                        <td class="text-center">
-                                            <div class="form-check form-switch">
-                                                <?php if(request()->get('status') == 'archived'): ?>
-                                                    <span class="badge bg-secondary">Deleted</span>
-                                                <?php else: ?>
-                                                    <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('question.edit')): ?>
-                                                        <input class="form-check-input active_inactive_btn "
-                                                            status="<?php echo e($val->status); ?>"
-                                                            <?php echo e($val->status == -1 ? '' : ''); ?> table="questions"
-                                                            type="checkbox" id="row_<?php echo e($val->id); ?>"
-                                                            value="<?php echo e(Crypt::encryptString($val->id)); ?>"
-                                                            <?php echo e($val->status == 1 ? 'checked' : ''); ?>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="sortable" tablename="questions">
+                                    <?php $__empty_1 = true; $__currentLoopData = $questions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $val): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                                        <tr id="<?php echo e($val->id); ?>">
+                                            <td class=''>
+                                                <span class="sort bg-red">
+                                                    <i class="fa-solid fa-up-down-left-right drag-icon"></i>
+                                                </span>
+                                            </td>
+                                            
+                                            <td><?php echo e($val->sl_order); ?></td>
+                                            <td><?php echo e($val->value); ?></td>
+                                            <td><?php echo e($val->value_bangla); ?></td>
+                                            <td><?php echo e(optional($val->category)->option_value); ?></td>
+                                            <td><?php echo e($val->respondent); ?></td>
+                                            <td>
+                                                <?php if($val->subQuestions->count() > 0): ?>
+                                                    <dl class="row mb-0 sub_question"
+                                                        style="height: 25px; overflow: hidden"
+                                                        id="sub_question<?php echo e($index); ?>">
+                                                        <?php $__currentLoopData = $val->subQuestions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $subQuestion): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                            <dd class="col-sm-12 pb-0 ">
+                                                                <?php echo e($key + 1); ?>.
+                                                                <?php echo e(optional($subQuestion)->value); ?>
 
-                                                            style="cursor:pointer">
-                                                    <?php endif; ?>
+                                                            </dd>
+                                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                                    </dl>
+                                                    <button onclick="seeMore(<?php echo e($index); ?>)"
+                                                        class="btn btn-sm btn-link"
+                                                        id="expandbtn<?php echo e($index); ?>">see
+                                                        more &#187;</button>
+                                                <?php endif; ?>
+                                            </td>
+                                            <td><?php echo e($val->input_method); ?></td>
+                                            <td><?php echo e($val->input_type); ?></td>
+                                            <td><?php echo e(ucwords($val->is_required)); ?></td>
+                                            <td><?php echo e(ucwords($val->image_require)); ?></td>
+                                            
+                                            <td class="text-center">
+                                                <div class="form-check form-switch">
+                                                    <?php if(request()->get('status') == 'archived'): ?>
+                                                        <span class="badge bg-secondary">Deleted</span>
+                                                    <?php else: ?>
+                                                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('question.edit')): ?>
+                                                            <input class="form-check-input active_inactive_btn "
+                                                                status="<?php echo e($val->status); ?>"
+                                                                <?php echo e($val->status == -1 ? '' : ''); ?> table="questions"
+                                                                type="checkbox" id="row_<?php echo e($val->id); ?>"
+                                                                value="<?php echo e(Crypt::encryptString($val->id)); ?>"
+                                                                <?php echo e($val->status == 1 ? 'checked' : ''); ?>
+
+                                                                style="cursor:pointer">
+                                                        <?php endif; ?>
+                                        <?php endif; ?>
+                            </div>
+                            </td>
+                            <td class="text-nowrap">
+                                <?php if(request()->get('status') == 'archived'): ?>
+                                    
+                                    <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('question.restore')): ?>
+                                        <a href="" class="btn btn-primary btn-sm btn-restore-<?php echo e($val->id); ?>"
+                                            onclick="event.preventDefault(); restoreConfirmation(<?php echo e($val->id); ?>)"><i
+                                                class="fa-solid fa-trash-arrow-up"></i> Restore</a>
+                                        <form id="restore-form-<?php echo e($val->id); ?>"
+                                            action="<?php echo e(route('questions.restore', Crypt::encryptString($val->id))); ?>"
+                                            method="POST" style="display: none">
+                                            <?php echo method_field('POST'); ?>
+                                            <?php echo csrf_field(); ?>
+                                        </form>
                                     <?php endif; ?>
-                        </div>
-                        </td>
-                        <td class="text-nowrap">
-                            <?php if(request()->get('status') == 'archived'): ?>
-                                
-                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('question.restore')): ?>
-                                    <a href="" class="btn btn-primary btn-sm btn-restore-<?php echo e($val->id); ?>"
-                                        onclick="event.preventDefault(); restoreConfirmation(<?php echo e($val->id); ?>)"><i
-                                            class="fa-solid fa-trash-arrow-up"></i> Restore</a>
-                                    <form id="restore-form-<?php echo e($val->id); ?>"
-                                        action="<?php echo e(route('questions.restore', Crypt::encryptString($val->id))); ?>"
-                                        method="POST" style="display: none">
-                                        <?php echo method_field('POST'); ?>
-                                        <?php echo csrf_field(); ?>
-                                    </form>
-                                <?php endif; ?>
-                                
-                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('question.force_delete')): ?>
-                                    <a href=""
-                                        class="disabled btn btn-danger btn-sm btn-force-delete-<?php echo e($val->id); ?>"
-                                        onclick="event.preventDefault(); forceDelete(<?php echo e($val->id); ?>)"><i
-                                            class="fa-solid fa-remove "></i> Force Delete</a>
-                                    <form id="force-delete-form-<?php echo e($val->id); ?>" style="display: none"
-                                        action="<?php echo e(route('questions.force-delete', Crypt::encryptString($val->id))); ?>"
-                                        method="POST">
-                                        <?php echo method_field('DELETE'); ?>
-                                        <?php echo csrf_field(); ?>
-                                    </form>
-                                <?php endif; ?>
-                            <?php else: ?>
-                                
-                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('question.edit')): ?>
-                                    <?php if($val->status == 1): ?>
-                                        <a href="<?php echo e(route('questions.edit', Crypt::encryptString($val->id))); ?>"
-                                            class="btn btn-outline-warning btn-sm"><i class="fa-solid fa-pencil"></i> Edit</a>
+                                    
+                                    <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('question.force_delete')): ?>
+                                        <a href=""
+                                            class="disabled btn btn-danger btn-sm btn-force-delete-<?php echo e($val->id); ?>"
+                                            onclick="event.preventDefault(); forceDelete(<?php echo e($val->id); ?>)"><i
+                                                class="fa-solid fa-remove "></i> Force Delete</a>
+                                        <form id="force-delete-form-<?php echo e($val->id); ?>" style="display: none"
+                                            action="<?php echo e(route('questions.force-delete', Crypt::encryptString($val->id))); ?>"
+                                            method="POST">
+                                            <?php echo method_field('DELETE'); ?>
+                                            <?php echo csrf_field(); ?>
+                                        </form>
+                                    <?php endif; ?>
+                                <?php else: ?>
+                                    
+                                    <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('question.edit')): ?>
+                                        <?php if($val->status == 1): ?>
+                                            <a href="<?php echo e(route('questions.edit', Crypt::encryptString($val->id))); ?>"
+                                                class="btn btn-outline-warning btn-sm"><i class="fa-solid fa-pencil"></i>
+                                                Edit</a>
+                                        <?php endif; ?>
+                                    <?php endif; ?>
+                                    
+                                    <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('question.delete')): ?>
+                                        <a href=""
+                                            class="btn btn-outline-danger btn-sm btn-delete-<?php echo e($val->id); ?>"
+                                            onclick="event.preventDefault(); confirmDelete(<?php echo e($val->id); ?>)"><i
+                                                class="fa-solid fa-trash"></i> Delete</a>
+                                        <form id="delete-form-<?php echo e($val->id); ?>" style="display: none"
+                                            action="<?php echo e(route('questions.destroy', Crypt::encryptString($val->id))); ?>"
+                                            method="POST">
+                                            <?php echo method_field('DELETE'); ?>
+                                            <?php echo csrf_field(); ?>
+                                        </form>
                                     <?php endif; ?>
                                 <?php endif; ?>
-                                
-                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('question.delete')): ?>
-                                    <a href="" class="btn btn-outline-danger btn-sm btn-delete-<?php echo e($val->id); ?>"
-                                        onclick="event.preventDefault(); confirmDelete(<?php echo e($val->id); ?>)"><i
-                                            class="fa-solid fa-trash"></i> Delete</a>
-                                    <form id="delete-form-<?php echo e($val->id); ?>" style="display: none"
-                                        action="<?php echo e(route('questions.destroy', Crypt::encryptString($val->id))); ?>"
-                                        method="POST">
-                                        <?php echo method_field('DELETE'); ?>
-                                        <?php echo csrf_field(); ?>
-                                    </form>
-                                <?php endif; ?>
+
+                            </td>
+                            </tr>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                            <tr>
+                                <td colspan="13" class="text-center">No records found. </td>
+                            </tr>
                             <?php endif; ?>
-
-                        </td>
-                        </tr>
-                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
-                        <tr>
-                            <td colspan="10" class="text-center">No records found. </td>
-                        </tr>
-                        <?php endif; ?>
-                        </tbody>
-                        </table>
+                            </tbody>
+                            </table>
+                        </div>
                         <span class="mt-2">
                             <?php echo e($questions->withQueryString()->links()); ?>
 
@@ -310,60 +322,6 @@
                         $('#expandbtn' + key).addClass("seemore");
                     }
                 }
-
-                $(function() {
-                    //....................................Sortable...................................
-                    $('#sortable').sortable({
-                        axis: 'y',
-                        opacity: 0.9,
-                        handle: 'span',
-                        update: function(event, ui) {
-                            var list_sortable = $(this).sortable('toArray').toString();
-                            var tablename = $(this).attr('tablename');
-                            // change order in the database using Ajax
-                            //    alert(tablename);
-                            processing('Reordering...');
-                            $.ajax({
-
-                                url: "<?php echo e(route('change-order')); ?>",
-                                type: 'POST',
-                                dataType: "json",
-                                data: {
-                                    "_token": "<?php echo e(csrf_token()); ?>",
-                                    list_order: list_sortable,
-                                    table_name: tablename
-                                },
-                                success: function(response) {
-                                    if (response.status == 'success') {
-                                        Swal.fire({
-                                            position: 'top-end',
-                                            icon: 'success',
-                                            title: response.message,
-                                            showConfirmButton: false,
-                                            timer: 5000
-                                        });
-                                    } else if (response.status == 'not_success') {
-                                        Swal.fire({
-                                            icon: 'error',
-                                            title: 'Oops...',
-                                            text: response.message,
-                                        });
-                                        return false;
-                                    }
-                                },
-                                error: function(xhr, status, error) {
-                                    // handle error
-                                    Swal.fire({
-                                        icon: 'error',
-                                        title: 'Oops...',
-                                        text: error,
-                                    });
-                                    return false;
-                                }
-                            });
-                        }
-                    }); // finished sortable
-                });
             </script>
         <?php $__env->stopPush(); ?>
      <?php echo $__env->renderComponent(); ?>

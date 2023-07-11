@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\MarketExport;
+use App\Imports\MarketImport;
 use App\Lib\Webspice;
 use App\Models\Area;
-use Illuminate\Http\Request;
 use App\Models\Market;
-use Exception;
-use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\MarketExport;
 use App\Traits\MasterData;
+use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Maatwebsite\Excel\Facades\Excel;
 
 class MarketController extends Controller
 {
@@ -18,7 +19,6 @@ class MarketController extends Controller
     public $webspice;
     public $tableName;
     protected $markets;
-
 
     public function __construct(Market $markets, Webspice $webspice)
     {
@@ -45,7 +45,11 @@ class MarketController extends Controller
         } else {
             $query = $this->markets->orderBy('created_at', 'desc');
         }
+        if ($request->search_area != null) {
+            $query->where('area_id', $request->search_area);
+        }
         if ($request->search_status != null) {
+
             $query->where('status', $request->search_status);
         }
 
@@ -73,12 +77,10 @@ class MarketController extends Controller
         $markets = $query->paginate(5);
         // });
 
-        $areas = MasterData::getMarket();
+        $areas = MasterData::getArea();
 
-        return view('market.index', compact('markets','areas'));
+        return view('market.index', compact('markets', 'areas'));
     }
-
-   
 
     /**
      * Show the form for creating a new resource.
@@ -97,7 +99,49 @@ class MarketController extends Controller
         }
 
         return view('market.create', [
-            'areas' => $areas
+            'areas' => $areas,
+        ]);
+    }
+    public function import(Request $request)
+    {
+
+        #permission verfy
+        $this->webspice->permissionVerify('market.import');
+        if (!Cache::has('active-areas')) {
+            $areas = Area::where(['status' => 1])->get();
+            Cache::forever('active-areas', $areas);
+        } else {
+            // $areas = Cache::get('markets')->where('status',1);
+            $areas = Cache::get('active-areas');
+        }
+
+        if ($request->all()) {
+            $request->validate(
+                [
+                    'import_file' => 'required | mimes:xls,xlsx,csv'
+                ]
+            );
+            ini_set('memory_limit', '-1');
+            ini_set('max_execution_time', '-1');
+            try {
+                if ($request->hasFile('import_file')) {
+                    # Import Uploaded Data
+                    try {
+                        Excel::import(new MarketImport, $request->file('import_file'));
+                    } catch (Exception $e) {
+                        return back()->with('error', $e->getMessage());
+                    }
+                } else {
+                    return back()->with('error', 'Upload file not found!');
+                }
+
+            } catch (Exception $e) {
+                return back()->with('error', $e->getMessage());
+            }
+        }
+
+        return view('market.import', [
+            'areas' => $areas,
         ]);
     }
 
@@ -113,6 +157,8 @@ class MarketController extends Controller
             [
                 'value' => 'required|min:3|max:1000|unique:markets',
                 'area_id' => 'required',
+                'latitude' => 'required',
+                'longitude' => 'required',
             ],
             [
                 'value.required' => 'Value field is required.',
@@ -124,6 +170,8 @@ class MarketController extends Controller
             'value' => $request->value,
             'value_bangla' => $request->value_bangla,
             'area_id' => $request->area_id,
+            'latitude' => $request->latitude,
+            'longitude' => $request->longitude,
             'created_at' => $this->webspice->now('datetime24'),
             'created_by' => $this->webspice->getUserId(),
         );
@@ -133,7 +181,6 @@ class MarketController extends Controller
         } catch (Exception $e) {
             $this->webspice->insertOrFail('error', $e->getMessage());
         }
-
 
         return redirect()->back();
     }
@@ -166,7 +213,7 @@ class MarketController extends Controller
         }
         return view('market.edit', [
             'marketInfo' => $marketInfo,
-            'areas' => $areas
+            'areas' => $areas,
         ]);
     }
 
@@ -185,11 +232,13 @@ class MarketController extends Controller
             [
                 'value' => 'required|min:3|max:1000|unique:markets,value,' . $id,
                 'area_id' => 'required',
+                'latitude' => 'required',
+                'longitude' => 'required',
             ],
             [
                 'value.required' => 'Value field is required.',
                 'area_id.required' => 'Area field is required.',
-                'value.unique' => 'This value has already been taken for another record.'
+                'value.unique' => 'This value has already been taken for another record.',
             ]
         );
         try {
@@ -197,6 +246,8 @@ class MarketController extends Controller
             $market->value = $request->value;
             $market->value_bangla = $request->value_bangla;
             $market->area_id = $request->area_id;
+            $market->latitude = $request->latitude;
+            $market->longitude = $request->longitude;
             $market->updated_at = $this->webspice->now('datetime24');
             $market->updated_by = $this->webspice->getUserId();
             $market->save();
@@ -226,7 +277,6 @@ class MarketController extends Controller
         }
         return back();
     }
-
 
     public function forceDelete($id)
     {

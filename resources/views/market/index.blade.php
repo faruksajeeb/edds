@@ -59,11 +59,11 @@
                                 value="{{ request()->get('status') == 'archived' ? 'archived' : '' }}">
                             <div class="row">
                                 <div class="col-md-12 col-sm-12 px-0 input-group">
-                                    <select name="search_market" class="form-select" id="search_market">
+                                    <select name="search_area" class="form-select" id="search_area">
                                         <option value="">Select Area</option>
                                         @foreach ($areas as $area)
                                             <option value="{{ $area->id }}"
-                                                {{ request()->get('search_market') == $area->id ? 'selected' : '' }}>
+                                                {{ request()->get('search_area') == $area->id ? 'selected' : '' }}>
                                                 {{ $area->value }}</option>
                                         @endforeach
                                     </select>
@@ -102,6 +102,12 @@
                                             <i class="fa-solid fa-download"></i> Export
                                         </button>
                                     @endcan
+                                    @can('market.import')
+                                        <a href="{{ route('markets.import') }}" class="btn btn-xs btn-info float-end"
+                                            name="create_new" type="button">
+                                            <i class="fa-solid fa-upload"></i> Import
+                                        </a>
+                                    @endcan
                                     @can('market.create')
                                         <a href="{{ route('markets.create') }}"
                                             class="btn btn-xs btn-outline-primary float-end" name="create_new"
@@ -119,6 +125,8 @@
                                     <th>Value</th>
                                     <th>Value Bangla</th>
                                     <th>Area</th>
+                                    <th>Latitude </th>
+                                    <th>Longitude </th>
                                     <th>Created At</th>
                                     <th>Updated At</th>
                                     <th>Status</th>
@@ -132,6 +140,8 @@
                                         <td>{{ $val->value }}</td>
                                         <td>{{ $val->value_bangla }}</td>
                                         <td>{{ isset($val->area) ? $val->area->value : '' }}</td>
+                                        <td>{{ $val->latitude }}</td>
+                                        <td>{{ $val->longitude }}</td>
                                         <td>{{ $val->created_at }}</td>
                                         <td>{{ $val->updated_at }}</td>
                                         <td>
@@ -203,7 +213,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="text-center">No records found. </td>
+                            <td colspan="10" class="text-center">No records found. </td>
                         </tr>
                         @endforelse
                         </tbody>

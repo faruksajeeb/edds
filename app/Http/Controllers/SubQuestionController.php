@@ -47,7 +47,8 @@ class SubQuestionController extends Controller implements Crud
             $query = $this->sub_questions->orderBy('deleted_at', 'desc');
             $query->onlyTrashed();
         } else {
-            $query = $this->sub_questions->orderBy('created_at', 'desc');
+            $query = $this->sub_questions->orderBy('question_id', 'ASC');
+            $query->orderBy('sl_order', 'ASC');
         }
         if ($request->search_question != null) {
             $query->where('question_id', $request->search_question);
@@ -76,8 +77,8 @@ class SubQuestionController extends Controller implements Crud
             }
             return Excel::download(new SubQuestionExport($query->get(), $title), $fileName . '_' . time() . '.xlsx');
         }
-
-        $sub_questions = $query->paginate(10);
+        $perPage = request()->input('perPage', 5);
+        $sub_questions = $query->paginate($perPage);
         // });
         $questions = MasterData::getQuenstion();
         return view('sub_question.index', compact('sub_questions', 'questions'));
@@ -119,6 +120,7 @@ class SubQuestionController extends Controller implements Crud
                 })],
                 'question_id' => 'required',
                 // 'input_method' => 'required',
+                'is_required' => 'required',
             ],
             [
                 'value.required' => 'Value field is required.',
@@ -134,6 +136,7 @@ class SubQuestionController extends Controller implements Crud
             'value' => $request->value,
             'value_bangla' => $request->value_bangla,
             'question_id' => $request->question_id,
+            'is_required' => $request->is_required,
             // 'input_method' => $request->input_method,
             'created_at' => $this->webspice->now('datetime24'),
             'created_by' => $this->webspice->getUserId(),
@@ -197,6 +200,7 @@ class SubQuestionController extends Controller implements Crud
                         ->where('question_id', $request->question_id);
                 })],
                 'question_id' => 'required',
+                'is_required' => 'required',
                 // 'input_method' => 'required',
             ],
             [
@@ -213,6 +217,7 @@ class SubQuestionController extends Controller implements Crud
             $question->value = $request->value;
             $question->value_bangla = $request->value_bangla;
             $question->question_id = $request->question_id;
+            $question->is_required = $request->is_required;
             // $question->input_method = $request->input_method;
             $question->updated_at = $this->webspice->now('datetime24');
             $question->updated_by = $this->webspice->getUserId();

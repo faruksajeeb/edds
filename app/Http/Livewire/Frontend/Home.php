@@ -55,8 +55,16 @@ class Home extends Component
                 $resData = $query->sum('user_response_details.response');
             }
             $categoryWiseReport[$categoryId]['response_data'] =   $resData;
-        endforeach;
 
+            $responseLocations = UserResponseDetail::select('user_responses.response_location')
+            ->leftJoin('questions', 'questions.id', '=', 'user_response_details.question_id')
+            ->leftJoin('user_responses', 'user_responses.id', '=', 'user_response_details.response_id')
+            ->where('questions.category_id', $categoryId)
+            ->whereBetween('user_responses.response_date',[Carbon::today()->subDays(7)->toDateString(),Carbon::today()->toDateString()])
+            ->where('user_responses.status', 2)->get();
+            $categoryWiseReport[$categoryId]['response_locations'] =   $responseLocations;
+        endforeach;
+        // dd($categoryWiseReport[5]['response_locations']->toArray());
         # Division Wise Report
         $divisionWiseReport = array();
         foreach ($divisions as $division) :

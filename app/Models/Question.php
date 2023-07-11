@@ -69,4 +69,12 @@ class Question extends Model
             $query->where('published_at', '<', now());
         });
     }
+
+    /**
+     * Get all of the post's logs.
+     */
+    public function logs()
+    {
+        return $this->morphMany('App\Models\Log', 'loggable');
+    }
 }

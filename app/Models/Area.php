@@ -13,6 +13,8 @@ class Area extends Model
     public $fillable = [
         'value',
         'value_bangla',
+        'latitude',
+        'longitude',
         'created_by',
         'updated_by',
         'status'

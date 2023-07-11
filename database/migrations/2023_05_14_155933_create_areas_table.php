@@ -17,6 +17,8 @@ return new class extends Migration
             $table->id();
             $table->string('value');
             $table->string('value_bangla')->nullable();
+            $table->string('latitude');
+            $table->string('longitude');
             $table->tinyInteger('status')->default(1);
             $table->bigInteger('created_by')->unsigned();
             $table->bigInteger('updated_by')->unsigned()->nullable();

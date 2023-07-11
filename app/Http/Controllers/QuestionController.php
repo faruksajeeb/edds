@@ -139,6 +139,9 @@ class QuestionController extends Controller implements Crud
                 'category_id' => 'required',
                 'respondent' => 'required',
                 'input_method' => 'required',
+                'input_type' => 'required',
+                'is_required' => 'required',
+                'image_require' => 'required',
             ],
             [
                 'value.required' => 'Value field is required.',
@@ -148,6 +151,7 @@ class QuestionController extends Controller implements Crud
                 'category_id.required' => 'Category field is required.',
                 'respondent.required' => 'Respondent field is required.',
                 'input_method.required' => 'Input method field is required.',
+                'input_type.required' => 'Input type field is required.',
             ]
         );
 
@@ -157,6 +161,9 @@ class QuestionController extends Controller implements Crud
             'category_id' => $request->category_id,
             'respondent' => $respondent,
             'input_method' => $request->input_method,
+            'input_type' => $request->input_type,
+            'is_required' => $request->is_required,
+            'image_require' => $request->image_require,
             'created_at' => $this->webspice->now('datetime24'),
             'created_by' => $this->webspice->getUserId(),
         );
@@ -236,6 +243,9 @@ class QuestionController extends Controller implements Crud
                 'category_id' => 'required',
                 'respondent' => 'required',
                 'input_method' => 'required',
+                'input_type' => 'required',
+                'is_required' => 'required',
+                'image_require' => 'required',
             ],
             [
                 'value.required' => 'Value field is required.',
@@ -246,6 +256,7 @@ class QuestionController extends Controller implements Crud
                 'respondent.required' => 'Respondent field is required.',
                 'value.unique' => 'This value has already been taken for another record.',
                 'input_method.required' => 'Input method field is required.',
+                'input_type.required' => 'Input type field is required.',
             ]
         );
         try {
@@ -255,6 +266,9 @@ class QuestionController extends Controller implements Crud
             $question->category_id = $request->category_id;
             $question->respondent = $respondent;
             $question->input_method = $request->input_method;
+            $question->input_type = $request->input_type;
+            $question->is_required = $request->is_required;
+            $question->image_require = $request->image_require;
             $question->updated_at = $this->webspice->now('datetime24');
             $question->updated_by = $this->webspice->getUserId();
             $question->save();

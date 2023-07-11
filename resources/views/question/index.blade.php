@@ -1,7 +1,7 @@
 @push('styles')
     <style>
         .drag-icon {
-            font-size: 35px;
+            font-size: 25px;
             color: darkgray;
             cursor: pointer;
         }
@@ -152,6 +152,9 @@
                                                     <option value="50"
                                                         {{ Request::get('perPage') == 50 ? 'selected' : '' }}>50
                                                     </option>
+                                                    <option value="100"
+                                                        {{ Request::get('perPage') == 100 ? 'selected' : '' }}>100
+                                                    </option>
                                                     <!-- Add more options if needed -->
                                                 </select> entries</label>
                                         </form>
@@ -159,133 +162,142 @@
                                 </div>
                             </div>
                         </form>
-                        <table class="table mb-0">
-                            <thead>
-                                <tr>
-                                    <th>
-                                        DRAG
-                                    </th>
-                                    <th>Sl No.</th>
-                                    <th>Value</th>
-                                    <th>Value Bangla</th>
-                                    <th>Category</th>
-                                    <th>Respondent</th>
-                                    <th>Sub Questions</th>
-                                    <th>Input Method</th>
-                                    {{-- <th>Created At</th>
+                        <div class="table-responsive">
+                            <table class="table table-sm mb-0 table-bordered table-striped ">
+                                <thead>
+                                    <tr>
+                                        <th colspan="2">Sl Order</th>
+                                        <th>Value</th>
+                                        <th>Value Bangla</th>
+                                        <th>Category</th>
+                                        <th>Respondent</th>
+                                        <th>Sub Questions</th>
+                                        <th>Input Method</th>
+                                        <th>Input Type</th>
+                                        <th>Is Required</th>
+                                        <th>Image Required</th>
+                                        {{-- <th>Created At</th>
                                     <th>Updated At</th> --}}
-                                    <th>Status</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="sortable" tablename="questions">
-                                @forelse ($questions as $index => $val)
-                                    <tr id="{{ $val->id }}">
-                                        <td class=''>
-                                            <span class="sort bg-red">
-                                                <i class="fa-solid fa-up-down-left-right drag-icon"></i>
-                                            </span>
-
-                                        </td>
-                                        <td>{{ $index + $questions->firstItem() }}</td>
-                                        <td>{{ $val->value }}</td>
-                                        <td>{{ $val->value_bangla }}</td>
-                                        <td>{{ optional($val->category)->option_value }}</td>
-                                        <td>{{ $val->respondent }}</td>
-                                        <td>
-                                            @if ($val->subQuestions->count() > 0)
-                                                <dl class="row mb-0 sub_question"
-                                                    style="height: 25px; overflow: hidden"
-                                                    id="sub_question{{ $index }}">
-                                                    @foreach ($val->subQuestions as $key => $subQuestion)
-                                                        <dd class="col-sm-12 pb-0 ">
-                                                            {{ $key + 1 }}. {{ optional($subQuestion)->value }}
-                                                        </dd>
-                                                    @endforeach
-                                                </dl>
-                                                <button onclick="seeMore({{ $index }})"
-                                                    class="btn btn-sm btn-link" id="expandbtn{{ $index }}">see
-                                                    more &#187;</button>
-                                            @endif
-                                        </td>
-                                        <td>{{ $val->input_method }}</td>
-                                        {{-- <td>{{ $val->created_at }}</td>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="sortable" tablename="questions">
+                                    @forelse ($questions as $index => $val)
+                                        <tr id="{{ $val->id }}">
+                                            <td class=''>
+                                                <span class="sort bg-red">
+                                                    <i class="fa-solid fa-up-down-left-right drag-icon"></i>
+                                                </span>
+                                            </td>
+                                            {{-- <td>{{ $index + $questions->firstItem() }}</td> --}}
+                                            <td>{{ $val->sl_order }}</td>
+                                            <td>{{ $val->value }}</td>
+                                            <td>{{ $val->value_bangla }}</td>
+                                            <td>{{ optional($val->category)->option_value }}</td>
+                                            <td>{{ $val->respondent }}</td>
+                                            <td>
+                                                @if ($val->subQuestions->count() > 0)
+                                                    <dl class="row mb-0 sub_question"
+                                                        style="height: 25px; overflow: hidden"
+                                                        id="sub_question{{ $index }}">
+                                                        @foreach ($val->subQuestions as $key => $subQuestion)
+                                                            <dd class="col-sm-12 pb-0 ">
+                                                                {{ $key + 1 }}.
+                                                                {{ optional($subQuestion)->value }}
+                                                            </dd>
+                                                        @endforeach
+                                                    </dl>
+                                                    <button onclick="seeMore({{ $index }})"
+                                                        class="btn btn-sm btn-link"
+                                                        id="expandbtn{{ $index }}">see
+                                                        more &#187;</button>
+                                                @endif
+                                            </td>
+                                            <td>{{ $val->input_method }}</td>
+                                            <td>{{ $val->input_type }}</td>
+                                            <td>{{ ucwords($val->is_required) }}</td>
+                                            <td>{{ ucwords($val->image_require) }}</td>
+                                            {{-- <td>{{ $val->created_at }}</td>
                                         <td>{{ $val->updated_at }}</td> --}}
-                                        <td class="text-center">
-                                            <div class="form-check form-switch">
-                                                @if (request()->get('status') == 'archived')
-                                                    <span class="badge bg-secondary">Deleted</span>
-                                                @else
-                                                    @can('question.edit')
-                                                        <input class="form-check-input active_inactive_btn "
-                                                            status="{{ $val->status }}"
-                                                            {{ $val->status == -1 ? '' : '' }} table="questions"
-                                                            type="checkbox" id="row_{{ $val->id }}"
-                                                            value="{{ Crypt::encryptString($val->id) }}"
-                                                            {{ $val->status == 1 ? 'checked' : '' }}
-                                                            style="cursor:pointer">
-                                                    @endif
-                                    @endif
-                        </div>
-                        </td>
-                        <td class="text-nowrap">
-                            @if (request()->get('status') == 'archived')
-                                {{-- restore button --}}
-                                @can('question.restore')
-                                    <a href="" class="btn btn-primary btn-sm btn-restore-{{ $val->id }}"
-                                        onclick="event.preventDefault(); restoreConfirmation({{ $val->id }})"><i
-                                            class="fa-solid fa-trash-arrow-up"></i> Restore</a>
-                                    <form id="restore-form-{{ $val->id }}"
-                                        action="{{ route('questions.restore', Crypt::encryptString($val->id)) }}"
-                                        method="POST" style="display: none">
-                                        @method('POST')
-                                        @csrf
-                                    </form>
-                                @endcan
-                                {{-- force delete button --}}
-                                @can('question.force_delete')
-                                    <a href=""
-                                        class="disabled btn btn-danger btn-sm btn-force-delete-{{ $val->id }}"
-                                        onclick="event.preventDefault(); forceDelete({{ $val->id }})"><i
-                                            class="fa-solid fa-remove "></i> Force Delete</a>
-                                    <form id="force-delete-form-{{ $val->id }}" style="display: none"
-                                        action="{{ route('questions.force-delete', Crypt::encryptString($val->id)) }}"
-                                        method="POST">
-                                        @method('DELETE')
-                                        @csrf
-                                    </form>
-                                @endcan
-                            @else
-                                {{-- edit button --}}
-                                @can('question.edit')
-                                    @if ($val->status == 1)
-                                        <a href="{{ route('questions.edit', Crypt::encryptString($val->id)) }}"
-                                            class="btn btn-outline-warning btn-sm"><i class="fa-solid fa-pencil"></i> Edit</a>
-                                    @endif
-                                @endcan
-                                {{-- delete button --}}
-                                @can('question.delete')
-                                    <a href="" class="btn btn-outline-danger btn-sm btn-delete-{{ $val->id }}"
-                                        onclick="event.preventDefault(); confirmDelete({{ $val->id }})"><i
-                                            class="fa-solid fa-trash"></i> Delete</a>
-                                    <form id="delete-form-{{ $val->id }}" style="display: none"
-                                        action="{{ route('questions.destroy', Crypt::encryptString($val->id)) }}"
-                                        method="POST">
-                                        @method('DELETE')
-                                        @csrf
-                                    </form>
-                                @endcan
-                            @endif
+                                            <td class="text-center">
+                                                <div class="form-check form-switch">
+                                                    @if (request()->get('status') == 'archived')
+                                                        <span class="badge bg-secondary">Deleted</span>
+                                                    @else
+                                                        @can('question.edit')
+                                                            <input class="form-check-input active_inactive_btn "
+                                                                status="{{ $val->status }}"
+                                                                {{ $val->status == -1 ? '' : '' }} table="questions"
+                                                                type="checkbox" id="row_{{ $val->id }}"
+                                                                value="{{ Crypt::encryptString($val->id) }}"
+                                                                {{ $val->status == 1 ? 'checked' : '' }}
+                                                                style="cursor:pointer">
+                                                        @endif
+                                        @endif
+                            </div>
+                            </td>
+                            <td class="text-nowrap">
+                                @if (request()->get('status') == 'archived')
+                                    {{-- restore button --}}
+                                    @can('question.restore')
+                                        <a href="" class="btn btn-primary btn-sm btn-restore-{{ $val->id }}"
+                                            onclick="event.preventDefault(); restoreConfirmation({{ $val->id }})"><i
+                                                class="fa-solid fa-trash-arrow-up"></i> Restore</a>
+                                        <form id="restore-form-{{ $val->id }}"
+                                            action="{{ route('questions.restore', Crypt::encryptString($val->id)) }}"
+                                            method="POST" style="display: none">
+                                            @method('POST')
+                                            @csrf
+                                        </form>
+                                    @endcan
+                                    {{-- force delete button --}}
+                                    @can('question.force_delete')
+                                        <a href=""
+                                            class="disabled btn btn-danger btn-sm btn-force-delete-{{ $val->id }}"
+                                            onclick="event.preventDefault(); forceDelete({{ $val->id }})"><i
+                                                class="fa-solid fa-remove "></i> Force Delete</a>
+                                        <form id="force-delete-form-{{ $val->id }}" style="display: none"
+                                            action="{{ route('questions.force-delete', Crypt::encryptString($val->id)) }}"
+                                            method="POST">
+                                            @method('DELETE')
+                                            @csrf
+                                        </form>
+                                    @endcan
+                                @else
+                                    {{-- edit button --}}
+                                    @can('question.edit')
+                                        @if ($val->status == 1)
+                                            <a href="{{ route('questions.edit', Crypt::encryptString($val->id)) }}"
+                                                class="btn btn-outline-warning btn-sm"><i class="fa-solid fa-pencil"></i>
+                                                Edit</a>
+                                        @endif
+                                    @endcan
+                                    {{-- delete button --}}
+                                    @can('question.delete')
+                                        <a href=""
+                                            class="btn btn-outline-danger btn-sm btn-delete-{{ $val->id }}"
+                                            onclick="event.preventDefault(); confirmDelete({{ $val->id }})"><i
+                                                class="fa-solid fa-trash"></i> Delete</a>
+                                        <form id="delete-form-{{ $val->id }}" style="display: none"
+                                            action="{{ route('questions.destroy', Crypt::encryptString($val->id)) }}"
+                                            method="POST">
+                                            @method('DELETE')
+                                            @csrf
+                                        </form>
+                                    @endcan
+                                @endif
 
-                        </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="10" class="text-center">No records found. </td>
-                        </tr>
-                        @endforelse
-                        </tbody>
-                        </table>
+                            </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="13" class="text-center">No records found. </td>
+                            </tr>
+                            @endforelse
+                            </tbody>
+                            </table>
+                        </div>
                         <span class="mt-2">
                             {{ $questions->withQueryString()->links() }}
                         </span>
@@ -307,60 +319,6 @@
                         $('#expandbtn' + key).addClass("seemore");
                     }
                 }
-
-                $(function() {
-                    //....................................Sortable...................................
-                    $('#sortable').sortable({
-                        axis: 'y',
-                        opacity: 0.9,
-                        handle: 'span',
-                        update: function(event, ui) {
-                            var list_sortable = $(this).sortable('toArray').toString();
-                            var tablename = $(this).attr('tablename');
-                            // change order in the database using Ajax
-                            //    alert(tablename);
-                            processing('Reordering...');
-                            $.ajax({
-
-                                url: "{{ route('change-order') }}",
-                                type: 'POST',
-                                dataType: "json",
-                                data: {
-                                    "_token": "{{ csrf_token() }}",
-                                    list_order: list_sortable,
-                                    table_name: tablename
-                                },
-                                success: function(response) {
-                                    if (response.status == 'success') {
-                                        Swal.fire({
-                                            position: 'top-end',
-                                            icon: 'success',
-                                            title: response.message,
-                                            showConfirmButton: false,
-                                            timer: 5000
-                                        });
-                                    } else if (response.status == 'not_success') {
-                                        Swal.fire({
-                                            icon: 'error',
-                                            title: 'Oops...',
-                                            text: response.message,
-                                        });
-                                        return false;
-                                    }
-                                },
-                                error: function(xhr, status, error) {
-                                    // handle error
-                                    Swal.fire({
-                                        icon: 'error',
-                                        title: 'Oops...',
-                                        text: error,
-                                    });
-                                    return false;
-                                }
-                            });
-                        }
-                    }); // finished sortable
-                });
             </script>
         @endpush
     </x-app-layout>
