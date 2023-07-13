@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exports\MarketExport;
 use App\Imports\MarketImport;
+use App\Imports\MarketListImport;
 use App\Lib\Webspice;
 use App\Models\Area;
 use App\Models\Market;
@@ -12,6 +13,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Session;
 
 class MarketController extends Controller
 {
@@ -126,8 +128,23 @@ class MarketController extends Controller
             try {
                 if ($request->hasFile('import_file')) {
                     # Import Uploaded Data
-                    try {
-                        Excel::import(new MarketImport, $request->file('import_file'));
+                    try {                      
+                        $import = new MarketListImport();                    
+                        // Excel::import(new MarketImport, $request->file('import_file'));
+                        Excel::import( $import, $request->file('import_file'));
+                        // Excel::queueImport(new MarketListImport, $request->file('import_file'));
+                        if($import->getRowCount()==0){
+                            return back()->with('error', "No data found. Imported file empty.");
+                        }
+                        Webspice::versionUpdate();
+                        Webspice::forgetCache('markets');
+                        Webspice::log('markets',$import->getInsertedRowCount(), 'IMPORTED');   
+
+                        Session::flash('error', $import->getErrorRow());
+                        if($import->getExistingRowCount()>0){
+                            Session::flash('warning', $import->getExistingRowCount().' data already Exist!');
+                        }
+                        return back()->with('success', $import->getInsertedRowCount().' Data imported successfully!');
                     } catch (Exception $e) {
                         return back()->with('error', $e->getMessage());
                     }

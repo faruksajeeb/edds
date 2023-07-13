@@ -13,6 +13,7 @@ class Market extends Model
     public $fillable = [
         'value',
         'value_bangla',
+        'market_address',
         'area_id',
         'latitude',
         'longitude',

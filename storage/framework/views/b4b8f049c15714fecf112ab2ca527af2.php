@@ -35,10 +35,9 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <form action="<?php echo e(route('markets.import')); ?>" method="POST" class="needs-validation"
-                        enctype="multipart/form-data" novalidate>
+                    <form id="import-form" action="<?php echo e(route('markets.import')); ?>" method="POST"
+                        class="needs-validation" enctype="multipart/form-data" novalidate>
                         <?php echo csrf_field(); ?>
-                        
 
                         <div class="form-group mb-3">
                             <label for="import_file" class="<?php if($errors->has('import_file')): ?> has-error <?php endif; ?> fw-bold">
@@ -73,18 +72,29 @@ unset($__errorArgs, $__bag); ?>
                                 </div>
                             <?php endif; ?>
                         </div>
-                        
+
                         Upload File Format Sample:
                         <table style="font-size:10px" class="table table-sm table-bordered my-0">
-                            <tr style="background-color: #176B87; color:white">
-                                <td>Area</td>
-                                <td>Market_Name_Eng</td>
+                            <tr>
+                                <td class=""></td>
+                                <td>A</td>
+                                <td>B</td>
+                                <td>C</td>
+                                <td>D</td>
+                                <td>E</td>
+                                <td>F</td>
+                            </tr>
+                            <tr style="background-color: #C5DFF8; color:black;font-weight:bold">
+                                <td class="" style="background-color: #FFF;font-weight:normal">1</td>
+                                <td class="text-danger">Area</td>
+                                <td class="text-danger">Market_Name_Eng</td>
                                 <td>Market_Name_Ban</td>
                                 <td>Market_Address</td>
-                                <td>Latitude</td>
-                                <td>Longitude</td>
+                                <td class="text-danger">Latitude</td>
+                                <td class="text-danger">Longitude</td>
                             </tr>
                             <tr>
+                                <td>2</td>
                                 <td>DNCC</td>
                                 <td>Panir Tanki Bazar</td>
                                 <td>পানির ট্যাংকি বাজার</td>
@@ -93,11 +103,17 @@ unset($__errorArgs, $__bag); ?>
                                 <td>90.37478</td>
                             </tr>
                         </table>
-                        <a class="float-end my-0 fst-italic" href="<?php echo e(asset('uploads/upload_file_format/upload_markets_format.xlsx')); ?>">Download The Format</a>
+                        [* Red text color fields are required.]
+                        <a class="float-end my-0 fst-italic"
+                            href="<?php echo e(asset('uploads/upload_file_format/upload_markets_format.xlsx')); ?>">Download The
+                            Format</a>
                         <br />
+                        <br />
+
                         <div class="form-group">
-                            <button type="submit" name="submit_btn"
-                                class="btn btn-lg btn-success btn-import">Import</button>
+                            <button type="submit" name="submit_btn" class="btn btn-lg btn-success btn-import"
+                                onclick="startClock()">Import</button>
+                            <p id="clock" class="float-end d-none">00:00:00</p>
                         </div>
                     </form>
                 </div>
@@ -106,9 +122,31 @@ unset($__errorArgs, $__bag); ?>
     </div>
     <?php $__env->startPush('scripts'); ?>
         <script>
-            $(function() {
+            function startClock() {
+                var clockElement = document.getElementById('clock');
+                var file = $('#import_file').val();
+                if (file) {
+                    $('#clock').show();
+                    var startTime = new Date().getTime();
+                    var intervalId = setInterval(function() {
+                        var currentTime = new Date().getTime();
+                        var elapsedTime = currentTime - startTime;
 
-            });
+                        var hours = Math.floor(elapsedTime / (1000 * 60 * 60));
+                        var minutes = Math.floor((elapsedTime % (1000 * 60 * 60)) / (1000 * 60));
+                        var seconds = Math.floor((elapsedTime % (1000 * 60)) / 1000);
+
+                        var timeString = formatTime(hours) + ':' + formatTime(minutes) + ':' + formatTime(seconds);
+
+                        clockElement.textContent = timeString;
+                    }, 1000);
+                }
+
+            }
+
+            function formatTime(time) {
+                return time < 10 ? '0' + time : time;
+            }
         </script>
     <?php $__env->stopPush(); ?>
  <?php echo $__env->renderComponent(); ?>

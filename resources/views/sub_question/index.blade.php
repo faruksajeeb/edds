@@ -161,6 +161,7 @@
                                     <th>Value Bangla</th>
                                     <th>Question</th>
                                     {{-- <th>Input Method</th> --}}
+                                    <th>Input Type</th>
                                     <th>Is Required</th>
                                     <th>Created At</th>
                                     <th>Updated At</th>
@@ -182,6 +183,7 @@
                                         <td>{{ $val->value_bangla }}</td>
                                         <td>{{ optional($val->question)->value }}</td>
                                         {{-- <td>{{ $val->input_method }}</td> --}}
+                                        <td>{{ ucwords($val->input_type) }}</td>
                                         <td>{{ ucwords($val->is_required) }}</td>
                                         <td>{{ $val->created_at }}</td>
                                         <td>{{ $val->updated_at }}</td>
@@ -255,7 +257,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="10" class="text-center">No records found. </td>
+                            <td colspan="11" class="text-center">No records found. </td>
                         </tr>
                         @endforelse
                         </tbody>

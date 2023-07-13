@@ -2,16 +2,17 @@
 
 namespace App\Imports;
 
+use App\Lib\Webspice;
 use App\Models\Area;
 use App\Models\Market;
-use App\Lib\Webspice;
+use DB;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
-use Maatwebsite\Excel\Concerns\ToCollection;
-
 use Illuminate\Support\Facades\Session;
+use Maatwebsite\Excel\Concerns\ToCollection;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
 
-class MarketImport implements ToCollection
+class MarketImport implements ToCollection, WithChunkReading
 {
     public function collection(Collection $rows)
     {
@@ -20,11 +21,11 @@ class MarketImport implements ToCollection
         $data = array();
         $columnHeaders = [
             'Area',
-            'Market_Name_Eng', 
-            'Market_Name_Ban', 
-            'Market_Address', 
-            'Latitude', 
-            'Longitude'
+            'Market_Name_Eng',
+            'Market_Name_Ban',
+            'Market_Address',
+            'Latitude',
+            'Longitude',
         ];
         // dd($columnHeaders);
         foreach ($rows as $key => $row) {
@@ -34,15 +35,15 @@ class MarketImport implements ToCollection
                 $header = $row;
                 $match = true;
                 $misMatchColumns = array();
-                for($i=0;$i<count($columnHeaders);$i++){
+                for ($i = 0; $i < count($columnHeaders); $i++) {
                     if ($columnHeaders[$i] !== trim($header[$i])) {
                         array_push($misMatchColumns, $columnHeaders[$i]);
                         $match = false;
                     }
                 }
                 if (!$match) {
-                    $res = implode(', ',$misMatchColumns);
-                    return back()->with('error', "Column order or header name ($res) mismatch!."); 
+                    $res = implode(', ', $misMatchColumns);
+                    return back()->with('error', "Column order or header name ($res) mismatch!.");
                 }
                 continue;
             }
@@ -67,7 +68,7 @@ class MarketImport implements ToCollection
                 if (($row[5] == null) || ($row[5] == '')) {
                     $error .= 'Row ' . $key . ": '$header[5]' is empty! <br>";
                 }
-            }   
+            }
 
             // if (!is_numeric($row[4])) {
             //     $error .= 'Row ' . $key . ": '$header[4]' contain invalid value! <br>";
@@ -76,10 +77,9 @@ class MarketImport implements ToCollection
             //     $error .= 'Row ' . $key . ": '$header[5]' contain invalid value! <br>";
             // }
 
-            if (!Webspice::isValidCoordinates($row[4], $row[5])) {                
+            if (!Webspice::isValidCoordinates($row[4], $row[5])) {
                 $error .= 'Row ' . $key . ": Invalid coordinates (Latitude, Longitude). <br>";
-            }      
-
+            }
 
             $areaInfo = Area::where('value', $row[0])->first();
             if (!$areaInfo) {
@@ -120,16 +120,34 @@ class MarketImport implements ToCollection
         if ($error != "") {
             return back()->with('error', $error);
         } else {
-            
-            if($existRecord>0){
-                Session::flash('warning',"$existRecord data already exist!.");
+
+            if ($existRecord > 0) {
+                Session::flash('warning', "$existRecord data already exist!.");
             }
             if (count($data) == 0) {
                 return back()->with('error', "No new data found!");
-            }else{
-                Market::insert($data);
-                return back()->with('success', count($data) . " data imported successfuly!");
+            } else {
+                try {
+                    DB::beginTransaction();
+                    foreach ($data as $item) {
+                        $model = new Market($item);
+                        $model->save();
+                        Webspice::log('markets', $model->id, 'IMPORTED');
+                    }
+                    Webspice::versionUpdate();
+                    Webspice::forgetCache('markets');
+                    DB::commit();                    
+                    return back()->with('success', count($data) . " data imported successfuly!");
+                } catch (\Exception $e) {
+                    DB::rollback();
+                    return back()->with('error',$e->getMessage());
+                }
             }
         }
+    }
+
+    public function chunkSize(): int
+    {
+        return 1000;
     }
 }

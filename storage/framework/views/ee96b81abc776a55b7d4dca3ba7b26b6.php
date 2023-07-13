@@ -127,6 +127,37 @@ unset($__errorArgs, $__bag); ?>
                         </div>
                         <div class="form-group my-1">
                             <label for=""
+                                class="<?php if($errors->has('input_type')): ?> has-error <?php endif; ?> fw-bold">Input Type
+                                <span class='text-danger'>*<span></label>
+                            <select name="input_type" id="input_type" class="form-select" required>
+                                <option value="">--select input type--</option>
+                                <option value="alphabetic" <?php echo e(old('input_type') == 'alphabetic' ? 'selected' : ''); ?>>Alphabetic
+                                </option>
+                                <option value="alphanumeric" <?php echo e(old('input_type') == 'alphanumeric' ? 'selected' : ''); ?>>
+                                    Alphanumeric</option>
+                                <option value="numeric" <?php echo e(old('input_type') == 'numeric' ? 'selected' : ''); ?>>
+                                    Numeric
+                                </option>
+                            </select>
+                            <?php if($errors->has('input_type')): ?>
+                                <?php $__errorArgs = ['input_type'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                    <div class="alert alert-danger"><?php echo e($message); ?></div>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                            <?php else: ?>
+                                <div class="invalid-feedback">
+                                    Please select input type.
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                        <div class="form-group my-1">
+                            <label for=""
                                 class="<?php if($errors->has('is_required')): ?> has-error <?php endif; ?> fw-bold">Is Required? <span class='text-danger'>*<span></label>
                             <select name="is_required" id="is_required" class="form-select" required>
                                 <option value="">--select one--</option>

@@ -163,6 +163,7 @@
                                     <th>Value Bangla</th>
                                     <th>Question</th>
                                     
+                                    <th>Input Type</th>
                                     <th>Is Required</th>
                                     <th>Created At</th>
                                     <th>Updated At</th>
@@ -184,6 +185,7 @@
                                         <td><?php echo e($val->value_bangla); ?></td>
                                         <td><?php echo e(optional($val->question)->value); ?></td>
                                         
+                                        <td><?php echo e(ucwords($val->input_type)); ?></td>
                                         <td><?php echo e(ucwords($val->is_required)); ?></td>
                                         <td><?php echo e($val->created_at); ?></td>
                                         <td><?php echo e($val->updated_at); ?></td>
@@ -258,7 +260,7 @@
                         </tr>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                         <tr>
-                            <td colspan="10" class="text-center">No records found. </td>
+                            <td colspan="11" class="text-center">No records found. </td>
                         </tr>
                         <?php endif; ?>
                         </tbody>

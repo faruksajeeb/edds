@@ -306,7 +306,7 @@ class Webspice
 				'message' => "Status $text successfully."
 			];
 			if ($queryStatus['status'] == 'success') {
-				$this->versionUpdate();
+				self::versionUpdate();
 				# log
 				$this->log($request->table, $id, $text);
 				$this->forgetCache($request->table);
@@ -369,7 +369,7 @@ class Webspice
 		return Cache::get($cacheName);
 	}
 	# Remove Cache	
-	function forgetCache($cacheName)
+	public static function forgetCache($cacheName)
 	{
 		Cache::forget($cacheName);
 		Cache::forget('active-' . $cacheName);
@@ -798,7 +798,7 @@ class Webspice
 		return $image->response();
 	}
 
-	public function versionUpdate()
+	public static function versionUpdate()
 	{
 		DB::update('UPDATE tbl_data_version SET version =version+.1 WHERE id = ?', [1]);
 	}
@@ -818,7 +818,7 @@ class Webspice
 				'status' => 'success',
 				'message' => "Order has been changed successfully."
 			];
-			$this->versionUpdate();
+			self::versionUpdate();
 		} catch (Exception $e) {
 			$queryStatus = [
 				'status' => 'not_success',
