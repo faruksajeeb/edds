@@ -12,6 +12,7 @@ use App\Traits\MasterData;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Session;
 
@@ -60,7 +61,10 @@ class MarketController extends Controller
             // $query = $query->search($request->search_text); // search by value
             $query->where(function ($query) use ($searchText) {
                 $query->where('value', 'LIKE', '%' . $searchText . '%')
-                    ->orWhere('value_bangla', 'LIKE', '%' . $searchText . '%');
+                    ->orWhere('value_bangla', 'LIKE', '%' . $searchText . '%')
+                    ->orWhere('latitude', 'LIKE', '%' . $searchText . '%')
+                    ->orWhere('longitude', 'LIKE', '%' . $searchText . '%')
+                    ;
             });
         }
         # elequent join with question model
@@ -76,7 +80,7 @@ class MarketController extends Controller
             return Excel::download(new MarketExport($query->get(), $title), $fileName . '_' . time() . '.xlsx');
         }
 
-        $markets = $query->paginate(5);
+        $markets = $query->paginate(7);
         // });
 
         $areas = MasterData::getArea();
@@ -172,14 +176,23 @@ class MarketController extends Controller
 
         $request->validate(
             [
-                'value' => 'required|min:3|max:1000|unique:markets',
+                'value' => [
+                    'required','min:3','max:1000',
+                    Rule::unique('markets')->where(function ($query) use($request) {
+                        return $query->where('value', $request->value)
+                            ->where('area_id', $request->area_id)
+                            ->where('latitude', $request->latitude)
+                            ->where('longitude', $request->longitude);
+                    })
+                ],
                 'area_id' => 'required',
-                'latitude' => 'required',
-                'longitude' => 'required',
+                'latitude' => 'required|numeric||between:-90,90',
+                'longitude' => 'required|numeric||between:-180,180',
             ],
             [
                 'value.required' => 'Value field is required.',
                 'area_id.required' => 'Area field is required.',
+                'value.required' => 'This value has already been taken for another record (area,value,lat,long).',
             ]
         );
 
@@ -187,6 +200,7 @@ class MarketController extends Controller
             'value' => $request->value,
             'value_bangla' => $request->value_bangla,
             'area_id' => $request->area_id,
+            'market_address' => $request->market_address,
             'latitude' => $request->latitude,
             'longitude' => $request->longitude,
             'created_at' => $this->webspice->now('datetime24'),
@@ -247,15 +261,23 @@ class MarketController extends Controller
 
         $request->validate(
             [
-                'value' => 'required|min:3|max:1000|unique:markets,value,' . $id,
+                'value' => [
+                    'required','min:3','max:1000',
+                    Rule::unique('markets')->ignore($id, 'id')->where(function ($query) use($request) {
+                        return $query->where('value', $request->value)
+                            ->where('area_id', $request->area_id)
+                            ->where('latitude', $request->latitude)
+                            ->where('longitude', $request->longitude);
+                    })
+                ],
                 'area_id' => 'required',
-                'latitude' => 'required',
-                'longitude' => 'required',
+                'latitude' => 'required|numeric||between:-90,90',
+                'longitude' => 'required|numeric||between:-180,180',
             ],
             [
                 'value.required' => 'Value field is required.',
                 'area_id.required' => 'Area field is required.',
-                'value.unique' => 'This value has already been taken for another record.',
+                'value.unique' => 'This value has already been taken for another record (area,value,lat,long).',
             ]
         );
         try {
@@ -263,6 +285,7 @@ class MarketController extends Controller
             $market->value = $request->value;
             $market->value_bangla = $request->value_bangla;
             $market->area_id = $request->area_id;
+            $market->market_address = $request->market_address;
             $market->latitude = $request->latitude;
             $market->longitude = $request->longitude;
             $market->updated_at = $this->webspice->now('datetime24');

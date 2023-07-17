@@ -118,106 +118,111 @@
                                 </div>
                             </div>
                         </form>
-                        <table class="table mb-0">
-                            <thead>
-                                <tr>
-                                    <th>Sl No.</th>
-                                    <th>Value</th>
-                                    <th>Value Bangla</th>
-                                    <th>Area</th>
-                                    <th>Latitude </th>
-                                    <th>Longitude </th>
-                                    <th>Created At</th>
-                                    <th>Updated At</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse ($markets as $index => $val)
+                        <div class="table-responsive">
+                            <table class="table table-sm mb-0 table-striped">
+                                <thead>
                                     <tr>
-                                        <td>{{ $index + $markets->firstItem() }}</td>
-                                        <td>{{ $val->value }}</td>
-                                        <td>{{ $val->value_bangla }}</td>
-                                        <td>{{ isset($val->area) ? $val->area->value : '' }}</td>
-                                        <td>{{ $val->latitude }}</td>
-                                        <td>{{ $val->longitude }}</td>
-                                        <td>{{ $val->created_at }}</td>
-                                        <td>{{ $val->updated_at }}</td>
-                                        <td>
-                                            <div class="form-check form-switch">
-                                                @if (request()->get('status') == 'archived')
-                                                    <span class="badge bg-secondary">Archived</span>
-                                                @else
-                                                    @can('market.edit')
-                                                        <input class="form-check-input active_inactive_btn "
-                                                            status="{{ $val->status }}"
-                                                            {{ $val->status == -1 ? '' : '' }} table="markets"
-                                                            type="checkbox" id="row_{{ $val->id }}"
-                                                            value="{{ Crypt::encryptString($val->id) }}"
-                                                            {{ $val->status == 1 ? 'checked' : '' }}
-                                                            style="cursor:pointer">
-                                                    @endif
-                                    @endif
-                        </div>
-                        </td>
-                        <td class="text-nowrap">
-                            @if (request()->get('status') == 'archived')
-                                {{-- restore button --}}
-                                @can('market.restore')
-                                    <a href="" class="btn btn-primary btn-sm btn-restore-{{ $val->id }}"
-                                        onclick="event.preventDefault(); restoreConfirmation({{ $val->id }})"><i
-                                            class="fa-solid fa-trash-arrow-up"></i> Restore</a>
-                                    <form id="restore-form-{{ $val->id }}"
-                                        action="{{ route('markets.restore', Crypt::encryptString($val->id)) }}" method="POST"
-                                        style="display: none">
-                                        @method('POST')
-                                        @csrf
-                                    </form>
-                                @endcan
-                                {{-- force delete button --}}
-                                @can('market.force_delete')
-                                    <a href="" class="btn btn-danger btn-sm btn-force-delete-{{ $val->id }}"
-                                        onclick="event.preventDefault(); forceDelete({{ $val->id }})"><i
-                                            class="fa-solid fa-remove"></i> Force Delete</a>
-                                    <form id="force-delete-form-{{ $val->id }}" style="display: none"
-                                        action="{{ route('markets.force-delete', Crypt::encryptString($val->id)) }}"
-                                        method="POST">
-                                        @method('DELETE')
-                                        @csrf
-                                    </form>
-                                @endcan
-                            @else
-                                {{-- edit button --}}
-                                @can('market.edit')
-                                    @if ($val->status == 1)
-                                        <a href="{{ route('markets.edit', Crypt::encryptString($val->id)) }}"
-                                            class="btn btn-outline-warning btn-sm"><i class="fa-solid fa-pencil"></i> Edit</a>
-                                    @endif
-                                @endcan
-                                {{-- delete button --}}
-                                @can('market.delete')
-                                    <a href="" class="btn btn-outline-danger btn-sm btn-delete-{{ $val->id }}"
-                                        onclick="event.preventDefault(); confirmDelete({{ $val->id }})"><i
-                                            class="fa-solid fa-trash"></i> Delete</a>
-                                    <form id="delete-form-{{ $val->id }}" style="display: none"
-                                        action="{{ route('markets.destroy', Crypt::encryptString($val->id)) }}"
-                                        method="POST">
-                                        @method('DELETE')
-                                        @csrf
-                                    </form>
-                                @endcan
-                            @endif
+                                        <th>Sl No.</th>
+                                        <th>Market In English</th>
+                                        <th>Market In Bangla</th>
+                                        <th>Area</th>
+                                        <th>Latitude </th>
+                                        <th>Longitude </th>
+                                        {{-- <th>Created At</th>
+                                        <th>Updated At</th> --}}
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse ($markets as $index => $val)
+                                        <tr>
+                                            <td>{{ $index + $markets->firstItem() }}</td>
+                                            <td class="text-nowrap">{{ $val->value }}</td>
+                                            <td class="text-nowrap">{{ $val->value_bangla }}</td>
+                                            <td class="text-nowrap">{{ isset($val->area) ? $val->area->value : '' }}
+                                            </td>
+                                            <td class="text-nowrap">{{ $val->latitude }}</td>
+                                            <td class="text-nowrap">{{ $val->longitude }}</td>
+                                            {{-- <td class="text-nowrap">{{ $val->created_at }}</td>
+                                            <td class="text-nowrap">{{ $val->updated_at }}</td> --}}
+                                            <td>
+                                                <div class="form-check form-switch">
+                                                    @if (request()->get('status') == 'archived')
+                                                        <span class="badge bg-secondary">Archived</span>
+                                                    @else
+                                                        @can('market.edit')
+                                                            <input class="form-check-input active_inactive_btn "
+                                                                status="{{ $val->status }}"
+                                                                {{ $val->status == -1 ? '' : '' }} table="markets"
+                                                                type="checkbox" id="row_{{ $val->id }}"
+                                                                value="{{ Crypt::encryptString($val->id) }}"
+                                                                {{ $val->status == 1 ? 'checked' : '' }}
+                                                                style="cursor:pointer">
+                                                        @endif
+                                        @endif
+                            </div>
+                            </td>
+                            <td class="text-nowrap">
+                                @if (request()->get('status') == 'archived')
+                                    {{-- restore button --}}
+                                    @can('market.restore')
+                                        <a href="" class="btn btn-primary btn-sm btn-restore-{{ $val->id }}"
+                                            onclick="event.preventDefault(); restoreConfirmation({{ $val->id }})"><i
+                                                class="fa-solid fa-trash-arrow-up"></i> Restore</a>
+                                        <form id="restore-form-{{ $val->id }}"
+                                            action="{{ route('markets.restore', Crypt::encryptString($val->id)) }}"
+                                            method="POST" style="display: none">
+                                            @method('POST')
+                                            @csrf
+                                        </form>
+                                    @endcan
+                                    {{-- force delete button --}}
+                                    @can('market.force_delete')
+                                        <a href="" class="btn btn-danger btn-sm btn-force-delete-{{ $val->id }}"
+                                            onclick="event.preventDefault(); forceDelete({{ $val->id }})"><i
+                                                class="fa-solid fa-remove"></i> Force Delete</a>
+                                        <form id="force-delete-form-{{ $val->id }}" style="display: none"
+                                            action="{{ route('markets.force-delete', Crypt::encryptString($val->id)) }}"
+                                            method="POST">
+                                            @method('DELETE')
+                                            @csrf
+                                        </form>
+                                    @endcan
+                                @else
+                                    {{-- edit button --}}
+                                    @can('market.edit')
+                                        @if ($val->status == 1)
+                                            <a href="{{ route('markets.edit', Crypt::encryptString($val->id)) }}"
+                                                class="btn btn-outline-warning btn-sm"><i class="fa-solid fa-pencil"></i>
+                                                Edit</a>
+                                        @endif
+                                    @endcan
+                                    {{-- delete button --}}
+                                    @can('market.delete')
+                                        <a href=""
+                                            class="btn btn-outline-danger btn-sm btn-delete-{{ $val->id }}"
+                                            onclick="event.preventDefault(); confirmDelete({{ $val->id }})"><i
+                                                class="fa-solid fa-trash"></i> Delete</a>
+                                        <form id="delete-form-{{ $val->id }}" style="display: none"
+                                            action="{{ route('markets.destroy', Crypt::encryptString($val->id)) }}"
+                                            method="POST">
+                                            @method('DELETE')
+                                            @csrf
+                                        </form>
+                                    @endcan
+                                @endif
 
-                        </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="10" class="text-center">No records found. </td>
-                        </tr>
-                        @endforelse
-                        </tbody>
-                        </table>
+                            </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="8" class="text-center">No records found. </td>
+                            </tr>
+                            @endforelse
+                            </tbody>
+                            </table>
+                        </div>
                         {{ $markets->withQueryString()->links() }}
                     </div>
                 </div>

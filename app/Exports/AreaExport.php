@@ -26,7 +26,7 @@ class AreaExport implements FromArray, WithHeadings, Responsable, ShouldAutoSize
         // $sheet = $spreadsheet->getActiveSheet();
         $sheet->setCellValue('A1', $this->title);
         $sheet->getStyle('A1')->getFont()->setBold(true);
-        $sheet->mergeCells('A1:F2');
+        $sheet->mergeCells('A1:K2');
         $styleArray = [
             'font' => [
                 'bold' => true,
@@ -44,7 +44,7 @@ class AreaExport implements FromArray, WithHeadings, Responsable, ShouldAutoSize
             //     ],
             // ],
             'fill' => [
-                // 'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_GRADIENT_LINEAR,
+                // 'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::KILL_GRADIENT_LINEAR,
                 'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
                 'rotation' => 90,
                 'startColor' => [
@@ -55,20 +55,26 @@ class AreaExport implements FromArray, WithHeadings, Responsable, ShouldAutoSize
                 ],
             ],
         ];
-        $sheet->getStyle('A1:F1')->applyFromArray($styleArray);
+        $sheet->getStyle('A1:K1')->applyFromArray($styleArray);
         $headerStyleArray = [
             'font' => [
                 'bold' => true,
             ]];
-        $sheet->getStyle('A3:F3')->applyFromArray($headerStyleArray);
+        $sheet->getStyle('A3:K3')->applyFromArray($headerStyleArray);
     }
     public function headings(): array
     {
         return [
             [
                 "Sl No",
-                "Value",
-                "Value Bangla",
+                "Division",
+                "District",
+                "Thana",
+                "Area Name In English",
+                "Area Name In Bangla",
+                "Latitude",
+                "Longitude",
+                "Status",
                 "Created At",
                 "Updated At",
                 // "Created By",
@@ -86,8 +92,14 @@ class AreaExport implements FromArray, WithHeadings, Responsable, ShouldAutoSize
         foreach ($this->data as $k=>$val) {
             $customArray[] = array(
                 $k+1,
+                $val['division'],
+                $val['district'],
+                $val['thana'],
                 $val['value'],
                 $val['value_bangla'],
+                $val['latitude'],
+                $val['longitude'],
+                ($val['status']==1)?'Active':'Inactive',
                 $val['created_at'],
                 $val['updated_at'],
                 // $val['created_by'],

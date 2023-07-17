@@ -74,4 +74,17 @@ class UserResponse extends Model
     function verifiedResponses() {
         return $this->hasMany(UserResponseDetail::class)->where('status', 2);
     }
+    
+    public function getUpdatedAtAttribute()
+    {
+        if (isset($this->attributes['updated_at'])) {
+            return Carbon::createFromFormat('Y-m-d H:i:s',$this->attributes['updated_at'])->format('F j, Y h:i:s A');
+        }
+    }
+    public function getCreatedAtAttribute()
+    {
+        if (isset($this->attributes['created_at'])) {
+            return Carbon::createFromFormat('Y-m-d H:i:s',$this->attributes['created_at'])->format('F j, Y h:i:s A');
+        }
+    }
 }

@@ -136,18 +136,32 @@ class UserResponseController extends Controller
 
         $writer = SimpleExcelWriter::streamDownload($fileName);
         $writer->addHeader([$title]);
-        $writer->addHeader(['#', 'Response Date', 'Full Name', 'Email', 'Mobile No.', 'Respondent Type']);
+        $writer->addHeader(['#', 
+        'Response Date', 
+        'Full Name', 
+        'Gender', 
+        'Email', 
+        'Mobile No.', 
+        'Respondent Type',
+        'Status',
+        'Created At',
+        'Updated At'
+    ]);
         $i = 0;
         foreach ($query->lazy(1000) as $val) {
             //$writer->addRow($val->toArray()); // for all fields
             $writer->addRow([
                 $i + 1,
                 // Date::dateTimeToExcel($val->response_date),
-                "$val->response_date",
-                isset($val->registered_user->full_name) ? $val->registered_user->full_name : '',
-                isset($val->registered_user->email) ? $val->registered_user->email : '',
-                isset($val->registered_user->mobile_no) ? $val->registered_user->mobile_no : '',
-                isset($val->registered_user->respondent_type) ? $val->registered_user->respondent_type : ''
+                $val->response_date,
+                optional($val->registered_user)->full_name,
+                ucfirst(optional($val->registered_user)->gender),
+                optional($val->registered_user)->email,
+                optional($val->registered_user)->mobile_no,
+                optional($val->registered_user)->respondent_type,
+                Webspice::excelStatus($val->status),
+                $val->created_at,
+                $val->updated_at,
                 // $this->webspice->date_excel_to_real($val->created_at),
             ]);
 

@@ -120,107 +120,111 @@
                                 </div>
                             </div>
                         </form>
-                        <table class="table mb-0">
-                            <thead>
-                                <tr>
-                                    <th>Sl No.</th>
-                                    <th>Value</th>
-                                    <th>Value Bangla</th>
-                                    <th>Area</th>
-                                    <th>Latitude </th>
-                                    <th>Longitude </th>
-                                    <th>Created At</th>
-                                    <th>Updated At</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php $__empty_1 = true; $__currentLoopData = $markets; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $val): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                        <div class="table-responsive">
+                            <table class="table table-sm mb-0 table-striped">
+                                <thead>
                                     <tr>
-                                        <td><?php echo e($index + $markets->firstItem()); ?></td>
-                                        <td><?php echo e($val->value); ?></td>
-                                        <td><?php echo e($val->value_bangla); ?></td>
-                                        <td><?php echo e(isset($val->area) ? $val->area->value : ''); ?></td>
-                                        <td><?php echo e($val->latitude); ?></td>
-                                        <td><?php echo e($val->longitude); ?></td>
-                                        <td><?php echo e($val->created_at); ?></td>
-                                        <td><?php echo e($val->updated_at); ?></td>
-                                        <td>
-                                            <div class="form-check form-switch">
-                                                <?php if(request()->get('status') == 'archived'): ?>
-                                                    <span class="badge bg-secondary">Archived</span>
-                                                <?php else: ?>
-                                                    <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('market.edit')): ?>
-                                                        <input class="form-check-input active_inactive_btn "
-                                                            status="<?php echo e($val->status); ?>"
-                                                            <?php echo e($val->status == -1 ? '' : ''); ?> table="markets"
-                                                            type="checkbox" id="row_<?php echo e($val->id); ?>"
-                                                            value="<?php echo e(Crypt::encryptString($val->id)); ?>"
-                                                            <?php echo e($val->status == 1 ? 'checked' : ''); ?>
+                                        <th>Sl No.</th>
+                                        <th>Market In English</th>
+                                        <th>Market In Bangla</th>
+                                        <th>Area</th>
+                                        <th>Latitude </th>
+                                        <th>Longitude </th>
+                                        
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php $__empty_1 = true; $__currentLoopData = $markets; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $val): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                                        <tr>
+                                            <td><?php echo e($index + $markets->firstItem()); ?></td>
+                                            <td class="text-nowrap"><?php echo e($val->value); ?></td>
+                                            <td class="text-nowrap"><?php echo e($val->value_bangla); ?></td>
+                                            <td class="text-nowrap"><?php echo e(isset($val->area) ? $val->area->value : ''); ?>
 
-                                                            style="cursor:pointer">
-                                                    <?php endif; ?>
+                                            </td>
+                                            <td class="text-nowrap"><?php echo e($val->latitude); ?></td>
+                                            <td class="text-nowrap"><?php echo e($val->longitude); ?></td>
+                                            
+                                            <td>
+                                                <div class="form-check form-switch">
+                                                    <?php if(request()->get('status') == 'archived'): ?>
+                                                        <span class="badge bg-secondary">Archived</span>
+                                                    <?php else: ?>
+                                                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('market.edit')): ?>
+                                                            <input class="form-check-input active_inactive_btn "
+                                                                status="<?php echo e($val->status); ?>"
+                                                                <?php echo e($val->status == -1 ? '' : ''); ?> table="markets"
+                                                                type="checkbox" id="row_<?php echo e($val->id); ?>"
+                                                                value="<?php echo e(Crypt::encryptString($val->id)); ?>"
+                                                                <?php echo e($val->status == 1 ? 'checked' : ''); ?>
+
+                                                                style="cursor:pointer">
+                                                        <?php endif; ?>
+                                        <?php endif; ?>
+                            </div>
+                            </td>
+                            <td class="text-nowrap">
+                                <?php if(request()->get('status') == 'archived'): ?>
+                                    
+                                    <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('market.restore')): ?>
+                                        <a href="" class="btn btn-primary btn-sm btn-restore-<?php echo e($val->id); ?>"
+                                            onclick="event.preventDefault(); restoreConfirmation(<?php echo e($val->id); ?>)"><i
+                                                class="fa-solid fa-trash-arrow-up"></i> Restore</a>
+                                        <form id="restore-form-<?php echo e($val->id); ?>"
+                                            action="<?php echo e(route('markets.restore', Crypt::encryptString($val->id))); ?>"
+                                            method="POST" style="display: none">
+                                            <?php echo method_field('POST'); ?>
+                                            <?php echo csrf_field(); ?>
+                                        </form>
                                     <?php endif; ?>
-                        </div>
-                        </td>
-                        <td class="text-nowrap">
-                            <?php if(request()->get('status') == 'archived'): ?>
-                                
-                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('market.restore')): ?>
-                                    <a href="" class="btn btn-primary btn-sm btn-restore-<?php echo e($val->id); ?>"
-                                        onclick="event.preventDefault(); restoreConfirmation(<?php echo e($val->id); ?>)"><i
-                                            class="fa-solid fa-trash-arrow-up"></i> Restore</a>
-                                    <form id="restore-form-<?php echo e($val->id); ?>"
-                                        action="<?php echo e(route('markets.restore', Crypt::encryptString($val->id))); ?>" method="POST"
-                                        style="display: none">
-                                        <?php echo method_field('POST'); ?>
-                                        <?php echo csrf_field(); ?>
-                                    </form>
-                                <?php endif; ?>
-                                
-                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('market.force_delete')): ?>
-                                    <a href="" class="btn btn-danger btn-sm btn-force-delete-<?php echo e($val->id); ?>"
-                                        onclick="event.preventDefault(); forceDelete(<?php echo e($val->id); ?>)"><i
-                                            class="fa-solid fa-remove"></i> Force Delete</a>
-                                    <form id="force-delete-form-<?php echo e($val->id); ?>" style="display: none"
-                                        action="<?php echo e(route('markets.force-delete', Crypt::encryptString($val->id))); ?>"
-                                        method="POST">
-                                        <?php echo method_field('DELETE'); ?>
-                                        <?php echo csrf_field(); ?>
-                                    </form>
-                                <?php endif; ?>
-                            <?php else: ?>
-                                
-                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('market.edit')): ?>
-                                    <?php if($val->status == 1): ?>
-                                        <a href="<?php echo e(route('markets.edit', Crypt::encryptString($val->id))); ?>"
-                                            class="btn btn-outline-warning btn-sm"><i class="fa-solid fa-pencil"></i> Edit</a>
+                                    
+                                    <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('market.force_delete')): ?>
+                                        <a href="" class="btn btn-danger btn-sm btn-force-delete-<?php echo e($val->id); ?>"
+                                            onclick="event.preventDefault(); forceDelete(<?php echo e($val->id); ?>)"><i
+                                                class="fa-solid fa-remove"></i> Force Delete</a>
+                                        <form id="force-delete-form-<?php echo e($val->id); ?>" style="display: none"
+                                            action="<?php echo e(route('markets.force-delete', Crypt::encryptString($val->id))); ?>"
+                                            method="POST">
+                                            <?php echo method_field('DELETE'); ?>
+                                            <?php echo csrf_field(); ?>
+                                        </form>
+                                    <?php endif; ?>
+                                <?php else: ?>
+                                    
+                                    <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('market.edit')): ?>
+                                        <?php if($val->status == 1): ?>
+                                            <a href="<?php echo e(route('markets.edit', Crypt::encryptString($val->id))); ?>"
+                                                class="btn btn-outline-warning btn-sm"><i class="fa-solid fa-pencil"></i>
+                                                Edit</a>
+                                        <?php endif; ?>
+                                    <?php endif; ?>
+                                    
+                                    <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('market.delete')): ?>
+                                        <a href=""
+                                            class="btn btn-outline-danger btn-sm btn-delete-<?php echo e($val->id); ?>"
+                                            onclick="event.preventDefault(); confirmDelete(<?php echo e($val->id); ?>)"><i
+                                                class="fa-solid fa-trash"></i> Delete</a>
+                                        <form id="delete-form-<?php echo e($val->id); ?>" style="display: none"
+                                            action="<?php echo e(route('markets.destroy', Crypt::encryptString($val->id))); ?>"
+                                            method="POST">
+                                            <?php echo method_field('DELETE'); ?>
+                                            <?php echo csrf_field(); ?>
+                                        </form>
                                     <?php endif; ?>
                                 <?php endif; ?>
-                                
-                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('market.delete')): ?>
-                                    <a href="" class="btn btn-outline-danger btn-sm btn-delete-<?php echo e($val->id); ?>"
-                                        onclick="event.preventDefault(); confirmDelete(<?php echo e($val->id); ?>)"><i
-                                            class="fa-solid fa-trash"></i> Delete</a>
-                                    <form id="delete-form-<?php echo e($val->id); ?>" style="display: none"
-                                        action="<?php echo e(route('markets.destroy', Crypt::encryptString($val->id))); ?>"
-                                        method="POST">
-                                        <?php echo method_field('DELETE'); ?>
-                                        <?php echo csrf_field(); ?>
-                                    </form>
-                                <?php endif; ?>
+
+                            </td>
+                            </tr>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                            <tr>
+                                <td colspan="8" class="text-center">No records found. </td>
+                            </tr>
                             <?php endif; ?>
-
-                        </td>
-                        </tr>
-                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
-                        <tr>
-                            <td colspan="10" class="text-center">No records found. </td>
-                        </tr>
-                        <?php endif; ?>
-                        </tbody>
-                        </table>
+                            </tbody>
+                            </table>
+                        </div>
                         <?php echo e($markets->withQueryString()->links()); ?>
 
                     </div>

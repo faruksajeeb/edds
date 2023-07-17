@@ -11,6 +11,7 @@ use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Maatwebsite\Excel\Concerns\WithCustomStartCell;
+use App\Lib\Webspice;
 
 
 class UserResponseExport implements FromArray, WithHeadings, Responsable, ShouldAutoSize, WithStyles, WithCustomStartCell
@@ -22,7 +23,7 @@ class UserResponseExport implements FromArray, WithHeadings, Responsable, Should
     {
         ini_set('max_execution_time', 30*60); // 30 min
         ini_set('memory_limit', '2048M');
-        $this->data = $objData->toArray();
+        $this->data = $objData;
         $this->title =$title;
     }
     public function styles(Worksheet $sheet)
@@ -75,7 +76,10 @@ class UserResponseExport implements FromArray, WithHeadings, Responsable, Should
                 "Full Name",
                 "Email",
                 "Mobile",
-                "Respondent"
+                "Respondent",
+                "Status",
+                "Created At",
+                "Updated At",
             ]
         ];
     }
@@ -89,11 +93,14 @@ class UserResponseExport implements FromArray, WithHeadings, Responsable, Should
         foreach ($this->data as $k=>$val) {
             $customArray[] = array(
                 $k+1,
-                Date::dateTimeToExcel($val['response_date']),
-                isset($val['registered_user']['full_name']) ? $val['registered_user']['full_name'] : '',
-                isset($val['registered_user']['email']) ? $val['registered_user']['email'] : '',
-                isset($val['registered_user']['mobile_no']) ? $val['registered_user']['mobile_no'] : '',
-                isset($val['registered_user']['respondent_type']) ? $val['registered_user']['respondent_type'] : ''
+                Date::dateTimeToExcel($val->response_date),
+                optional($val->registered_user)->full_name,
+                optional($val->registered_user)->emai,
+                optional($val->registered_user)->mobile_no,
+                optional($val->registered_user)->respondent_type,
+                Webspice::excelStatus($val->status),
+                $val->created_at,
+                $val->updated_at,
             );
         }
         return $customArray;

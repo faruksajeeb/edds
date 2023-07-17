@@ -41,8 +41,9 @@
                         <?php echo csrf_field(); ?>
                         <div class="form-group my-1">
                             <label for=""
-                                class="<?php if($errors->has('value_bangla')): ?> has-error <?php endif; ?> fw-bold">Area  <span class="text-danger">*</span></label>
-                            <select name="area_id" id="area_id" class="form-select" required>
+                                class="<?php if($errors->has('value_bangla')): ?> has-error <?php endif; ?> fw-bold">Area <span
+                                    class="text-danger">*</span></label>
+                            <select name="area_id" id="area_id" class="form-select select2" required>
                                 <option value="">--select areas--</option>
                                 <?php $__currentLoopData = $areas; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $val): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                     <option value="<?php echo e($val->id); ?>"
@@ -69,8 +70,10 @@ unset($__errorArgs, $__bag); ?>
                         </div>
                         <div class="form-group mb-3">
                             <label for=""
-                                class="<?php if($errors->has('value')): ?> has-error <?php endif; ?> fw-bold">Value  <span class="text-danger">*</span></label><br />
-                            <textarea name='value' id='value' class="form-control <?php $__errorArgs = ['value'];
+                                class="<?php if($errors->has('value')): ?> has-error <?php endif; ?> fw-bold">Market Name in
+                                English <span class="text-danger">*</span></label><br />
+                            <input type="text" name='value' id='value'
+                                class="form-control <?php $__errorArgs = ['value'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -78,7 +81,8 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
-                                placeholder="Enter value" rows="3" required><?php echo e(old('value', $marketInfo->value)); ?></textarea>
+                                placeholder="Enter market name in english"
+                                value="<?php echo e(old('value', $marketInfo->value)); ?>" required>
                             <?php if($errors->has('value')): ?>
                                 <?php $__errorArgs = ['value'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -92,15 +96,16 @@ endif;
 unset($__errorArgs, $__bag); ?>
                             <?php else: ?>
                                 <div class="invalid-feedback">
-                                    Please enter a value.
+                                    Please enter a market name in english.
                                 </div>
                             <?php endif; ?>
                         </div>
                         <div class="form-group mb-3">
                             <label for=""
-                                class="<?php if($errors->has('value_bangla')): ?> has-error <?php endif; ?> fw-bold">Value
+                                class="<?php if($errors->has('value_bangla')): ?> has-error <?php endif; ?> fw-bold">Market Name in
                                 Bangla</label><br />
-                            <textarea name='value_bangla' id='value_bangla' class="form-control <?php $__errorArgs = ['value_bangla'];
+                            <input type="text" name='value_bangla' id='value_bangla'
+                                class="form-control <?php $__errorArgs = ['value_bangla'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -108,13 +113,17 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
-                                placeholder="Enter value in bangla" rows="3"><?php echo e(old('value_bangla', $marketInfo->value_bangla)); ?></textarea>
+                                placeholder="Enter market name in bangla"
+                                value="<?php echo e(old('value_bangla', $marketInfo->value_bangla)); ?>">
                         </div>
                         <div class="form-group mb-3">
-                            <label for="latitude" class="<?php if($errors->has('latitude')): ?> has-error <?php endif; ?> fw-bold">
-                                Latitude <span class="text-danger">*</span></label><br />
-                            <input type="text" name='latitude' id='latitude'
-                                class="form-control <?php $__errorArgs = ['latitude'];
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="latitude"
+                                        class="<?php if($errors->has('latitude')): ?> has-error <?php endif; ?> fw-bold">
+                                        Latitude <span class="text-danger">*</span></label><br />
+                                    <input type="text"  pattern="[0-9.-]"  name='latitude' id='latitude'
+                                        class="form-control <?php $__errorArgs = ['latitude'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -122,29 +131,32 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
-                                placeholder="Enter Latitude" value="<?php echo e(old('latitude', $marketInfo->latitude)); ?>" required>
-                            <?php if($errors->has('latitude')): ?>
-                                <?php $__errorArgs = ['latitude'];
+                                        placeholder="Enter Latitude"
+                                        value="<?php echo e(old('latitude', $marketInfo->latitude)); ?>" required>
+                                    <?php if($errors->has('latitude')): ?>
+                                        <?php $__errorArgs = ['latitude'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?>
-                                    <div class="alert alert-danger"><?php echo e($message); ?></div>
-                                <?php unset($message);
+                                            <div class="alert alert-danger"><?php echo e($message); ?></div>
+                                        <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
-                            <?php else: ?>
-                                <div class="invalid-feedback">
-                                    Please enter a latitude.
+                                    <?php else: ?>
+                                        <div class="invalid-feedback">
+                                            Please enter a valid latitude.
+                                        </div>
+                                    <?php endif; ?>
+
                                 </div>
-                            <?php endif; ?>
-                        </div>
-                        <div class="form-group mb-3">
-                            <label for="longitude" class="<?php if($errors->has('longitude')): ?> has-error <?php endif; ?> fw-bold">
-                                Longitude <span class="text-danger">*</span></label><br />
-                            <input type="text" name='longitude' id='longitude'
-                                class="form-control <?php $__errorArgs = ['longitude'];
+                                <div class="col-md-6">
+                                    <label for="longitude"
+                                        class="<?php if($errors->has('longitude')): ?> has-error <?php endif; ?> fw-bold">
+                                        Longitude <span class="text-danger">*</span></label><br />
+                                    <input type="text" pattern="[0-9.-]"  name='longitude' id='longitude'
+                                        class="form-control <?php $__errorArgs = ['longitude'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -152,24 +164,41 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
-                                placeholder="Enter longitude" value="<?php echo e(old('longitude', $marketInfo->longitude)); ?>"
-                                required>
-                            <?php if($errors->has('longitude')): ?>
-                                <?php $__errorArgs = ['longitude'];
+                                        placeholder="Enter longitude"
+                                        value="<?php echo e(old('longitude', $marketInfo->longitude)); ?>" required>
+                                    <?php if($errors->has('longitude')): ?>
+                                        <?php $__errorArgs = ['longitude'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?>
-                                    <div class="alert alert-danger"><?php echo e($message); ?></div>
-                                <?php unset($message);
+                                            <div class="alert alert-danger"><?php echo e($message); ?></div>
+                                        <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
-                            <?php else: ?>
-                                <div class="invalid-feedback">
-                                    Please enter a longitude.
+                                    <?php else: ?>
+                                        <div class="invalid-feedback">
+                                            Please enter a valid longitude.
+                                        </div>
+                                    <?php endif; ?>
+
                                 </div>
-                            <?php endif; ?>
+                            </div>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for=""
+                                class="<?php if($errors->has('market_address')): ?> has-error <?php endif; ?> fw-bold">Market
+                                Address</label><br />
+                            <textarea name='market_address' id='market_address' class="form-control <?php $__errorArgs = ['market_address'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
+                                placeholder="Enter market address" rows="3"><?php echo e(old('market_address', $marketInfo->market_address)); ?></textarea>
                         </div>
                         <br />
                         <div class="form-group">

@@ -7,6 +7,7 @@ use App\Models\Market;
 use App\Models\Option;
 use App\Models\Question;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Http\Request;
 
 trait MasterData
 {
@@ -127,4 +128,10 @@ trait MasterData
 
         return $records;
     }
+
+    public static function getAreaUpazillaWise(Request $request){
+        dd($request->all());
+    }
+
+
 }

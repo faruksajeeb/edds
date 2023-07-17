@@ -15,8 +15,11 @@ return new class extends Migration
     {
         Schema::create('areas', function (Blueprint $table) {
             $table->id();
-            $table->string('value');
-            $table->string('value_bangla')->nullable();
+            $table->string('division');
+            $table->string('district');
+            $table->string('thana');
+            $table->string('area_name_english');
+            $table->string('area_name_bangla')->nullable();
             $table->string('latitude');
             $table->string('longitude');
             $table->tinyInteger('status')->default(1);

@@ -19,6 +19,7 @@ use App\Http\Controllers\UserResponseController;
 use App\Http\Controllers\AreaController;
 use App\Http\Controllers\MarketController;
 use App\Http\Controllers\RegisteredUserController;
+use App\Traits\MasterData;
 
 
 use App\Http\Livewire\Backend\OptionGroup;
@@ -27,6 +28,8 @@ use App\Http\Livewire\Backend\CategoryComponent;
 use App\Http\Livewire\Backend\SubCategoryComponent;
 
 use App\Http\Livewire\Frontend\Home;
+
+use App\Http\Controllers\Api\DropdownController;
 
 /*
 |--------------------------------------------------------------------------
@@ -46,6 +49,8 @@ Route::get('lang/change', [LanguageController::class, 'change'])->name('changeLa
 Route::middleware('auth')->group(function () {
     Route::get('active-inactive', [Webspice::class, 'activeInactive'])->name('active.inactive');
     Route::post('change-order', [Webspice::class, 'changeOrder'])->name('change-order');
+    Route::post('api/fetch-areas', [DropdownController::class, 'fetchArea']);
+    Route::get('api/fetch-markets/{id}', [DropdownController::class, 'fetchMarket']);
 
     // Route::match(['get','post'],'/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
     Route::match(['get', 'post'], '/dashboard', [DashboardController::class, 'index'])->name('dashboard');

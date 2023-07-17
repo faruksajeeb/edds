@@ -27,16 +27,17 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('markets.store') }}" method="POST" class="needs-validation"
-                        novalidate>
+                    <form action="{{ route('markets.store') }}" method="POST" class="needs-validation" novalidate>
                         @csrf
                         <div class="form-group my-1">
                             <label for=""
-                                class="@if ($errors->has('value_bangla')) has-error @endif fw-bold">Area <span class="text-danger">*</span></label>
-                            <select name="area_id" id="area_id" class="form-select" required>
+                                class="@if ($errors->has('value_bangla')) has-error @endif fw-bold">Market Area <span
+                                    class="text-danger">*</span></label>
+                            <select name="area_id" id="area_id" class="form-select select2" required>
                                 <option value="">--select area--</option>
                                 @foreach ($areas as $val)
-                                    <option value="{{ $val->id }}" {{ $val->id==old('area_id')?'selected':''}}>{{ $val->value }}</option>
+                                    <option value="{{ $val->id }}" {{ $val->id == old('area_id') ? 'selected' : '' }}>
+                                        {{ $val->value }}</option>
                                 @endforeach
                             </select>
                             @if ($errors->has('area_id'))
@@ -51,58 +52,76 @@
                         </div>
                         <div class="form-group mb-3">
                             <label for=""
-                                class="@if ($errors->has('value')) has-error @endif fw-bold">Value <span class="text-danger">*</span></label><br />
-                            <textarea name='value' id='value' class="form-control @error('value') is-invalid @enderror"
-                                placeholder="Enter  value" rows="3" required>{{ old('value') }}</textarea>
+                                class="@if ($errors->has('value')) has-error @endif fw-bold">Market Name in
+                                English <span class="text-danger">*</span></label><br />
+                            <input type="text" name='value' id='value'
+                                class="form-control @error('value') is-invalid @enderror"
+                                placeholder="Enter market name in english" value="{{ old('value') }}" required>
                             @if ($errors->has('value'))
                                 @error('value')
                                     <div class="alert alert-danger">{{ $message }}</div>
                                 @enderror
                             @else
                                 <div class="invalid-feedback">
-                                    Please enter a value.
+                                    Please enter a market name in english.
                                 </div>
                             @endif
                         </div>
                         <div class="form-group mb-3">
                             <label for=""
-                                class="@if ($errors->has('value_bangla')) has-error @endif fw-bold">Value
+                                class="@if ($errors->has('value_bangla')) has-error @endif fw-bold">Market Name in
                                 Bangla</label><br />
-                            <textarea name='value_bangla' id='value_bangla' class="form-control @error('value_bangla') is-invalid @enderror"
-                                placeholder="Enter  value in bangla" rows="3">{{ old('value_bangla') }}</textarea>
+                            <input type="text" name='value_bangla' id='value_bangla'
+                                class="form-control @error('value_bangla') is-invalid @enderror"
+                                placeholder="Enter market name in bangla" value="{{ old('value_bangla') }}">
                         </div>
                         <div class="form-group mb-3">
-                            <label for="latitude" class="@if ($errors->has('latitude')) has-error @endif fw-bold">
-                                Latitude  <span class="text-danger">*</span></label><br />
-                            <input type="text" name='latitude' id='latitude'
-                                class="form-control @error('latitude') is-invalid @enderror"
-                                placeholder="Enter Latitude" value="{{ old('latitude') }}" required>
-                            @if ($errors->has('latitude'))
-                                @error('latitude')
-                                    <div class="alert alert-danger">{{ $message }}</div>
-                                @enderror
-                            @else
-                                <div class="invalid-feedback">
-                                    Please enter a latitude.
+                            <div class="row">
+                                <div class="col-md-6">
+
+                                    <label for="latitude"
+                                        class="@if ($errors->has('latitude')) has-error @endif fw-bold">
+                                        Latitude <span class="text-danger">*</span></label><br />
+                                    <input type="number"  pattern="[0-9.-]"  name='latitude' id='latitude'
+                                        class="form-control @error('latitude') is-invalid @enderror"
+                                        placeholder="Enter Latitude" value="{{ old('latitude') }}" min="-90" max="90" required>
+                                    @if ($errors->has('latitude'))
+                                        @error('latitude')
+                                            <div class="alert alert-danger">{{ $message }}</div>
+                                        @enderror
+                                    @else
+                                        <div class="invalid-feedback">
+                                            Please enter a valid latitude.
+                                        </div>
+                                    @endif
                                 </div>
-                            @endif
-                        </div>
+                                <div class="col-md-6">
+                                    <label for="longitude"
+                                        class="@if ($errors->has('longitude')) has-error @endif fw-bold">
+                                        Longitude <span class="text-danger">*</span></label><br />
+                                    <input type="number"  pattern="[0-9.-]"  name='longitude' id='longitude'
+                                        class="form-control @error('longitude') is-invalid @enderror"
+                                        placeholder="Enter longitude" value="{{ old('longitude') }}" min="-180" max="180"  required>
+                                    @if ($errors->has('longitude'))
+                                        @error('longitude')
+                                            <div class="alert alert-danger">{{ $message }}</div>
+                                        @enderror
+                                    @else
+                                        <div class="invalid-feedback">
+                                            Please enter a valid longitude.
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>                      
                         <div class="form-group mb-3">
-                            <label for="longitude" class="@if ($errors->has('longitude')) has-error @endif fw-bold">
-                                Longitude <span class="text-danger">*</span></label><br />
-                            <input type="text" name='longitude' id='longitude'
-                                class="form-control @error('longitude') is-invalid @enderror"
-                                placeholder="Enter longitude" value="{{ old('longitude') }}" required>
-                            @if ($errors->has('longitude'))
-                                @error('longitude')
-                                    <div class="alert alert-danger">{{ $message }}</div>
-                                @enderror
-                            @else
-                                <div class="invalid-feedback">
-                                    Please enter a longitude.
-                                </div>
-                            @endif
+                            <label for=""
+                                class="@if ($errors->has('market_address')) has-error @endif fw-bold">Market
+                                Address</label><br />
+                            <textarea name='market_address' id='market_address' class="form-control @error('market_address') is-invalid @enderror"
+                                placeholder="Enter market address" rows="3">{{ old('market_address') }}</textarea>
                         </div>
+
                         <br />
                         <div class="form-group">
                             <button type="submit" name="submit-btn"

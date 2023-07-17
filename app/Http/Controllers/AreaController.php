@@ -2,21 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\AreaExport;
 use App\Lib\Webspice;
-use App\Models\Option;
-use Illuminate\Http\Request;
 use App\Models\Area;
 use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\AreaExport;
-use Illuminate\Support\Facades\Cache;
 
 class AreaController extends Controller
 {
     public $webspice;
     public $tableName;
     protected $areas;
-
 
     public function __construct(Area $areas, Webspice $webspice)
     {
@@ -47,16 +45,31 @@ class AreaController extends Controller
             $query->where('status', $request->search_status);
         }
 
+        if ($request->search_division != null) {
+            $query->where('division', $request->search_division);
+        }
+        if ($request->search_district != null) {
+            $query->where('district', $request->search_district);
+        }
+        if ($request->search_thana != null) {
+            $query->where('thana', $request->search_thana);
+        }
+
         $searchText = $request->search_text;
         if ($searchText != null) {
             // $query = $query->search($request->search_text); // search by value
             $query->where(function ($query) use ($searchText) {
                 $query->where('value', 'LIKE', '%' . $searchText . '%')
-                    ->orWhere('value_bangla', 'LIKE', '%' . $searchText . '%');
+                    ->orWhere('value_bangla', 'LIKE', '%' . $searchText . '%')
+                    ->orWhere('latitude', 'LIKE', '%' . $searchText . '%')
+                    ->orWhere('longitude', 'LIKE', '%' . $searchText . '%')
+                ;
             });
         }
+
+
         // $query->with('option');
-        if (in_array($type=$request->submit_btn, array('export', 'csv', 'pdf'))) {
+        if (in_array($type = $request->submit_btn, array('export', 'csv', 'pdf'))) {
             $title = $fileTag . 'Area List';
             // $this->export($request->submit_btn,$query,$title);
             $fileName = str_replace(' ', '_', strtolower($title));
@@ -66,8 +79,8 @@ class AreaController extends Controller
             return Excel::download(new AreaExport($query->get(), $title), $fileName . '_' . time() . '.xlsx');
         }
 
-        $areas = $query->paginate(5);
-        // });     
+        $areas = $query->paginate(7);
+        // });
         return view('area.index', compact('areas'));
     }
 
@@ -84,7 +97,7 @@ class AreaController extends Controller
         #permission verfy
         $this->webspice->permissionVerify('area.create');
         return view('area.create', [
-            
+
         ]);
     }
 
@@ -98,30 +111,35 @@ class AreaController extends Controller
 
         $request->validate(
             [
-                'value' => 'required|min:3|max:1000|unique:areas',
-                'latitude' => 'required',
-                'longitude' => 'required',
+                'division' => 'required|min:2|max:1000',
+                'district' => 'required|min:2|max:1000',
+                'thana' => 'required|min:2|max:1000',
+                'value' => [
+                    'required', 'min:3', 'max:1000',
+                    Rule::unique('areas')->where(function ($query) use ($request) {
+                        return $query->where('value', $request->value)
+                            ->where('division', $request->division)
+                            ->where('district', $request->district)
+                            ->where('thana', $request->thana)
+                            ->where('latitude', $request->latitude)
+                            ->where('longitude', $request->longitude);
+                    }),
+                ],
+                'value_bangla' => 'required|min:3|max:1000',
+                'latitude' => 'required|numeric||between:-90,90',
+                'longitude' => 'required|numeric||between:-180,180',
             ],
             [
-                'value.required' => 'Value field is required.',
+                'value.unique' => 'This area name has already been taken (unique combination:division,district,thana,area name english,lat,long).',
             ]
         );
-
-        $data = array(
-            'value' => $request->value,
-            'value_bangla' => $request->value_bangla,
-            'latitude' => $request->latitude,
-            'longitude' => $request->longitude,
-            'created_at' => $this->webspice->now('datetime24'),
-            'created_by' => $this->webspice->getUserId(),
-        );
-
         try {
-            $this->areas->create($data);
+            $input = $request->all();
+            $input['created_by'] = $this->webspice->getUserId();
+            $this->areas->create($input);
         } catch (Exception $e) {
-            $this->webspice->insertOrFail('error', $e->getMessage());
+            $this->webspice->message('error', $e->getMessage());
         }
-
 
         return redirect()->back();
     }
@@ -145,7 +163,7 @@ class AreaController extends Controller
         $id = $this->webspice->encryptDecrypt('decrypt', $id);
 
         $areaInfo = $this->areas->find($id);
-      
+
         return view('area.edit', [
             'areaInfo' => $areaInfo,
         ]);
@@ -154,36 +172,44 @@ class AreaController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Area $area)
     {
         # permission verfy
         $this->webspice->permissionVerify('area.edit');
 
         # decrypt value
-        $id = $this->webspice->encryptDecrypt('decrypt', $id);
+        // $id = $this->webspice->encryptDecrypt('decrypt', $id);
+        $id = $area->id;
 
         $request->validate(
             [
-                'value' => 'required|min:3|max:1000|unique:areas,value,' . $id,
-                'latitude' => 'required',
-                'longitude' => 'required'
-            ],
-            [
-                'value.required' => 'Value field is required.',
-                'value.unique' => 'This value has already been taken for another record.'
+                'division' => 'required|min:2|max:1000',
+                'district' => 'required|min:2|max:1000',
+                'thana' => 'required|min:2|max:1000',
+                'value' => [
+                    'required', 'min:3', 'max:1000',
+                    Rule::unique('areas')->ignore($id, 'id')->where(function ($query) use ($request) {
+                        return $query->where('value', $request->value)
+                            ->where('division', $request->division)
+                            ->where('district', $request->district)
+                            ->where('thana', $request->thana)
+                            ->where('latitude', $request->latitude)
+                            ->where('longitude', $request->longitude);
+                    }),
+                ],
+                'value_bangla' => 'required|min:3|max:1000',
+                'latitude' => 'required|numeric||between:-90,90',
+                'longitude' => 'required|numeric||between:-180,180',
+            ], [
+                'value.unique' => 'This area name has already been taken for another record (unique combination:division,district,thana,area name english,lat,long).',
             ]
         );
         try {
-            $area = $this->areas->find($id);
-            $area->value = $request->value;
-            $area->value_bangla = $request->value_bangla;
-            $area->latitude = $request->latitude;
-            $area->longitude = $request->longitude;
-            $area->updated_at = $this->webspice->now('datetime24');
-            $area->updated_by = $this->webspice->getUserId();
-            $area->save();
+            $input = $request->all();
+            $input['updated_by'] = $this->webspice->getUserId();
+            $area->update($input);
         } catch (Exception $e) {
-            $this->webspice->updateOrFail('error', $e->getMessage());
+            $this->webspice->message('error', $e->getMessage());
         }
 
         return redirect('areas');
@@ -208,7 +234,6 @@ class AreaController extends Controller
         }
         return back();
     }
-
 
     public function forceDelete($id)
     {

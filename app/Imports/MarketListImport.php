@@ -13,7 +13,7 @@ use Maatwebsite\Excel\Concerns\WithHeadingRow;
 // use Illuminate\Contracts\Queue\ShouldQueue;
 use Maatwebsite\Excel\Concerns\WithValidation;
 
-class MarketListImport implements ToModel, WithHeadingRow, WithBatchInserts, WithChunkReading, WithValidation
+class MarketListImport implements ToModel, WithBatchInserts, WithChunkReading, WithValidation, WithHeadingRow
 {
     use RemembersRowNumber;
     private $rows = 0;
@@ -53,6 +53,9 @@ class MarketListImport implements ToModel, WithHeadingRow, WithBatchInserts, Wit
             $areaInfo = Area::where('value', $row['area'])->first();
             if (!$areaInfo) {
                 $area = new Area();
+                $area->division = '';
+                $area->district = '';
+                $area->thana = '';
                 $area->value = $row['area'];
                 $area->value_bangla = $row['area'];
                 $area->created_by = Auth::user()->id;

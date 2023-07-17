@@ -280,6 +280,133 @@ class Webspice
 
 		return $text;
 	}
+	static function excelStatus($status)
+	{
+		$text = null;
+		switch ($status) {
+			case 0:
+				$text = 'Pending';
+				break;
+			case 1:
+				$text = 'Active';
+				break;
+			case 2:
+				$text = 'Verified';
+				break;
+			case 3:
+				$text = 'Resolved';
+				break;
+			case 4:
+				$text = 'Forwarded';
+				break;
+			case 5:
+				$text = 'Deployed';
+				break;
+			case 6:
+				$text = 'New';
+				break;
+				// case 7:
+				// 	$text = 'Active';
+				// 	break;
+			case 8:
+				$text = 'Initiated';
+				break;
+			case 9:
+				$text = 'On Progress';
+				break;
+			case 10:
+				$text = 'Delivered';
+				break;
+			case 11:
+				$text = 'Locked</span>';
+				break;
+			case 12:
+				$text = 'Returned</span>';
+				break;
+			case 13:
+				$text = 'Sold</span>';
+				break;
+			case 14:
+				$text = 'Paid</span>';
+				break;
+			case 15:
+				$text = 'Testing';
+				break;
+			case 16:
+				$text = 'Verified';
+				break;
+			case 20:
+				$text = 'Settled';
+				break;
+			case 21:
+				$text = 'Replaced';
+				break;
+			case 22:
+				$text = 'Completed';
+				break;
+			case 23:
+				$text = 'Confirmed';
+				break;
+			case 24:
+				$text = 'Honored';
+				break;
+			case 25:
+				$text = 'Defaulter';
+				break;
+			case 26:
+				$text = 'Not Defaulter';
+				break;
+			case 28:
+				$text = 'Allowed';
+				break;
+			case 29:
+				$text = 'Accepted';
+				break;
+			case 30:
+				$text = 'Taken';
+				break;
+			case 31:
+				$text = 'Partial Paid';
+				break;
+			case 32:
+				$text = 'Reviewed';
+				break;
+			case 33:
+				$text = 'Processed';
+				break;
+			case 34:
+				$text = 'Acknowledged';
+				break;
+
+			case -24:
+				$text = 'Dishonored';
+				break;
+
+			case -1:
+				$text = 'Inactive';
+				break;
+			case -2:
+				$text = 'Declined';
+				break;
+			case -3:
+				$text = 'Canceled';
+				break;
+			case -5:
+				$text = 'Taking out';
+				break;
+			case -6:
+				$text = 'Renewed';
+				break;
+				// case -7:
+				// 	$text = 'Inactive';
+				// 	break;
+			default:
+				$text = 'Unknown';
+				break;
+		}
+
+		return $text;
+	}
 
 	public function activeInactive(Request $request)
 	{

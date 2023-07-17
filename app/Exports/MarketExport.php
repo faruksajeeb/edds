@@ -26,7 +26,7 @@ class MarketExport implements FromArray, WithHeadings, Responsable, ShouldAutoSi
         // $sheet = $spreadsheet->getActiveSheet();
         $sheet->setCellValue('A1', $this->title);
         $sheet->getStyle('A1')->getFont()->setBold(true);
-        $sheet->mergeCells('A1:F2');
+        $sheet->mergeCells('A1:I2');
         $styleArray = [
             'font' => [
                 'bold' => true,
@@ -55,21 +55,24 @@ class MarketExport implements FromArray, WithHeadings, Responsable, ShouldAutoSi
                 ],
             ],
         ];
-        $sheet->getStyle('A1:F1')->applyFromArray($styleArray);
+        $sheet->getStyle('A1:I1')->applyFromArray($styleArray);
         $headerStyleArray = [
             'font' => [
                 'bold' => true,
             ]];
-        $sheet->getStyle('A3:F3')->applyFromArray($headerStyleArray);
+        $sheet->getStyle('A3:I3')->applyFromArray($headerStyleArray);
     }
     public function headings(): array
     {
         return [
             [
                 "Sl No",
-                "Value",
-                "Value Bangla",
-                "Area",
+                "Market Name In English",
+                "Market Name In Bangla",
+                "Latitude",
+                "Longitude",
+                "Area Name",
+                "Status",
                 "Created At",
                 "Updated At",
                 // "Created By",
@@ -89,7 +92,10 @@ class MarketExport implements FromArray, WithHeadings, Responsable, ShouldAutoSi
                 $k+1,
                 $val['value'],
                 $val['value_bangla'],
+                $val['latitude'],
+                $val['longitude'],
                 isset($val['area']['value']) ? $val['area']['value'] : '',
+                ($val['status']==1)?'Active':'Inactive',
                 $val['created_at'],
                 $val['updated_at'],
                 // $val['created_by'],
