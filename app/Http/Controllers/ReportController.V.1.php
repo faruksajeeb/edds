@@ -62,13 +62,13 @@ class ReportController extends Controller
                     $query->leftJoin('markets', 'markets.id', '=', 'user_responses.market_id');
 
                     if ($request->division != '') {
-                        $query->where('areas.division', $request->division);
+                        $query->where('user_responses.response_division', $request->division);
                     }
                     if ($request->district != '') {
-                        $query->where('areas.district', $request->district);
+                        $query->where('user_responses.response_district', $request->district);
                     }
                     if ($request->thana != '') {
-                        $query->where('areas.thana', $request->thana);
+                        $query->where('registered_users.thana', $request->thana);
                     }
                     if ($request->area_id != '') {
                         $query->where('user_responses.area_id', $request->area_id);
@@ -77,9 +77,9 @@ class ReportController extends Controller
                         $query->where('user_responses.market_id', $request->market_id);
                     }
 
-                    // if ($request->address_address != '') {
-                    //     $query->where('user_responses.formatted_address', $request->address_address);
-                    // }
+                    if ($request->address_address != '') {
+                        $query->where('user_responses.formatted_address', $request->address_address);
+                    }
                     
                     if ($request->category_id != '') {
                         // $query->leftJoin('options','options.id','=','questions.category_id');
@@ -167,24 +167,23 @@ class ReportController extends Controller
                     $query->leftJoin('markets', 'markets.id', '=', 'user_responses.market_id');
 
                     if ($request->division != '') {
-                        $query->where('areas.division', $request->division);
+                        $query->where('user_responses.response_division', $request->division);
                     }
                     if ($request->district != '') {
-                        $query->where('areas.district', $request->district);
+                        $query->where('user_responses.response_district', $request->district);
                     }
-                    if ($request->thana != '') {
-                        $query->where('areas.thana', $request->thana);
+                    if ($request->address_address != '') {
+                        $query->where('user_responses.formatted_address', $request->address_address);
                     }
-                    // if ($request->address_address != '') {
-                    //     $query->where('user_responses.formatted_address', $request->address_address);
+                    // if ($request->thana != '') {
+                    //     $query->where('registered_users.thana', $request->thana);
                     // }
-                    
-                    if ($request->area_id != '') {
-                        $query->where('user_responses.area_id', $request->area_id);
-                    }
-                    if ($request->market_id != '') {
-                        $query->where('user_responses.market_id', $request->market_id);
-                    }
+                    // if ($request->area_id != '') {
+                    //     $query->where('user_responses.area_id', $request->area_id);
+                    // }
+                    // if ($request->market_id != '') {
+                    //     $query->where('user_responses.market_id', $request->market_id);
+                    // }
                    
                     if ($request->category_id != '') {
                         // $query->leftJoin('options','options.id','=','questions.category_id');

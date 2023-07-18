@@ -17,7 +17,9 @@
         font-family: Arial, Helvetica, sans-serif;
     }
 </style>
-
+@php
+    $colspan = 7;
+@endphp
 @if ($report_format == 'pdf')
     <div id="header" style="text-align:center">
         <img style="width:200px" src="{{ asset('/uploads/'.$theme_settings->website_logo) }}" alt="Logo" />
@@ -29,12 +31,12 @@
     <thead>
         @if ($report_format == 'export')
             <tr style="">
-                <td style="height:70px;text-align:center; padding-top:10px" colspan="7">
+                <td style="height:70px;text-align:center; padding-top:10px" colspan="{{$colspan}}">
 
                 </td>
             </tr>
             <tr>
-                <td colspan="7" style="text-align:center;padding:10px; font-weight:bold;background-color:#F5DEB3;color:#000000">
+                <td colspan="{{$colspan}}" style="text-align:center;padding:10px; font-weight:bold;background-color:#F5DEB3;color:#000000">
                     <h1>Survey Report</h1>
                 </td>
             </tr>
@@ -45,14 +47,14 @@
     <tbody>
 
         <tr style="font-weight:bold;text-align:left">
-            <td>
+            <td colspan="2">
                 Division: {{ $division }}
             </td>
             <td colspan="2">
                 District: {{ $district }}
             </td>
             <td colspan="1">
-                {{-- Thana: {{ $thana }} --}}
+                Thana: {{ $thana }}
             </td>
             <td colspan="2" style="text-align:right!important">
                 Date From: {{ $date_from }}  Date To: {{ $date_to }}
@@ -60,7 +62,7 @@
         </tr>
         @foreach ($records as $key => $category)
             <tr style="">
-                <td colspan="6" style="padding:15px;background-color: #F5DEB3;"><b># Category:
+                <td colspan="{{$colspan}}" style="padding:15px;background-color: #F5DEB3;"><b># Category:
                         {{ $category['category_name'] != '' ? $category['category_name'] : 'Not Assigned' }}</b>
                 </td>
             </tr>
@@ -68,13 +70,13 @@
 
             @foreach ($category['category_records'] as $k => $question)
                 <tr style="">
-                    <td colspan="6" style="padding:15px;background-color: #F5DEB3;"><b>## Question:
+                    <td colspan="{{$colspan}}" style="padding:15px;background-color: #F5DEB3;"><b>## Question:
                             {{ $question['question'] != '' ? $question['question'] : 'Not Assigned' }}</b>
                     </td>
                 </tr>
                 @foreach ($question['sub_records'] as $k => $sub_question)
                     <tr style="">
-                        <td colspan="6" style="padding:15px;background-color: #F5DEB3;"><b>### Sub Question:
+                        <td colspan="{{$colspan}}" style="padding:15px;background-color: #F5DEB3;"><b>### Sub Question:
                                 {{ $sub_question['sub_question'] != '' ? $sub_question['sub_question'] : 'Not Assigned' }}</b>
                         </td>
                     </tr>
@@ -83,9 +85,9 @@
                         <td>Response Date</td>
                         <td>Response By</td>
                         <td>Mobile No</td>
-                        <td>Location</td>
-                        {{-- <td>Area</td>
-                        <td>Market</td> --}}
+                        {{-- <td>Location</td> --}}
+                        <td>Area</td>
+                        <td>Market</td>
                         {{-- <td>Category</td>
                 <td>Question</td> --}}
                         {{-- <td>Sub Question</td> --}}
@@ -100,9 +102,9 @@
                             <td>{{ $val->response_date }}</td>
                             <td>{{ $val->full_name }}</td>
                             <td>{{ $val->mobile_no }}</td>
-                            <td>{{ $val->formatted_address }}</td>
-                            {{-- <td>{{ $val->area_name }}</td>
-                            <td>{{ $val->market_name }}</td> --}}
+                            {{-- <td>{{ $val->formatted_address }}</td> --}}
+                            <td>{{ $val->area_name }}</td>
+                            <td>{{ $val->market_name }}</td>
                             {{-- <td>{{ $val->category_name }}</td>
                     <td>{{ $val->question }}</td> --}}
                             {{-- <td>{{ $val->sub_question }}</td> --}}
@@ -117,11 +119,11 @@
                         @endphp
                     @endforeach
                     <tr style="font-weight:bold">
-                        <td colspan="5">Total ({{ $sub_question['sub_question'] }} )</td>
-                        <td style="text-align:center">{{ $subQuestionTotal }}</td>
+                        <td colspan="6" style="font-weight:bold">Total ({{ $sub_question['sub_question'] }} )</td>
+                        <td style="text-align:center;font-weight:bold">{{ $subQuestionTotal }}</td>
                     </tr>
                     <tr>
-                        <td colspan="6"></td>
+                        <td colspan="{{$colspan}}"></td>
                     </tr>
                 @endforeach
             @endforeach

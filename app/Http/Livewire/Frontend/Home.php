@@ -74,10 +74,11 @@ class Home extends Component
             foreach ($categories as $category) :
                 $query = UserResponseDetail::leftJoin('questions', 'questions.id', '=', 'user_response_details.question_id');
                 $query->leftJoin('user_responses', 'user_responses.id', '=', 'user_response_details.response_id');
+                $query->leftJoin('areas', 'areas.id', '=', 'user_responses.area_id');
                 // $query->leftJoin('registered_users', 'registered_users.id', '=', 'user_responses.registered_user_id');
                 $query->where('questions.category_id', $category->id);
-                // $query->where('registered_users.division', $division->division_name);
-                $query->where('user_responses.response_division', $division->division_name);
+                $query->where('areas.division', $division->division_name);
+                // $query->where('user_responses.response_division', $division->division_name);
                 $query->where('user_responses.status', 2);
                 $query->whereBetween('user_responses.response_date',[Carbon::today()->subDays(7)->toDateString(),Carbon::today()->toDateString()]);
                 if ($category->option_value == 'LBM Worker') {

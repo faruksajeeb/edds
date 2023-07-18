@@ -16,7 +16,7 @@
                                 <div class="row mb-2">
                                     <label for="Division" class="col-sm-3 col-form-label">Division</label>
                                     <div class="col-sm-9">
-                                        <select name="division" id="drpDivision" class="form-select">
+                                        <select name="division" id="drpDivision" class="form-select" >
                                             <option value="">--select division--</option>
                                             <option value="Dhaka">Dhaka</option>
                                             <option value="Chattogram">Chattogram</option>
@@ -102,10 +102,10 @@
                                         </select>
                                     </div>
                                 </div>
-                                {{-- <div class="row mb-2">
+                             <div class="row mb-2">
                                     <label for="thana" class="col-sm-3 col-form-label">Thana</label>
                                     <div class="col-sm-9">
-                                        <select name="thana" id="drpUpazilla" class="form-select">
+                                        <select name="thana" id="drpUpazilla" class="form-select" onchange="getArea(this.value)">
                                             <option value="">--select thana--</option>
                                             <option data-link="Dhaka" value="Dhamrai">Dhamrai</option>
                                             <option data-link="Dhaka" value="Dohar">Dohar</option>
@@ -670,7 +670,7 @@
                                 <div class="row mb-2">
                                     <label for="thana" class="col-sm-3 col-form-label">Area</label>
                                     <div class="col-sm-9">
-                                        <select name="area_id" id="area_id" class="form-select">
+                                        <select name="area_id" id="area_id" class="form-select" onchange="getMarket(this.value)">
                                             <option value="">--select area--</option>
                                             @foreach ($areas as $val)
                                                 <option value="{{ $val->id }}">{{ $val->value }}</option>
@@ -688,10 +688,10 @@
                                             @endforeach
                                         </select>
                                     </div>
-                                </div> --}}
+                                </div> 
 
 
-                                <div class="row mb-2">
+                                {{-- <div class="row mb-2">
                                     <label for="district" class="col-sm-3 col-form-label">Location</label>
                                     <div class="col-sm-9">
                                         <input type="text" class="form-control  map-input" id="address-input" name="address_address" placeholder="Search by location">
@@ -701,7 +701,10 @@
                                     <div id="address-map-container" style="width:100%;height:400px;display:none ">
                                         <div style="width: 100%; height: 100%" id="address-map"></div>
                                     </div>
-                                </div>
+                                </div> --}}
+                                
+                            </div>
+                            <div class="col-md-6">
                                 
                                 <div class="row mb-2">
                                     <label for="thana" class="col-sm-3 col-form-label">Category</label>
@@ -714,8 +717,6 @@
                                         </select>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col-md-6">
                                 <div class="row mb-2">
                                     <label for="thana" class="col-sm-3 col-form-label">Question</label>
                                     <div class="col-sm-9">
@@ -821,6 +822,23 @@
             $(document).ready(function() {
                 $("#drpDistrict, #drpUpazilla").children('option').hide();
                 $("#drpDistrict, #drpUpazilla").val("");
+
+                var searchDivision = "{{ request()->get('division') }}";
+                    if (searchDivision) {
+                        $("#drpDivision option[value=" + searchDivision + "]").attr('selected', 'selected');
+                    }
+                    var searchDistrict = "{{ request()->get('district') }}";
+                    if (searchDistrict) {
+                        $("#drpDistrict").children('option[data-link="' + searchDivision + '"]').show();
+                        $("#drpDistrict option[value=" + searchDistrict + "]").attr('selected', 'selected');
+
+                    }
+                    var searchThana = "{{ request()->get('thana') }}";
+                    if (searchThana) {
+                        $("#drpUpazilla").children('option[data-link="' + searchDistrict + '"]').show();
+                        $("#drpUpazilla option[value=" + searchThana + "]").attr('selected', 'selected');
+                    }
+
                 $("#drpDivision").change(function() {
                     $("#drpDistrict, #drpUpazilla").children('option').hide();
                     $("#drpDistrict, #drpUpazilla").val("");
@@ -838,112 +856,47 @@
                     }
                 });
             });
-        </script>
 
-
-<script
-            src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_API_KEY') }}&libraries=places&callback=initialize"
-            async defer></script>
-        <script>
-            function initialize() {
-
-                $('form').on('keyup keypress', function(e) {
-                    var keyCode = e.keyCode || e.which;
-                    if (keyCode === 13) {
-                        e.preventDefault();
-                        return false;
-                    }
-                });
-                const locationInputs = document.getElementsByClassName("map-input");
-
-                const autocompletes = [];
-                const geocoder = new google.maps.Geocoder;
-                for (let i = 0; i < locationInputs.length; i++) {
-
-                    const input = locationInputs[i];
-                    const fieldKey = input.id.replace("-input", "");
-                    const isEdit = document.getElementById(fieldKey + "-latitude").value != '' && document.getElementById(
-                        fieldKey + "-longitude").value != '';
-
-                    const latitude = parseFloat(document.getElementById(fieldKey + "-latitude").value) || -33.8688;
-                    const longitude = parseFloat(document.getElementById(fieldKey + "-longitude").value) || 151.2195;
-
-                    const map = new google.maps.Map(document.getElementById(fieldKey + '-map'), {
-                        center: {
-                            lat: latitude,
-                            lng: longitude
+            const getArea = (val) => {
+                if (val) {
+                    // by jquery
+                    $.ajax({
+                        url: "{{ url('api/fetch-areas') }}",
+                        type: 'POST',
+                        dataType: "json",
+                        data: {
+                            "_token": "{{ csrf_token() }}",
+                            upazilla: val
                         },
-                        zoom: 13
-                    });
-                    const marker = new google.maps.Marker({
-                        map: map,
-                        position: {
-                            lat: latitude,
-                            lng: longitude
+                        success: (response) => {
+                            $('#area_id').html('<option value="">-- Select Area --</option>');
+                            $.each(response.areas, (key, value) => {
+                                $("#area_id").append('<option value="' + value
+                                    .id + '">' + value.value + '</option>');
+                            });
                         },
-                    });
+                        error: (xhr, status, error) => {
 
-                    marker.setVisible(isEdit);
-                    var options = {
-                        // types: ['(cities)'],
-                        componentRestrictions: {
-                            country: "bd"
-                        } //Here bd for bangladesh location only
-                    };
-                    const autocomplete = new google.maps.places.Autocomplete(input, options);
-                    autocomplete.key = fieldKey;
-                    autocompletes.push({
-                        input: input,
-                        map: map,
-                        marker: marker,
-                        autocomplete: autocomplete
-                    });
-                }
-
-                for (let i = 0; i < autocompletes.length; i++) {
-                    const input = autocompletes[i].input;
-                    const autocomplete = autocompletes[i].autocomplete;
-                    const map = autocompletes[i].map;
-                    const marker = autocompletes[i].marker;
-
-                    google.maps.event.addListener(autocomplete, 'place_changed', function() {
-                        marker.setVisible(false);
-                        const place = autocomplete.getPlace();
-
-                        geocoder.geocode({
-                            'placeId': place.place_id
-                        }, function(results, status) {
-                            if (status === google.maps.GeocoderStatus.OK) {
-                                const lat = results[0].geometry.location.lat();
-                                const lng = results[0].geometry.location.lng();
-                                setLocationCoordinates(autocomplete.key, lat, lng);
-                            }
-                        });
-
-                        if (!place.geometry) {
-                            window.alert("No details available for input: '" + place.name + "'");
-                            input.value = "";
-                            return;
                         }
-
-                        if (place.geometry.viewport) {
-                            map.fitBounds(place.geometry.viewport);
-                        } else {
-                            map.setCenter(place.geometry.location);
-                            map.setZoom(17);
-                        }
-                        marker.setPosition(place.geometry.location);
-                        marker.setVisible(true);
-
                     });
                 }
             }
-
-            function setLocationCoordinates(key, lat, lng) {
-                const latitudeField = document.getElementById(key + "-" + "latitude");
-                const longitudeField = document.getElementById(key + "-" + "longitude");
-                latitudeField.value = lat;
-                longitudeField.value = lng;
+            const getMarket = (val) => {
+                if (val) {
+                    // by raw/vanilla javascript api
+                    fetch("{{ url('api/fetch-markets') }}/" + val)
+                        .then(response => response.json())
+                        .then(data => {
+                            let marketSelect = document.querySelector('#market_id');
+                            marketSelect.innerHTML = '<option value="">-- Select Market --</option>'; // Clear existing options
+                            data.markets.forEach((market) => {
+                                var option = document.createElement('option');
+                                option.value = market.id;
+                                option.text = market.value;
+                                marketSelect.appendChild(option);
+                            });
+                        });
+                }
             }
         </script>
     @endpush
