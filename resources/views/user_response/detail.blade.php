@@ -42,35 +42,37 @@
                                 <tr>
                                     <td>Respondent Email</td>
                                     <td>: {{ isset($val->registered_user) ? $val->registered_user->email : '' }}</td>
-                                    <td>Response Division</td>
+                                    <td>Division</td>
                                     {{-- <td>: {{ isset($val->registered_user) ? $val->registered_user->division : '' }}</td> --}}
-                                    <td>: {{ isset($val->response_division) ? $val->response_division : '' }}</td>
+                                    <td>: {{ optional($val->area)->division }}</td>
                                 </tr>
                                 <tr>
-                                    <td>Response District</td>
+                                    <td>District</td>
                                     {{-- <td>: {{ isset($val->registered_user) ? $val->registered_user->district : '' }}</td> --}}
-                                    <td colspan="3">:
-                                        {{ isset($val->response_district) ? $val->response_district : '' }}</td>
-                                    {{-- <td>Thana</td>
-                                    <td>: {{ isset($val->registered_user) ? $val->registered_user->thana : '' }}</td> --}}
+                                    <td colspan="">:
+                                        {{ optional($val->area)->district }}</td>
+                                    <td>Thana</td>
+                                    <td>: {{ optional($val->area)->thana }}</td>
                                 </tr>
-                                {{-- <tr>
+                                <tr>
                                     <td>Area</td>
-                                    <td>: {{ isset($val->area) ? $val->area->value : '' }}</td>
+                                    <td>: {{ optional($val->area)->value }}</td>
                                     <td>Market</td>
                                     <td>: {{ isset($val->market) ? $val->market->value : (($val->market_id==-100)?$val->market_other:'')}}</td>
-                                </tr> --}}
+                                </tr>
                                 <tr>
-                                    <td>Response Area</td>
+                                    <td><a href="https://www.google.com/maps/search/?api=1&query={{optional($val->market)->latitude}},{{optional($val->market)->longitude}}"
+                                        target="_blank" class="float-start"><i class="fa-solid fa-location-dot"></i>
+                                        Response Location</a></td>
                                     <td colspan="2">:
-                                        {{ isset($val->formatted_address) ? $val->formatted_address : '' }}</td>
-                                    <td> <a href="https://www.google.com/maps/search/?api=1&query=<?php echo $val->response_location; ?>"
-                                            target="_blank" class="float-end"><i class="fa-solid fa-location-dot"></i>
-                                            Response Location</a></td>
+                                        {{-- {{ isset($val->formatted_address) ? $val->formatted_address : '' }} --}}
+                                       
+                                    </td>
+                                    <td>  <a href="https://www.google.com/maps/search/?api=1&query=<?php echo $val->location; ?>"
+                                        target="_blank" class="float-start">User Location</a></td>
                                 </tr>
                             </table>
-                            <a href="https://www.google.com/maps/search/?api=1&query=<?php echo $val->location; ?>"
-                                target="_blank" class="float-start">User Location</a>
+                            
 
 
                         </fieldset>

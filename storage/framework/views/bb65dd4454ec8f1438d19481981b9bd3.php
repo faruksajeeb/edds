@@ -45,29 +45,37 @@
                                 <tr>
                                     <td>Respondent Email</td>
                                     <td>: <?php echo e(isset($val->registered_user) ? $val->registered_user->email : ''); ?></td>
-                                    <td>Response Division</td>
+                                    <td>Division</td>
                                     
-                                    <td>: <?php echo e(isset($val->response_division) ? $val->response_division : ''); ?></td>
+                                    <td>: <?php echo e(optional($val->area)->division); ?></td>
                                 </tr>
                                 <tr>
-                                    <td>Response District</td>
+                                    <td>District</td>
                                     
-                                    <td colspan="3">:
-                                        <?php echo e(isset($val->response_district) ? $val->response_district : ''); ?></td>
-                                    
+                                    <td colspan="">:
+                                        <?php echo e(optional($val->area)->district); ?></td>
+                                    <td>Thana</td>
+                                    <td>: <?php echo e(optional($val->area)->thana); ?></td>
                                 </tr>
-                                
                                 <tr>
-                                    <td>Response Area</td>
+                                    <td>Area</td>
+                                    <td>: <?php echo e(optional($val->area)->value); ?></td>
+                                    <td>Market</td>
+                                    <td>: <?php echo e(isset($val->market) ? $val->market->value : (($val->market_id==-100)?$val->market_other:'')); ?></td>
+                                </tr>
+                                <tr>
+                                    <td><a href="https://www.google.com/maps/search/?api=1&query=<?php echo e(optional($val->market)->latitude); ?>,<?php echo e(optional($val->market)->longitude); ?>"
+                                        target="_blank" class="float-start"><i class="fa-solid fa-location-dot"></i>
+                                        Response Location</a></td>
                                     <td colspan="2">:
-                                        <?php echo e(isset($val->formatted_address) ? $val->formatted_address : ''); ?></td>
-                                    <td> <a href="https://www.google.com/maps/search/?api=1&query=<?php echo $val->response_location; ?>"
-                                            target="_blank" class="float-end"><i class="fa-solid fa-location-dot"></i>
-                                            Response Location</a></td>
+                                        
+                                       
+                                    </td>
+                                    <td>  <a href="https://www.google.com/maps/search/?api=1&query=<?php echo $val->location; ?>"
+                                        target="_blank" class="float-start">User Location</a></td>
                                 </tr>
                             </table>
-                            <a href="https://www.google.com/maps/search/?api=1&query=<?php echo $val->location; ?>"
-                                target="_blank" class="float-start">User Location</a>
+                            
 
 
                         </fieldset>
