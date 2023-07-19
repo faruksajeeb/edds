@@ -56,9 +56,10 @@ class Home extends Component
             }
             $categoryWiseReport[$categoryId]['response_data'] =   $resData;
 
-            $responseLocations = UserResponseDetail::select('user_responses.response_location')
+            $responseLocations = UserResponseDetail::select('areas.latitude','areas.longitude')
             ->leftJoin('questions', 'questions.id', '=', 'user_response_details.question_id')
             ->leftJoin('user_responses', 'user_responses.id', '=', 'user_response_details.response_id')
+            ->leftJoin('areas','areas.id','=','user_responses.area_id')
             ->where('questions.category_id', $categoryId)
             ->whereBetween('user_responses.response_date',[Carbon::today()->subDays(7)->toDateString(),Carbon::today()->toDateString()])
             ->where('user_responses.status', 2)->get();

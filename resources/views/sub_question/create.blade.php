@@ -88,8 +88,8 @@
                                 <span class='text-danger'>*<span></label>
                             <select name="input_type" id="input_type" class="form-select" required>
                                 <option value="">--select input type--</option>
-                                <option value="alphabetic" {{ old('input_type') == 'alphabetic' ? 'selected' : '' }}>Alphabetic
-                                </option>
+                                {{-- <option value="alphabetic" {{ old('input_type') == 'alphabetic' ? 'selected' : '' }}>Alphabetic
+                                </option> --}}
                                 <option value="alphanumeric" {{ old('input_type') == 'alphanumeric' ? 'selected' : '' }}>
                                     Alphanumeric</option>
                                 <option value="numeric" {{ old('input_type') == 'numeric' ? 'selected' : '' }}>
@@ -106,7 +106,7 @@
                                 </div>
                             @endif
                         </div>
-                        <div class="form-group my-1">
+                        {{-- <div class="form-group my-1">
                             <label for=""
                                 class="@if ($errors->has('is_required')) has-error @endif fw-bold">Is Required? <span class='text-danger'>*<span></label>
                             <select name="is_required" id="is_required" class="form-select" required>
@@ -125,7 +125,7 @@
                                     Please select one.
                                 </div>
                             @endif
-                        </div>
+                        </div> --}}
 
                         <br />
                         <div class="form-group">

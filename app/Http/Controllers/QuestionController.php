@@ -2,19 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Interfaces\Crud;
-
-use App\Lib\Webspice;
-use Illuminate\Http\Request;
-use App\Models\Question;
-use Exception;
-use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\QuestionExport;
+use App\Interfaces\Crud;
+use App\Lib\Webspice;
+use App\Models\Question;
 use App\Traits\MasterData;
-use Illuminate\View\View;
+use Exception;
 use Illuminate\Http\RedirectResponse;
-
-
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use Illuminate\View\View;
+use Maatwebsite\Excel\Facades\Excel;
 
 class QuestionController extends Controller implements Crud
 {
@@ -23,7 +21,6 @@ class QuestionController extends Controller implements Crud
     public $webspice;
     public $tableName;
     protected $questions;
-
 
     public function __construct(Question $questions, Webspice $webspice)
     {
@@ -69,7 +66,7 @@ class QuestionController extends Controller implements Crud
                     ->orWhere('value_bangla', 'LIKE', '%' . $searchText . '%');
             });
         }
-        $query->with('category','subQuestions');
+        $query->with('category', 'subQuestions');
         if (in_array($type = $request->submit_btn, array('export', 'csv', 'pdf'))) {
             $title = $fileTag . 'Question List';
             // $this->export($request->submit_btn,$query,$title);
@@ -84,7 +81,7 @@ class QuestionController extends Controller implements Crud
             return Excel::download(new QuestionExport($query->get(), $title), $fileName . '_' . time() . '.xlsx');
         }
         // $query->has('subQuestions'); # It means, get which questions has sub qestions.
-        $perPage = request()->input('perPage', 5); 
+        $perPage = request()->input('perPage', 5);
         $questions = $query->paginate($perPage);
 
         $categories = MasterData::getCategory();
@@ -106,15 +103,16 @@ class QuestionController extends Controller implements Crud
 
         return view('question.create', [
             'categories' => $categories,
-            'respondents' => $respondents
+            'respondents' => $respondents,
         ]);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request) : RedirectResponse
+    public function store(Request $request): RedirectResponse
     {
+        // dd($request->all());
         #permission verfy
         $this->webspice->permissionVerify('question.create');
         $respondent = implode(",", $request->respondent);
@@ -139,7 +137,7 @@ class QuestionController extends Controller implements Crud
                 'category_id' => 'required',
                 'respondent' => 'required',
                 'input_method' => 'required',
-                'input_type' => 'required',
+                'input_type' => Rule::requiredIf(fn() => ($request->input_method == 'text_box')),
                 'is_required' => 'required',
                 'image_require' => 'required',
             ],
@@ -151,25 +149,21 @@ class QuestionController extends Controller implements Crud
                 'category_id.required' => 'Category field is required.',
                 'respondent.required' => 'Respondent field is required.',
                 'input_method.required' => 'Input method field is required.',
-                'input_type.required' => 'Input type field is required.',
             ]
         );
-
-        $data = array(
-            'value' => $request->value,
-            'value_bangla' => $request->value_bangla,
-            'category_id' => $request->category_id,
-            'respondent' => $respondent,
-            'input_method' => $request->input_method,
-            'input_type' => $request->input_type,
-            'is_required' => $request->is_required,
-            'image_require' => $request->image_require,
-            'created_at' => $this->webspice->now('datetime24'),
-            'created_by' => $this->webspice->getUserId(),
-        );
-
         try {
-            $question = $this->questions->create($data);
+            $question = new Question();
+            $question->value = $request->value;
+            $question->value_bangla = $request->value_bangla;
+            $question->category_id = $request->category_id;
+            $question->respondent = $respondent;
+            $question->input_method = $request->input_method;
+            $question->input_type = $request->input_type;
+            $question->is_required = $request->is_required;
+            $question->image_require = $request->image_require;
+            $question->created_at = $this->webspice->now('datetime24');
+            $question->created_by = $this->webspice->getUserId();
+            $question->save();
             # if sub questions
             // if($request->get('sub_question_value') !=''){
             // $question->subQuestions()->create([
@@ -182,7 +176,6 @@ class QuestionController extends Controller implements Crud
         } catch (Exception $e) {
             $this->webspice->insertOrFail('error', $e->getMessage());
         }
-
 
         return redirect()->back();
     }
@@ -213,14 +206,14 @@ class QuestionController extends Controller implements Crud
         return view('question.edit', [
             'questionInfo' => $questionInfo,
             'categories' => $categories,
-            'respondents' => $respondents
+            'respondents' => $respondents,
         ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id) : RedirectResponse
+    public function update(Request $request, string $id): RedirectResponse
     {
         # permission verfy
         $this->webspice->permissionVerify('question.edit');
@@ -243,7 +236,7 @@ class QuestionController extends Controller implements Crud
                 'category_id' => 'required',
                 'respondent' => 'required',
                 'input_method' => 'required',
-                'input_type' => 'required',
+                'input_type' => Rule::requiredIf(fn() => ($request->input_method == 'text_box')),
                 'is_required' => 'required',
                 'image_require' => 'required',
             ],
@@ -256,7 +249,7 @@ class QuestionController extends Controller implements Crud
                 'respondent.required' => 'Respondent field is required.',
                 'value.unique' => 'This value has already been taken for another record.',
                 'input_method.required' => 'Input method field is required.',
-                'input_type.required' => 'Input type field is required.',
+                // 'input_type.required' => 'Input type field is required.',
             ]
         );
         try {
@@ -282,7 +275,7 @@ class QuestionController extends Controller implements Crud
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id) : RedirectResponse
+    public function destroy(string $id): RedirectResponse
     {
         # permission verfy
         $this->webspice->permissionVerify('question.delete');
@@ -299,8 +292,7 @@ class QuestionController extends Controller implements Crud
         return back();
     }
 
-
-    public function forceDelete($id) : RedirectResponse
+    public function forceDelete($id): RedirectResponse
     {
         abort(403, 'SORRY! unauthenticated access!');
         #permission verfy
@@ -315,7 +307,7 @@ class QuestionController extends Controller implements Crud
         }
         return redirect()->back();
     }
-    public function restore($id) : RedirectResponse
+    public function restore($id): RedirectResponse
     {
         #permission verfy
         $this->webspice->permissionVerify('question.restore');
@@ -329,7 +321,7 @@ class QuestionController extends Controller implements Crud
         return redirect()->route('questions.index');
     }
 
-    public function restoreAll() : RedirectResponse
+    public function restoreAll(): RedirectResponse
     {
         #permission verfy
         $this->webspice->permissionVerify('question.restore');

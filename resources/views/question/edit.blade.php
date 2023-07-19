@@ -58,12 +58,11 @@
                             <label for=""
                                 class="@if ($errors->has('value_bangla')) has-error @endif fw-bold">Respondent
                                 *</label>
-                            <select name="respondent[]" id="respondent" class="form-select  js-states select2" multiple="multiple"  data-placeholder="Select one or more..." required>
+                            <select name="respondent[]" id="respondent" class="form-select  js-states select2"
+                                multiple="multiple" data-placeholder="Select one or more..." required>
                                 @foreach ($respondents as $val)
-                                    <option value="{{ $val->option_value }}"
-                                        {{-- {{ $val->option_value == old('respondent', $questionInfo->respondent) ? 'selected' : '' }} --}}
-                                        {{ (in_array($val->option_value,old('respondent', explode(',',$questionInfo->respondent)))) ? 'selected' : '' }}
-                                        >
+                                    <option value="{{ $val->option_value }}" {{-- {{ $val->option_value == old('respondent', $questionInfo->respondent) ? 'selected' : '' }} --}}
+                                        {{ in_array($val->option_value, old('respondent', explode(',', $questionInfo->respondent))) ? 'selected' : '' }}>
                                         {{ $val->option_value }}</option>
                                 @endforeach
                             </select>
@@ -98,7 +97,7 @@
                                 Bangla*</label><br />
                             <textarea name='value_bangla' id='value_bangla' class="form-control @error('value_bangla') is-invalid @enderror"
                                 placeholder="Enter question value in bangla" rows="3" required>{{ old('value_bangla', $questionInfo->value_bangla) }}</textarea>
-                                @if ($errors->has('value_bangla'))
+                            @if ($errors->has('value_bangla'))
                                 @error('value_bangla')
                                     <div class="alert alert-danger">{{ $message }}</div>
                                 @enderror
@@ -112,7 +111,7 @@
                             <label for=""
                                 class="@if ($errors->has('value_bangla')) has-error @endif fw-bold">Input Method
                                 *</label>
-                            <select name="input_method" id="input_method" class="form-select" required>
+                            <select name="input_method" id="input_method" class="form-select" onchange="showInputType(this.value)" required>
                                 <option value="">--select input method--</option>
                                 <option value="text_box"
                                     {{ old('input_method', $questionInfo->input_method) == 'text_box' ? 'selected' : '' }}>
@@ -138,17 +137,19 @@
                                 </div>
                             @endif
                         </div>
-                        <div class="form-group my-1">
+                        <div class="form-group my-1 input_type_section">
                             <label for=""
                                 class="@if ($errors->has('input_type')) has-error @endif fw-bold">Input Type
                                 *</label>
-                            <select name="input_type" id="input_type" class="form-select" required>
+                            <select name="input_type" id="input_type" class="form-select" >
                                 <option value="">--select input type--</option>
-                                <option value="alphabetic" {{ old('input_type', $questionInfo->input_type) == 'alphabetic' ? 'selected' : '' }}>Alphabetic
-                                </option>
-                                <option value="alphanumeric" {{ old('input_type', $questionInfo->input_type) == 'alphanumeric' ? 'selected' : '' }}>
+                                {{-- <option value="alphabetic" {{ old('input_type', $questionInfo->input_type) == 'alphabetic' ? 'selected' : '' }}>Alphabetic
+                                </option> --}}
+                                <option value="alphanumeric"
+                                    {{ old('input_type', $questionInfo->input_type) == 'alphanumeric' ? 'selected' : '' }}>
                                     Alphanumeric</option>
-                                <option value="numeric" {{ old('input_type', $questionInfo->input_type) == 'numeric' ? 'selected' : '' }}>
+                                <option value="numeric"
+                                    {{ old('input_type', $questionInfo->input_type) == 'numeric' ? 'selected' : '' }}>
                                     Numeric
                                 </option>
                             </select>
@@ -163,13 +164,15 @@
                             @endif
                         </div>
                         <div class="form-group my-1">
-                            <label for=""
-                                class="@if ($errors->has('is_required')) has-error @endif fw-bold">Is Required? *</label>
+                            <label for="" class="@if ($errors->has('is_required')) has-error @endif fw-bold">Is
+                                Required? *</label>
                             <select name="is_required" id="is_required" class="form-select" required>
                                 <option value="">--select one--</option>
-                                <option value="yes" {{ old('is_required',$questionInfo->is_required) == 'yes' ? 'selected' : '' }}>Yes
+                                <option value="yes"
+                                    {{ old('is_required', $questionInfo->is_required) == 'yes' ? 'selected' : '' }}>Yes
                                 </option>
-                                <option value="no" {{ old('is_required',$questionInfo->is_required) == 'no' ? 'selected' : '' }}>
+                                <option value="no"
+                                    {{ old('is_required', $questionInfo->is_required) == 'no' ? 'selected' : '' }}>
                                     No</option>
                             </select>
                             @if ($errors->has('is_required'))
@@ -184,12 +187,16 @@
                         </div>
                         <div class="form-group my-1">
                             <label for=""
-                                class="@if ($errors->has('image_require')) has-error @endif fw-bold">Image Required? *</label>
+                                class="@if ($errors->has('image_require')) has-error @endif fw-bold">Image Required?
+                                *</label>
                             <select name="image_require" id="image_require" class="form-select" required>
                                 <option value="">--select one--</option>
-                                <option value="yes" {{ old('image_require',$questionInfo->image_require) == 'yes' ? 'selected' : '' }}>Yes
+                                <option value="yes"
+                                    {{ old('image_require', $questionInfo->image_require) == 'yes' ? 'selected' : '' }}>
+                                    Yes
                                 </option>
-                                <option value="no" {{ old('image_require',$questionInfo->image_require) == 'no' ? 'selected' : '' }}>
+                                <option value="no"
+                                    {{ old('image_require', $questionInfo->image_require) == 'no' ? 'selected' : '' }}>
                                     No</option>
                             </select>
                             @if ($errors->has('image_require'))
@@ -217,6 +224,24 @@
             $(function() {
 
             });
+            let inputMethodVal = $("#input_method").val();
+            if(inputMethodVal=='text_box'){
+                $('.input_type_section').show();
+                $("#input_type").prop('required', true);
+            } else {
+                $('.input_type_section').hide();
+                $("#input_type").prop('required', false);
+            }
+            const showInputType = (val) => {
+
+                if (val == 'text_box') {
+                    $('.input_type_section').show('slow');
+                    $("#input_type").prop('required', true);
+                } else {
+                    $('.input_type_section').hide('slow');
+                    $("#input_type").prop('required', false);
+                }
+            }
         </script>
     @endpush
 </x-app-layout>

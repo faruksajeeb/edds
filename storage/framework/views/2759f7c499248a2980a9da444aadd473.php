@@ -73,13 +73,11 @@ unset($__errorArgs, $__bag); ?>
                             <label for=""
                                 class="<?php if($errors->has('value_bangla')): ?> has-error <?php endif; ?> fw-bold">Respondent
                                 *</label>
-                            <select name="respondent[]" id="respondent" class="form-select  js-states select2" multiple="multiple"  data-placeholder="Select one or more..." required>
+                            <select name="respondent[]" id="respondent" class="form-select  js-states select2"
+                                multiple="multiple" data-placeholder="Select one or more..." required>
                                 <?php $__currentLoopData = $respondents; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $val): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                    <option value="<?php echo e($val->option_value); ?>"
-                                        
-                                        <?php echo e((in_array($val->option_value,old('respondent', explode(',',$questionInfo->respondent)))) ? 'selected' : ''); ?>
-
-                                        >
+                                    <option value="<?php echo e($val->option_value); ?>" 
+                                        <?php echo e(in_array($val->option_value, old('respondent', explode(',', $questionInfo->respondent))) ? 'selected' : ''); ?>>
                                         <?php echo e($val->option_value); ?></option>
                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </select>
@@ -142,7 +140,7 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
                                 placeholder="Enter question value in bangla" rows="3" required><?php echo e(old('value_bangla', $questionInfo->value_bangla)); ?></textarea>
-                                <?php if($errors->has('value_bangla')): ?>
+                            <?php if($errors->has('value_bangla')): ?>
                                 <?php $__errorArgs = ['value_bangla'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -163,7 +161,7 @@ unset($__errorArgs, $__bag); ?>
                             <label for=""
                                 class="<?php if($errors->has('value_bangla')): ?> has-error <?php endif; ?> fw-bold">Input Method
                                 *</label>
-                            <select name="input_method" id="input_method" class="form-select" required>
+                            <select name="input_method" id="input_method" class="form-select" onchange="showInputType(this.value)" required>
                                 <option value="">--select input method--</option>
                                 <option value="text_box"
                                     <?php echo e(old('input_method', $questionInfo->input_method) == 'text_box' ? 'selected' : ''); ?>>
@@ -196,17 +194,18 @@ unset($__errorArgs, $__bag); ?>
                                 </div>
                             <?php endif; ?>
                         </div>
-                        <div class="form-group my-1">
+                        <div class="form-group my-1 input_type_section">
                             <label for=""
                                 class="<?php if($errors->has('input_type')): ?> has-error <?php endif; ?> fw-bold">Input Type
                                 *</label>
-                            <select name="input_type" id="input_type" class="form-select" required>
+                            <select name="input_type" id="input_type" class="form-select" >
                                 <option value="">--select input type--</option>
-                                <option value="alphabetic" <?php echo e(old('input_type', $questionInfo->input_type) == 'alphabetic' ? 'selected' : ''); ?>>Alphabetic
-                                </option>
-                                <option value="alphanumeric" <?php echo e(old('input_type', $questionInfo->input_type) == 'alphanumeric' ? 'selected' : ''); ?>>
+                                
+                                <option value="alphanumeric"
+                                    <?php echo e(old('input_type', $questionInfo->input_type) == 'alphanumeric' ? 'selected' : ''); ?>>
                                     Alphanumeric</option>
-                                <option value="numeric" <?php echo e(old('input_type', $questionInfo->input_type) == 'numeric' ? 'selected' : ''); ?>>
+                                <option value="numeric"
+                                    <?php echo e(old('input_type', $questionInfo->input_type) == 'numeric' ? 'selected' : ''); ?>>
                                     Numeric
                                 </option>
                             </select>
@@ -228,13 +227,15 @@ unset($__errorArgs, $__bag); ?>
                             <?php endif; ?>
                         </div>
                         <div class="form-group my-1">
-                            <label for=""
-                                class="<?php if($errors->has('is_required')): ?> has-error <?php endif; ?> fw-bold">Is Required? *</label>
+                            <label for="" class="<?php if($errors->has('is_required')): ?> has-error <?php endif; ?> fw-bold">Is
+                                Required? *</label>
                             <select name="is_required" id="is_required" class="form-select" required>
                                 <option value="">--select one--</option>
-                                <option value="yes" <?php echo e(old('is_required',$questionInfo->is_required) == 'yes' ? 'selected' : ''); ?>>Yes
+                                <option value="yes"
+                                    <?php echo e(old('is_required', $questionInfo->is_required) == 'yes' ? 'selected' : ''); ?>>Yes
                                 </option>
-                                <option value="no" <?php echo e(old('is_required',$questionInfo->is_required) == 'no' ? 'selected' : ''); ?>>
+                                <option value="no"
+                                    <?php echo e(old('is_required', $questionInfo->is_required) == 'no' ? 'selected' : ''); ?>>
                                     No</option>
                             </select>
                             <?php if($errors->has('is_required')): ?>
@@ -256,12 +257,16 @@ unset($__errorArgs, $__bag); ?>
                         </div>
                         <div class="form-group my-1">
                             <label for=""
-                                class="<?php if($errors->has('image_require')): ?> has-error <?php endif; ?> fw-bold">Image Required? *</label>
+                                class="<?php if($errors->has('image_require')): ?> has-error <?php endif; ?> fw-bold">Image Required?
+                                *</label>
                             <select name="image_require" id="image_require" class="form-select" required>
                                 <option value="">--select one--</option>
-                                <option value="yes" <?php echo e(old('image_require',$questionInfo->image_require) == 'yes' ? 'selected' : ''); ?>>Yes
+                                <option value="yes"
+                                    <?php echo e(old('image_require', $questionInfo->image_require) == 'yes' ? 'selected' : ''); ?>>
+                                    Yes
                                 </option>
-                                <option value="no" <?php echo e(old('image_require',$questionInfo->image_require) == 'no' ? 'selected' : ''); ?>>
+                                <option value="no"
+                                    <?php echo e(old('image_require', $questionInfo->image_require) == 'no' ? 'selected' : ''); ?>>
                                     No</option>
                             </select>
                             <?php if($errors->has('image_require')): ?>
@@ -296,6 +301,24 @@ unset($__errorArgs, $__bag); ?>
             $(function() {
 
             });
+            let inputTypeVal = $("#input_method").val();
+            if (inputTypeVal == 'text_box') {
+                $('.input_type_section').show();
+                $("#input_type").prop('required', true);
+            } else {
+                $('.input_type_section').hide();
+                $("#input_type").prop('required', false);
+            }
+            const showInputType = (val) => {
+
+                if (val == 'text_box') {
+                    $('.input_type_section').show('slow');
+                    $("#input_type").prop('required', true);
+                } else {
+                    $('.input_type_section').hide('slow');
+                    $("#input_type").prop('required', false);
+                }
+            }
         </script>
     <?php $__env->stopPush(); ?>
  <?php echo $__env->renderComponent(); ?>

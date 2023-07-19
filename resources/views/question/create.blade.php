@@ -107,7 +107,7 @@
                             <label for=""
                                 class="@if ($errors->has('value_bangla')) has-error @endif fw-bold">Input Method
                                 <span class='text-danger'>*<span></label>
-                            <select name="input_method" id="input_method" class="form-select" required>
+                            <select name="input_method" id="input_method" class="form-select" onchange="showInputType(this.value)" required>
                                 <option value="">--select input method--</option>
                                 <option value="text_box" {{ old('input_method') == 'text_box' ? 'selected' : '' }}>Text
                                     Box
@@ -134,17 +134,19 @@
                             @endif
                         </div>
 
-                        <div class="form-group my-1">
+                        <div class="form-group my-1 input_type_section">
                             <label for=""
                                 class="@if ($errors->has('input_type')) has-error @endif fw-bold">Input Type
-                                <span class='text-danger'>*<span></label>
-                            <select name="input_type" id="input_type" class="form-select" required>
+                                *</label>
+                            <select name="input_type" id="input_type" class="form-select" >
                                 <option value="">--select input type--</option>
-                                <option value="alphabetic" {{ old('input_type') == 'alphabetic' ? 'selected' : '' }}>Alphabetic
-                                </option>
-                                <option value="alphanumeric" {{ old('input_type') == 'alphanumeric' ? 'selected' : '' }}>
+                                {{-- <option value="alphabetic" {{ old('input_type', $questionInfo->input_type) == 'alphabetic' ? 'selected' : '' }}>Alphabetic
+                                </option> --}}
+                                <option value="alphanumeric"
+                                    {{ old('input_type') == 'alphanumeric' ? 'selected' : '' }}>
                                     Alphanumeric</option>
-                                <option value="numeric" {{ old('input_type') == 'numeric' ? 'selected' : '' }}>
+                                <option value="numeric"
+                                    {{ old('input_type') == 'numeric' ? 'selected' : '' }}>
                                     Numeric
                                 </option>
                             </select>
@@ -214,6 +216,24 @@
             $(function() {
 
             });
+            let inputMethodVal = $("#input_method").val();
+            if(inputMethodVal=='text_box'){
+                $('.input_type_section').show();
+                $("#input_type").prop('required',true);
+            }else{
+                $('.input_type_section').hide();
+                $("#input_type").prop('required',false);
+            }
+            const showInputType = (val)=> {
+                
+                if(val=='text_box'){
+                    $('.input_type_section').show('slow');
+                    $("#input_type").prop('required',true);
+                }else{
+                    $('.input_type_section').hide('slow');
+                    $("#input_type").prop('required',false);
+                }
+            }
         </script>
     @endpush
 </x-app-layout>

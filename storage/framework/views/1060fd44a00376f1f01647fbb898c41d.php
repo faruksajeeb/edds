@@ -284,8 +284,8 @@
                 heatmap<?php echo e($category['category_id']); ?> = new google.maps.visualization.HeatmapLayer({
                     data: [
                         <?php $__currentLoopData = $category['response_locations']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $val): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                            <?php if($val['response_location']!=''): ?>                                
-                                new google.maps.LatLng(<?php echo e($val['response_location']); ?>),
+                            <?php if($val['latitude']!='' && $val['longitude']!=''): ?>                                
+                                new google.maps.LatLng(<?php echo e($val['latitude']); ?>,<?php echo e($val['longitude']); ?>),
                             <?php endif; ?>
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     ],

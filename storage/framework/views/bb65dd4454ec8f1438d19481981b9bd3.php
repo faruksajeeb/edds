@@ -2,7 +2,7 @@
 <?php $__currentLoopData = $user_responses; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $val): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
     <div class="modal fade" id="details-modal-<?php echo e($val->id); ?>" tabindex="-1" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel"><i class="fa-solid fa-magnifying-glass"></i> User
@@ -20,7 +20,7 @@
                     <?php if(isset($val)): ?>
                         <fieldset class="reset">
                             <legend class="reset">Respondent Information</legend>
-                            <table class="table">
+                            <table class="table table-striped">
                                 <tr>
                                     <td class="">
                                         Response Date
@@ -64,15 +64,11 @@
                                     <td>: <?php echo e(isset($val->market) ? $val->market->value : (($val->market_id==-100)?$val->market_other:'')); ?></td>
                                 </tr>
                                 <tr>
-                                    <td><a href="https://www.google.com/maps/search/?api=1&query=<?php echo e(optional($val->market)->latitude); ?>,<?php echo e(optional($val->market)->longitude); ?>"
+                                    <td colspan="2"><a href="https://www.google.com/maps/search/?api=1&query=<?php echo e(optional($val->market)->latitude); ?>,<?php echo e(optional($val->market)->longitude); ?>"
                                         target="_blank" class="float-start"><i class="fa-solid fa-location-dot"></i>
                                         Response Location</a></td>
-                                    <td colspan="2">:
-                                        
-                                       
-                                    </td>
-                                    <td>  <a href="https://www.google.com/maps/search/?api=1&query=<?php echo $val->location; ?>"
-                                        target="_blank" class="float-start">User Location</a></td>
+                                    <td colspan="2">  <a href="https://www.google.com/maps/search/?api=1&query=<?php echo $val->location; ?>"
+                                        target="_blank" class="float-end"><i class="fa-solid fa-user"></i> User Location</a></td>
                                 </tr>
                             </table>
                             

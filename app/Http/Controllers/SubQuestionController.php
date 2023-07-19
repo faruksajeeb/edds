@@ -121,7 +121,7 @@ class SubQuestionController extends Controller implements Crud
                 'question_id' => 'required',
                 'input_type' => 'required',
                 // 'input_method' => 'required',
-                'is_required' => 'required',
+                // 'is_required' => 'required',
             ],
             [
                 'value.required' => 'Value field is required.',
@@ -138,7 +138,7 @@ class SubQuestionController extends Controller implements Crud
             'value_bangla' => $request->value_bangla,
             'question_id' => $request->question_id,
             'input_type' => $request->input_type,
-            'is_required' => $request->is_required,
+            // 'is_required' => $request->is_required,
             // 'input_method' => $request->input_method,
             'created_at' => $this->webspice->now('datetime24'),
             'created_by' => $this->webspice->getUserId(),
@@ -202,7 +202,7 @@ class SubQuestionController extends Controller implements Crud
                         ->where('question_id', $request->question_id);
                 })],
                 'question_id' => 'required',
-                'is_required' => 'required',
+                // 'is_required' => 'required',
                 'input_type' => 'required',
                 // 'input_method' => 'required',
             ],
@@ -221,7 +221,7 @@ class SubQuestionController extends Controller implements Crud
             $question->value_bangla = $request->value_bangla;
             $question->question_id = $request->question_id;
             $question->input_type = $request->input_type;
-            $question->is_required = $request->is_required;
+            // $question->is_required = $request->is_required;
             // $question->input_method = $request->input_method;
             $question->updated_at = $this->webspice->now('datetime24');
             $question->updated_by = $this->webspice->getUserId();

@@ -313,8 +313,8 @@
                 heatmap{{ $category['category_id'] }} = new google.maps.visualization.HeatmapLayer({
                     data: [
                         @foreach ($category['response_locations'] as $val)
-                            @if ($val['response_location']!='')                                
-                                new google.maps.LatLng({{$val['response_location']}}),
+                            @if ($val['latitude']!='' && $val['longitude']!='')                                
+                                new google.maps.LatLng({{$val['latitude']}},{{$val['longitude']}}),
                             @endif
                         @endforeach
                     ],
