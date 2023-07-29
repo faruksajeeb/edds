@@ -187,7 +187,7 @@
                         </div>
                         <div class="form-group my-1">
                             <label for=""
-                                class="@if ($errors->has('image_require')) has-error @endif fw-bold">Image Required?
+                                class="@if ($errors->has('image_require')) has-error @endif fw-bold">Show Image Field?
                                 *</label>
                             <select name="image_require" id="image_require" class="form-select" required>
                                 <option value="">--select one--</option>

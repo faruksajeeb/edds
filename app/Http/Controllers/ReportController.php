@@ -130,10 +130,11 @@ class ReportController extends Controller
                         $pdf = PDF::loadView('report.question_wise_survey_report_export', $data);
                         $pdf->set_paper('letter', 'landscape');
                         // $pdf->set_paper('A4', 'portrait');
-                        return $pdf->download('surver_report_' . time() . '.pdf');
+                        $fileName = 'surver_report_' . time() . '.pdf';
+                        return $pdf->download($fileName);
+                        
                     } else if ($exportType == 'export') {
                         # Generate Excel
-
                         return Excel::download(new SurveyReportExport($data), 'surver_report_' . time() . '.xlsx');
                     } else {
                         # view

@@ -182,7 +182,7 @@
                         </div>
                         <div class="form-group my-1">
                             <label for=""
-                                class="@if ($errors->has('image_require')) has-error @endif fw-bold">Image Required? <span class='text-danger'>*<span></label>
+                                class="@if ($errors->has('image_require')) has-error @endif fw-bold">Show Image Field? <span class='text-danger'>*<span></label>
                             <select name="image_require" id="image_require" class="form-select" required>
                                 <option value="">--select one--</option>
                                 <option value="yes" {{ old('image_require') == 'yes' ? 'selected' : '' }}>Yes

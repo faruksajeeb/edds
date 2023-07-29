@@ -175,7 +175,7 @@
                                         <th>Input Method</th>
                                         <th>Input Type</th>
                                         <th>Is Required</th>
-                                        <th>Image Required</th>
+                                        <th>Show Image Field?</th>
                                         {{-- <th>Created At</th>
                                     <th>Updated At</th> --}}
                                         <th>Status</th>

@@ -98,7 +98,7 @@ class QuestionExport implements FromArray, WithHeadings, Responsable,  WithStyle
                 "Respondent",
                 "Input method",
                 "Is Required",
-                "Image Require",
+                "Show Image Field?",
                 // "Created At",
                 // "Updated At",
                 // "Created By",
