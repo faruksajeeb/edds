@@ -53,11 +53,11 @@
                                 <a class="btn btn-sm btn-success float-end" wire:click.prevent="render('excelExport')"><i
                                         class="fa-solid fa-download"></i> Export</a>
                               
-                                {{-- <button type="button" class="btn btn-sm btn-outline-primary float-end me-1"
+                                <!-- <button type="button" class="btn btn-sm btn-outline-primary float-end me-1"
                                     data-bs-toggle="modal" data-bs-target="#addPaymentDeduction"
                                     wire:click="resetInputFields()">
                                     <i class="fa-solid fa-plus"></i> Create New
-                                </button> --}}
+                                </button>  -->
                               
                             </div>
                         </div>
@@ -95,10 +95,10 @@
                                             <div class="form-check form-switch">
                                                 <input class="form-check-input active_inactive_btn "
                                                     status="{{ $val->status }}"
-                                                    {{ $val->status == -1 ? '' : '' }} table="option_groups"
+                                                    {{ $val->status == -7 ? '' : '' }} table="option_groups"
                                                     type="checkbox" id="row_{{ $val->id }}"
                                                     value="{{ Crypt::encryptString($val->id) }}"
-                                                    {{ $val->status == 1 ? 'checked' : '' }} style="cursor:pointer">
+                                                    {{ $val->status == 7 ? 'checked' : '' }} style="cursor:pointer">
                                             </div>
                                         </td>
                                         <td>{{ $val->created_at }}</td>

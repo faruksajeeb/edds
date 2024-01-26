@@ -716,20 +716,10 @@
                                     <div class="input-group">
                                         <select name="search_respodent" class="form-select" id="search_respodent">
                                             <option value="">Select respondent type</option>
-                                            <option value="Customer"
-                                                {{ request()->get('search_respodent') == 'Customer' ? 'selected' : '' }}>
-                                                Customer</option>
-                                            <option value="Seller"
-                                                {{ request()->get('search_respodent') == 'Seller' ? 'selected' : '' }}>
-                                                Seller</option>
-                                            <option value="LBW Worker"
-                                                {{ request()->get('search_respodent') == 'LBW Worker' ? 'selected' : '' }}>
-                                                LBW Worker</option>
-                                            {{-- @foreach ($respondents as $val)
-                                                <option value="{{ $val->id }}"
-                                                    {{ $val->id == old('responden_id') ? 'selected' : '' }}>
-                                                    {{ $val->option_value }}</option>
-                                            @endforeach --}}
+                                            @foreach($respondent_types as $respondent_type)
+                                            <option value="{{$respondent_type->option}}" {{ request()->get('search_respodent') == $respondent_type->option ? 'selected' : '' }}>{{$respondent_type->option}}</option>
+                                            @endforeach
+                                     
                                         </select>
                                         <input type="text" name="search_text"
                                             value="{{ request()->get('search_text') }}" class="form-control"

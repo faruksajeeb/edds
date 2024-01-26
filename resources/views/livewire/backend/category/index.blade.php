@@ -113,10 +113,10 @@
                                         <td>
                                             <div class="form-check form-switch">
                                                 <input class="form-check-input active_inactive_btn "
-                                                    status="{{ $val->status }}" {{ $val->status == -1 ? '' : '' }}
+                                                    status="{{ $val->status }}" {{ $val->status == -7 ? '' : '' }}
                                                     table="categories" type="checkbox" id="row_{{ $val->id }}"
                                                     value="{{ Crypt::encryptString($val->id) }}"
-                                                    {{ $val->status == 1 ? 'checked' : '' }} style="cursor:pointer">
+                                                    {{ $val->status == 7 ? 'checked' : '' }} style="cursor:pointer">
                                             </div>
                                         </td>
                                         <td>{{ $val->created_at }}</td>

@@ -5,6 +5,7 @@ namespace App\Exceptions;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Auth\AuthenticationException;
 use Throwable;
+use Illuminate\Support\Arr;
 
 class Handler extends ExceptionHandler
 {
@@ -55,10 +56,30 @@ class Handler extends ExceptionHandler
             return response()->json(['message' => 'Unauthenticated.'], 401);
         }
 
-        if ($request->is('customer') || $request->is('customer/*')) {
-            return redirect()->guest('/customer-login');
-        }
-        
-        return redirect()->guest(route('login'));
+        // if ($request->is('customer') || $request->is('customer/*')) {
+        //     return redirect()->guest('/customer-login');
+        // }        
+        // return redirect()->guest(route('login'));
+          // Use your own logic to determine where to redirect in case of a web request.
+          $guard = Arr::get($exception->guards(), 0);
+            //dd($guard);
+          switch ($guard) {
+              case 'sanctum':
+                  return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid Token!',
+                    'data' => [
+
+                    ]
+                ], 401);
+                 
+                  break;
+  
+              // Add more cases as needed for different guards.
+  
+              default:
+                  return redirect()->guest(route('login'));
+                  break;
+          }
     }
 }

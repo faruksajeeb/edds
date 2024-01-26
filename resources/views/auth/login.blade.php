@@ -9,7 +9,7 @@
     <meta http-equiv='expires' content='0'>
     <meta http-equiv='pragma' content='no-cache'>
 
-    <title>{{ config('app.name', 'Laravel') }} | Login</title>
+    <title>{{ $company_settings->company_name }} | Login</title>
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -47,7 +47,7 @@
 
                     <div class="form-group">
                         <label for="">Email *:</label>
-                        <input type="email" class="form-control " name="email" value="{{ old('email') }}" required
+                        <input type="email" class="form-control " name="email" value="{{ old('email','admin@admin.com') }}" required
                             autofocus />
                         @if ($errors->has('email'))
                             @error('email')
@@ -61,7 +61,7 @@
                     </div>
                     <div class="form-group mt-2">
                         <label for="">Password *:</label>
-                        <input type="password" class="form-control " type="password" name="password" required
+                        <input type="password" class="form-control " value="12345678" type="password" name="password" required
                             autocomplete="current-password" />
                         @if ($errors->has('password'))
                             @error('password')

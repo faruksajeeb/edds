@@ -71,7 +71,8 @@ return [
 
     // 'timezone' => 'UTC',
     'timezone' => 'Asia/Dhaka',
-
+    'charset' => 'UTF-8',
+    'collation' => 'utf8_unicode_ci',
     /*
     |--------------------------------------------------------------------------
     | Application Locale Configuration
@@ -190,7 +191,8 @@ return [
         Spatie\Permission\PermissionServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
         Gloudemans\Shoppingcart\ShoppingcartServiceProvider::class,
-
+        Mccarlosen\LaravelMpdf\LaravelMpdfServiceProvider::class,
+        Intervention\Image\ImageServiceProvider::class,
         /*
          * Application Service Providers...
          */
@@ -217,7 +219,10 @@ return [
         // 'ExampleClass' => App\Example\ExampleClass::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
         'Cart' => Gloudemans\Shoppingcart\Facades\Cart::class,
-        'PDF' => Barryvdh\DomPDF\Facade::class,
+        // 'PDF' => Barryvdh\DomPDF\Facade\Pdf::class,
+        'PDF' => Mccarlosen\LaravelMpdf\Facades\LaravelMpdf::class,
+        'Image' => Intervention\Image\Facades\Image::class
+       
     ])->toArray(),
 
 ];

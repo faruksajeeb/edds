@@ -227,6 +227,8 @@ class AreaController extends Controller
             $id = $this->webspice->encryptDecrypt('decrypt', $id);
             $area = $this->areas->findOrFail($id);
             if (!is_null($area)) {
+                $area->status = -7;
+                $area->save();
                 $area->delete();
             }
         } catch (Exception $e) {
@@ -244,6 +246,7 @@ class AreaController extends Controller
             #decrypt value
             $id = $this->webspice->encryptDecrypt('decrypt', $id);
             $area = Area::withTrashed()->findOrFail($id);
+            
             $area->forceDelete();
         } catch (Exception $e) {
             $this->webspice->message('error', $e->getMessage());
@@ -257,6 +260,8 @@ class AreaController extends Controller
         try {
             $id = $this->webspice->encryptDecrypt('decrypt', $id);
             $area = Area::withTrashed()->findOrFail($id);
+            $area->status = 7;
+            $area->save();
             $area->restore();
         } catch (Exception $e) {
             $this->webspice->message('error', $e->getMessage());
@@ -271,6 +276,8 @@ class AreaController extends Controller
         try {
             $areas = Area::onlyTrashed()->get();
             foreach ($areas as $area) {
+                $area->status = 7;
+                $area->save();
                 $area->restore();
             }
         } catch (Exception $e) {

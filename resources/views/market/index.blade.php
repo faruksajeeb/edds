@@ -69,11 +69,11 @@
                                     </select>
                                     <select name="search_status" class="form-select" id="search_status">
                                         <option value="">Select Status</option>
-                                        <option value="1"
-                                            {{ request()->get('search_status') == 1 ? 'selected' : '' }}>Active
+                                        <option value="7"
+                                            {{ request()->get('search_status') == 7 ? 'selected' : '' }}>Active
                                         </option>
-                                        <option value="-1"
-                                            {{ request()->get('search_status') == -1 ? 'selected' : '' }}>Inactive
+                                        <option value="-7"
+                                            {{ request()->get('search_status') == -7 ? 'selected' : '' }}>Inactive
                                         </option>
                                     </select>
                                     <input type="text" name="search_text" value="{{ request()->get('search_text') }}"
@@ -119,7 +119,7 @@
                             </div>
                         </form>
                         <div class="table-responsive">
-                            <table class="table table-sm mb-0 table-striped">
+                            <table class="table table-sm mb-0 table-bordered table-striped">
                                 <thead>
                                     <tr>
                                         <th>Sl No.</th>
@@ -128,8 +128,8 @@
                                         <th>Area</th>
                                         <th>Latitude </th>
                                         <th>Longitude </th>
-                                        {{-- <th>Created At</th>
-                                        <th>Updated At</th> --}}
+                                       
+                                        <th>SMS Code</th>
                                         <th>Status</th>
                                         <th>Action</th>
                                     </tr>
@@ -144,8 +144,7 @@
                                             </td>
                                             <td class="text-nowrap">{{ $val->latitude }}</td>
                                             <td class="text-nowrap">{{ $val->longitude }}</td>
-                                            {{-- <td class="text-nowrap">{{ $val->created_at }}</td>
-                                            <td class="text-nowrap">{{ $val->updated_at }}</td> --}}
+                                            <td class="text-nowrap">{{ $val->sms_code }}</td>                                            
                                             <td>
                                                 <div class="form-check form-switch">
                                                     @if (request()->get('status') == 'archived')
@@ -154,10 +153,10 @@
                                                         @can('market.edit')
                                                             <input class="form-check-input active_inactive_btn "
                                                                 status="{{ $val->status }}"
-                                                                {{ $val->status == -1 ? '' : '' }} table="markets"
+                                                                {{ $val->status == -7 ? '' : '' }} table="markets"
                                                                 type="checkbox" id="row_{{ $val->id }}"
                                                                 value="{{ Crypt::encryptString($val->id) }}"
-                                                                {{ $val->status == 1 ? 'checked' : '' }}
+                                                                {{ $val->status == 7 ? 'checked' : '' }}
                                                                 style="cursor:pointer">
                                                         @endif
                                         @endif
@@ -192,7 +191,7 @@
                                 @else
                                     {{-- edit button --}}
                                     @can('market.edit')
-                                        @if ($val->status == 1)
+                                        @if ($val->status == 7)
                                             <a href="{{ route('markets.edit', Crypt::encryptString($val->id)) }}"
                                                 class="btn btn-outline-warning btn-sm"><i class="fa-solid fa-pencil"></i>
                                                 Edit</a>
@@ -217,7 +216,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="8" class="text-center">No records found. </td>
+                                <td colspan="9" class="text-center">No records found. </td>
                             </tr>
                             @endforelse
                             </tbody>

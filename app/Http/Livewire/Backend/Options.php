@@ -20,6 +20,7 @@ use PDF;
 
 class Options extends Component
 {
+    public $id = 'your-unique-id';
     public $tableName = 'options';
     public $flag = 0;
 
@@ -118,7 +119,7 @@ class Options extends Component
         $options = $query->paginate($paze_size);
         return view('livewire.backend.option.index', [
             'columns' => Schema::getColumnListing($this->tableName),
-            'option_groups' => DB::table('option_groups')->select('*')->where('status', 1)->get(),
+            'option_groups' => DB::table('option_groups')->select('*')->where('status', 7)->get(),
             'options' => $options
         ]);
     }
@@ -135,6 +136,7 @@ class Options extends Component
                         ->where('option_value', $this->option_value);
                 })
             ],
+            'option_value3' => 'unique:options' 
         ]);
         try {
             # Save form data
@@ -156,6 +158,7 @@ class Options extends Component
                 Cache::forget($this->tableName);
                 Cache::forget($this->option_group.'-options');
                 Cache::forget('active-'.$this->option_group.'-options');
+                
                 $webspice = new Webspice();
                 $webspice->versionUpdate();
                 $this->emit('success', 'inserted');
@@ -189,6 +192,7 @@ class Options extends Component
                         ->where('option_value', $this->option_value);
                 })
             ],
+            'option_value3' => 'unique:options,option_value3,'.$this->ids
         ]);
         try {
             $this->flag = 1;
@@ -218,10 +222,16 @@ class Options extends Component
 
         $this->flag = 0;
     }
-    public function destroy($id)
+    public function confirmDelete($deleteId)
     {
+        $this->emit('confirmDelete', $deleteId);
+    }
+
+    public function destroy($deleteId)
+    {
+        // dd($deleteId);
         try {
-            $id = Crypt::decryptString($id);
+            $id = Crypt::decryptString($deleteId);
             $option = Option::where('id', $id);
             $option->delete();
             # Write Log

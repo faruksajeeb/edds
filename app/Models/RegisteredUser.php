@@ -6,10 +6,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Laravel\Sanctum\HasApiTokens;
 
-class RegisteredUser extends Model
+use Illuminate\Foundation\Auth\User as Authenticatable;
+
+class RegisteredUser extends Authenticatable
 {
-    use HasFactory, SoftDeletes;
+    use HasApiTokens, HasFactory, SoftDeletes;
+
+    protected $table = 'registered_users';
+
     public $fillable = [
         'full_name',
         'email',
@@ -19,7 +25,9 @@ class RegisteredUser extends Model
         'department',
         'district',
         'respondent_type',
-        'status'
+        'status',
+        'otp',
+        'otp_generated_at'
     ];
 
     protected $casts = [

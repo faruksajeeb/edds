@@ -46,7 +46,7 @@ return [
     |
     */
 
-    'expiration' => null,
+    'expiration' => 60*24, // minutes
 
     /*
     |--------------------------------------------------------------------------
@@ -58,6 +58,14 @@ return [
     | request. You may change the middleware listed below as required.
     |
     */
+
+    'providers' => [
+        'users' => [
+            'driver' => 'eloquent',
+            'model' => \App\Models\RegisteredUser::class,
+            'table' => 'registered_users',
+        ],
+    ],
 
     'middleware' => [
         'verify_csrf_token' => App\Http\Middleware\VerifyCsrfToken::class,

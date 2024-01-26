@@ -63,9 +63,9 @@
                                 <div class="col-md-3 col-sm-12">
                                     <select name="search_status" class="form-select" id="search_status">
                                         <option value="">Select Status</option>
-                                        <option value="1">Active
+                                        <option value="7">Active
                                         </option>
-                                        <option value="-1">Inactive
+                                        <option value="-7">Inactive
                                         </option>
                                     </select>
                                 </div>
@@ -152,10 +152,10 @@
                                                     @can('user.edit')
                                                         <input class="form-check-input active_inactive_btn "
                                                             status="{{ $val->status }}"
-                                                            {{ $val->status == -1 ? '' : '' }} table="users"
+                                                            {{ $val->status == -7 ? '' : '' }} table="users"
                                                             type="checkbox" id="row_{{ $val->id }}"
                                                             value="{{ Crypt::encryptString($val->id) }}"
-                                                            {{ $val->status == 1 ? 'checked' : '' }}
+                                                            {{ $val->status == 7 ? 'checked' : '' }}
                                                             style="cursor:pointer">
                                                     @endif
                                                 @endif

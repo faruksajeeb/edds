@@ -8,7 +8,7 @@
     <meta http-equiv='cache-control' content='no-cache'>
     <meta http-equiv='expires' content='0'>
     <meta http-equiv='pragma' content='no-cache'>
-    <title>{{ config('app.name', 'Laravel') }} Register</title>
+    <title>{{ $company_settings->company_name }} | Register</title>
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" type="text/css" href="{{ asset('css/bootstrap.min.css') }}">

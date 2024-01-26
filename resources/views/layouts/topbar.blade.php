@@ -1,15 +1,10 @@
 <div class="topbar row m-0 p-0  sticky-top ">
-    <div class="col-md-1 m-0 p-0 ">
+    <div class="col-md-6 m-0 p-0">
         <div class="toggle  float-start" onclick="toggleMenu()">
         </div>
-    </div>
-    <div class="col-md-5 m-0 p-0 ">
-        {{-- <div class="search ">
-            <label for="">
-                <input type="text" placeholder="Search here" class=" form-control" />
-                <i class="fa fa-solid fa-magnifying-glass"></i>
-            </label>
-        </div> --}}
+        <div class="py-3">
+            <a href="{{route('home')}}" > Go to home page </a>
+        </div>
     </div>
     <div class="col-md-6 m-0 p-3 ">        
         <div class="dropdown user float-end">

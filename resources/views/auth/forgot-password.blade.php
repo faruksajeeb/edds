@@ -9,7 +9,7 @@
     <meta http-equiv='expires' content='0'>
     <meta http-equiv='pragma' content='no-cache'>
 
-    <title>{{ config('app.name', 'Laravel') }} Forgot Password</title>
+    <title>{{ $company_settings->company_name }}  | Forgot Password</title>
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -32,7 +32,7 @@
                 </div>
                 <hr>
                 <!-- Session Status -->
-                <x-auth-session-status class="mb-4" :status="session('status')" />
+                <x-auth-session-status class="mb-4 alert alert-success text-success" :status="session('status')" />
                 @if ($errors)
                     @foreach ($errors->all() as $error)
                         <div class="alert alert-danger">{{ $error }}</div>
@@ -45,7 +45,7 @@
                 </div>
 
                 <!-- Session Status -->
-                <x-auth-session-status class="mb-4" :status="session('status')" />
+                <!-- <x-auth-session-status class="mb-4" :status="session('status')" /> -->
 
                 <form method="POST" action="{{ route('password.email') }}" class="needs-validation" novalidate>
                     @csrf
@@ -78,7 +78,9 @@
     </div>
 </body>
 <!-- Session Status -->
+<!--
 <x-auth-session-status class="mb-4" :status="session('status')" />
+-->
 
 <script src="{{ asset('js/jquery-3.6.1.min.js') }}"></script>
 <script>

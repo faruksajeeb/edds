@@ -36,6 +36,7 @@
                                 Import File <span class="text-danger">*</span></label><br />
                             <input type="file" name='import_file' id='import_file'
                                 class="form-control @error('import_file') is-invalid @enderror"
+                                accept=".xls, .xlsx, .csv"
                                 placeholder="Enter import_file" value="{{ old('import_file') }}" required>
                             @if ($errors->has('import_file'))
                                 @error('import_file')
@@ -61,15 +62,17 @@
                                 <td>D</td>
                                 <td>E</td>
                                 <td>F</td>
+                                <td>G</td>
                             </tr>
                             <tr style="background-color: #C5DFF8; color:black;font-weight:bold">
                                 <td class="" style="background-color: #FFF;font-weight:normal">1</td>
                                 <td class="text-danger">Area</td>
                                 <td class="text-danger">Market_Name_Eng</td>
-                                <td>Market_Name_Ban</td>
+                                <td class="text-danger">Market_Name_Ban</td>
                                 <td>Market_Address</td>
                                 <td class="text-danger">Latitude</td>
                                 <td class="text-danger">Longitude</td>
+                                <td >SMS_Code</td>
                             </tr>
                             <tr>
                                 <td>2</td>
@@ -79,6 +82,7 @@
                                 <td>11C, Avenue-5, Mirpur-11</td>
                                 <td>23.81464</td>
                                 <td>90.37478</td>
+                                <td>P</td>
                             </tr>
                         </table>
                         [* Red text color fields are required.]

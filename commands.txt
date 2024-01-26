@@ -1,0 +1,3 @@
+php artisan make:mail SendOtpMail --markdown=emails.send-otp-mail
+php artisan make:job SendOtpJob
+php artisan queue:work --queue=high,default

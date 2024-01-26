@@ -77,8 +77,8 @@ class UserController extends Controller
     {
         #permission verfy
         $this->webspice->permissionVerify('user.create');
-        $roles = Role::where('status', 1)->get();
-        $permission_groups = PermissionGroup::with('activePermissions')->where('status', 1)->orderBy('order')->get();
+        $roles = Role::where('status', 7)->get();
+        $permission_groups = PermissionGroup::with('activePermissions')->where('status', 7)->orderBy('order')->get();
 
         return view('users.create', compact('roles', 'permission_groups'));
     }
@@ -91,8 +91,8 @@ class UserController extends Controller
 
         $request->validate(
             [
-                'name' => 'required|regex:/^[a-zA-Z0-9_ ]+$/u|min:3|max:20',
-                'email' => 'required|min:3|email|max:20|unique:users',
+                'name' => 'required|regex:/^[a-zA-Z0-9_ ]+$/u|min:3|max:200',
+                'email' => 'required|min:3|email|max:200|unique:users',
                 'password' => 'required|min:6|confirmed',
             ],
             [
@@ -151,8 +151,8 @@ class UserController extends Controller
         # decrypt value
         $id = $this->webspice->encryptDecrypt('decrypt', $id);
         $user = $this->users->find($id);
-        $roles = Role::where('status', 1)->get();
-        $permission_groups = PermissionGroup::with('activePermissions')->where('status', 1)->orderBy('order')->get();
+        $roles = Role::where('status',7)->get();
+        $permission_groups = PermissionGroup::with('activePermissions')->where('status', 7)->orderBy('order')->get();
 
         return view('users.edit', [
             'user' => $user,
@@ -172,8 +172,8 @@ class UserController extends Controller
         $user = $this->users->find($id);
         $request->validate(
             [
-                'name'     => 'required|regex:/^[a-zA-Z0-9_ ]+$/u|min:3|max:50',
-                'email'    => 'required|min:3|email|max:20|unique:users,email,' . $id,
+                'name'     => 'required|regex:/^[a-zA-Z0-9_ ]+$/u|min:3|max:200',
+                'email'    => 'required|min:3|email|max:200|unique:users,email,' . $id,
                 'password' => 'nullable|min:6|confirmed',
             ],
             [
@@ -202,9 +202,9 @@ class UserController extends Controller
             }
 
             $permissions = $request->permissions;
-            if (!empty($permissions)) {
+           // if (!empty($permissions)) {
                 $user->syncPermissions($permissions);
-            }
+           // }
             # Success Message & Log into UserObservers
         } catch (Exception $e) {
             $this->webspice->message('error', $e->getMessage());
@@ -251,6 +251,8 @@ class UserController extends Controller
             $id = $this->webspice->encryptDecrypt('decrypt', $id);
             $user = $this->users->find($id);
             if (!is_null($user)) {
+                $user->status = -7;
+                $user->save();
                 $user->delete();
             }
         } catch (Exception $e) {
@@ -290,6 +292,8 @@ class UserController extends Controller
         try {
             $id = $this->webspice->encryptDecrypt('decrypt', $id);
             $user = User::withTrashed()->findOrFail($id);
+            $user->status = 7;
+            $user->save();
             $user->restore();
         } catch (Exception $e) {
             $this->webspice->message('error', $e->getMessage());
@@ -305,6 +309,8 @@ class UserController extends Controller
         try {
             $users = User::onlyTrashed()->get();
             foreach ($users as $user) {
+                $user->status = 7;
+                $user->save();
                 $user->restore();
             }
         } catch (Exception $e) {

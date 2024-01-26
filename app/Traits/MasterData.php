@@ -15,30 +15,40 @@ trait MasterData
     # Methods 
     public static function getActiveCategory(): object
     {
-        if (!Cache::has('active-category-options')) {
-            $categories = Option::where(['option_group_name' => 'category', 'status' => 1])->get();
-            Cache::forever('active-category-options', $categories);
-        } else {
-            $categories = Cache::get('active-category-options');
-        }
+        // if (!Cache::has('active-category-options')) {
+            $categories = Option::where(['option_group_name' => 'category', 'status' => 7])->get();
+        //     Cache::forever('active-category-options', $categories);
+        // } else {
+        //     $categories = Cache::get('active-category-options');
+        // }
         return $categories;
     }
 
     public static function getCategory(): object
     {
-        if (!Cache::has('category-options')) {
+        // if (!Cache::has('category-options')) {
             $categories = Option::where(['option_group_name' => 'category'])->get();
-            Cache::forever('category-options', $categories);
-        } else {
-            $categories = Cache::get('category-options');
-        }
+        //     Cache::forever('category-options', $categories);
+        // } else {
+        //     $categories = Cache::get('category-options');
+        // }
+        return $categories;
+    }
+    public static function getActiveHealthcareType(): object
+    {
+        // if (!Cache::has('category-options')) {
+            $categories = Option::where(['option_group_name' => 'healthcare_center_type'])->get();
+        //     Cache::forever('category-options', $categories);
+        // } else {
+        //     $categories = Cache::get('category-options');
+        // }
         return $categories;
     }
 
     public static function getActiveRespondent(): object
     {
         if (!Cache::has('active-respondent-options')) {
-            $respondents = Option::where(['option_group_name' => 'respondent', 'status' => 1])->get();
+            $respondents = Option::where(['option_group_name' => 'respondent', 'status' => 7])->get();
             Cache::forever('active-respondent-options', $respondents);
         } else {
             $respondents = Cache::get('active-respondent-options');
@@ -72,13 +82,7 @@ trait MasterData
 
     public static function getActiveArea(): object
     {
-        if (!Cache::has('active-areas')) {
-            $records = Area::where('status', 1)->get();
-            Cache::forever('active-areas', $records);
-        } else {
-            $records = Cache::get('active-areas');
-        }
-
+        $records = Area::where('status', 7)->get();
         return $records;
     }
 
@@ -97,7 +101,7 @@ trait MasterData
     public static function getActiveMarket(): object
     {
         if (!Cache::has('active-markets')) {
-            $records = Market::where('status', 1)->get();
+            $records = Market::where('status', 7)->get();
             Cache::forever('active-markets', $records);
         } else {
             $records = Cache::get('active-markets');
@@ -120,7 +124,7 @@ trait MasterData
     public static function getActiveQuenstion(): object
     {
         if (!Cache::has('active-questions')) {
-            $records = Question::where('status', 1)->get();
+            $records = Question::where('status', 7)->get();
             Cache::forever('active-questions', $records);
         } else {
             $records = Cache::get('active-questions');

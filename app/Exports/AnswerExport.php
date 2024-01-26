@@ -67,8 +67,8 @@ class AnswerExport implements FromArray, WithHeadings, Responsable, ShouldAutoSi
         return [
             [
                 "Sl No",
-                "Value",
-                "Value Bangla",
+                "Answer",
+                "Answer Bangla",
                 "Question",
                 "Created At",
                 "Updated At",
@@ -87,9 +87,9 @@ class AnswerExport implements FromArray, WithHeadings, Responsable, ShouldAutoSi
         foreach ($this->data as $k=>$val) {
             $customArray[] = array(
                 $k+1,
-                $val['value'],
-                $val['value_bangla'],
-                isset($val['question']['value']) ? $val['question']['value'] : '',
+                $val['answare'],
+                $val['answare_bangla'],
+                isset($val['question']['question']) ? $val['question']['question'] : '',
                 $val['created_at'],
                 $val['updated_at'],
                 // $val['created_by'],

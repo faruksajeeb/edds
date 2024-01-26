@@ -8,6 +8,8 @@ use App\Imports\MarketListImport;
 use App\Lib\Webspice;
 use App\Models\Area;
 use App\Models\Market;
+use App\Rules\BanglaCharacters;
+use App\Rules\EnglishCharacters;
 use App\Traits\MasterData;
 use Exception;
 use Illuminate\Http\Request;
@@ -96,13 +98,7 @@ class MarketController extends Controller
 
         #permission verfy
         $this->webspice->permissionVerify('market.create');
-        if (!Cache::has('active-areas')) {
-            $areas = Area::where(['status' => 1])->get();
-            Cache::forever('active-areas', $areas);
-        } else {
-            // $areas = Cache::get('markets')->where('status',1);
-            $areas = Cache::get('active-areas');
-        }
+        $areas = MasterData::getActiveArea();
 
         return view('market.create', [
             'areas' => $areas,
@@ -177,7 +173,7 @@ class MarketController extends Controller
         $request->validate(
             [
                 'value' => [
-                    'required','min:3','max:1000',
+                    'required','min:3','max:1000', new EnglishCharacters,
                     Rule::unique('markets')->where(function ($query) use($request) {
                         return $query->where('value', $request->value)
                             ->where('area_id', $request->area_id)
@@ -185,6 +181,7 @@ class MarketController extends Controller
                             ->where('longitude', $request->longitude);
                     })
                 ],
+                'value_bangla'=> ['required', new BanglaCharacters],
                 'area_id' => 'required',
                 'latitude' => 'required|numeric||between:-90,90',
                 'longitude' => 'required|numeric||between:-180,180',
@@ -203,6 +200,7 @@ class MarketController extends Controller
             'market_address' => $request->market_address,
             'latitude' => $request->latitude,
             'longitude' => $request->longitude,
+            'sms_code' => $request->sms_code,
             'created_at' => $this->webspice->now('datetime24'),
             'created_by' => $this->webspice->getUserId(),
         );
@@ -231,21 +229,18 @@ class MarketController extends Controller
     {
         # permission verfy
         $this->webspice->permissionVerify('market.edit');
+        
         # decrypt value
         $id = $this->webspice->encryptDecrypt('decrypt', $id);
 
         $marketInfo = $this->markets->find($id);
-        if (!Cache::has('active-areas')) {
-            $areas = Area::where(['status' => 1])->get();
-            Cache::forever('active-areas', $areas);
-        } else {
-            // $areas = Cache::get('markets')->where('status',1);
-            $areas = Cache::get('active-areas');
-        }
+
+        $areas = MasterData::getActiveArea();
         return view('market.edit', [
             'marketInfo' => $marketInfo,
             'areas' => $areas,
         ]);
+
     }
 
     /**
@@ -262,7 +257,7 @@ class MarketController extends Controller
         $request->validate(
             [
                 'value' => [
-                    'required','min:3','max:1000',
+                    'required','min:3','max:1000', new EnglishCharacters,
                     Rule::unique('markets')->ignore($id, 'id')->where(function ($query) use($request) {
                         return $query->where('value', $request->value)
                             ->where('area_id', $request->area_id)
@@ -270,9 +265,11 @@ class MarketController extends Controller
                             ->where('longitude', $request->longitude);
                     })
                 ],
+                'value_bangla'=> ['required', new BanglaCharacters],
                 'area_id' => 'required',
                 'latitude' => 'required|numeric||between:-90,90',
                 'longitude' => 'required|numeric||between:-180,180',
+                'sms_code' => 'unique:markets,sms_code,'.$id
             ],
             [
                 'value.required' => 'Value field is required.',
@@ -288,6 +285,7 @@ class MarketController extends Controller
             $market->market_address = $request->market_address;
             $market->latitude = $request->latitude;
             $market->longitude = $request->longitude;
+            $market->sms_code = $request->sms_code;
             $market->updated_at = $this->webspice->now('datetime24');
             $market->updated_by = $this->webspice->getUserId();
             $market->save();
@@ -310,6 +308,8 @@ class MarketController extends Controller
             $id = $this->webspice->encryptDecrypt('decrypt', $id);
             $market = $this->markets->findOrFail($id);
             if (!is_null($market)) {
+                $market->status = -7;
+                $market->save();
                 $market->delete();
             }
         } catch (Exception $e) {
@@ -340,6 +340,8 @@ class MarketController extends Controller
         try {
             $id = $this->webspice->encryptDecrypt('decrypt', $id);
             $market = Market::withTrashed()->findOrFail($id);
+            $market->status = 7;
+            $market->save();
             $market->restore();
         } catch (Exception $e) {
             $this->webspice->message('error', $e->getMessage());
@@ -354,6 +356,8 @@ class MarketController extends Controller
         try {
             $markets = Market::onlyTrashed()->get();
             foreach ($markets as $market) {
+                $market->status = 7;
+                $market->save();
                 $market->restore();
             }
         } catch (Exception $e) {

@@ -22,7 +22,7 @@ class Home extends Component
         # Cache Area
         $cacheName = 'active-category-options';
         if (!$this->webspice->getCache($cacheName)) {
-            $categories = Option::where(['option_group_name' => 'category', 'status' => 1])->get();
+            $categories = Option::where(['option_group_name' => 'category', 'status' => 7])->get();
             $this->webspice->createCache($cacheName, $categories);
         } else {
             $categories = $this->webspice->getCache($cacheName);
@@ -31,7 +31,7 @@ class Home extends Component
         $cacheName = 'active-divisions';
         $this->webspice->forgetCache($cacheName);
         if (!$this->webspice->getCache($cacheName)) {
-            $divisions = Division::where(['status' => 1])->get();
+            $divisions = Division::where(['status' => 7])->get();
             $this->webspice->createCache($cacheName, $divisions);
         } else {
             $divisions = $this->webspice->getCache($cacheName);
@@ -44,9 +44,10 @@ class Home extends Component
             $categoryWiseReport[$categoryId]['category_id'] = $categoryId;
             $categoryWiseReport[$categoryId]['category_name'] = $category->option_value;
             $categoryWiseReport[$categoryId]['category_name_bangla'] = $category->option_value2;
-            $query = UserResponseDetail::leftJoin('questions', 'questions.id', '=', 'user_response_details.question_id');
+            $query = UserResponseDetail::leftJoin('tbl_q as questions', 'questions.id', '=', 'user_response_details.question_id');
             $query->leftJoin('user_responses', 'user_responses.id', '=', 'user_response_details.response_id');
             $query->where('questions.category_id', $categoryId);
+            $query->where('user_response_details.sub_question_id', 0);
             $query->where('user_responses.status', 2);
             $query->whereRaw('user_responses.response_date = CURDATE()');
             if ($category->option_value == 'LBM Worker') {
@@ -54,10 +55,11 @@ class Home extends Component
             } else {
                 $resData = $query->sum('user_response_details.response');
             }
+            //dd($resData);
             $categoryWiseReport[$categoryId]['response_data'] =   $resData;
 
             $responseLocations = UserResponseDetail::select('areas.latitude','areas.longitude')
-            ->leftJoin('questions', 'questions.id', '=', 'user_response_details.question_id')
+            ->leftJoin('tbl_q as questions', 'questions.id', '=', 'user_response_details.question_id')
             ->leftJoin('user_responses', 'user_responses.id', '=', 'user_response_details.response_id')
             ->leftJoin('areas','areas.id','=','user_responses.area_id')
             ->where('questions.category_id', $categoryId)
@@ -65,7 +67,7 @@ class Home extends Component
             ->where('user_responses.status', 2)->get();
             $categoryWiseReport[$categoryId]['response_locations'] =   $responseLocations;
         endforeach;
-        // dd($categoryWiseReport[5]['response_locations']->toArray());
+        //dd($categoryWiseReport);
         # Division Wise Report
         $divisionWiseReport = array();
         foreach ($divisions as $division) :
@@ -73,14 +75,19 @@ class Home extends Component
             $divisionWiseReport[$divisionId]['division_name'] = $division->division_name;
            // dd($categories);
             foreach ($categories as $category) :
-                $query = UserResponseDetail::leftJoin('questions', 'questions.id', '=', 'user_response_details.question_id');
+                $query = UserResponseDetail::leftJoin('tbl_q as questions', 'questions.id', '=', 'user_response_details.question_id');
                 $query->leftJoin('user_responses', 'user_responses.id', '=', 'user_response_details.response_id');
                 $query->leftJoin('areas', 'areas.id', '=', 'user_responses.area_id');
                 // $query->leftJoin('registered_users', 'registered_users.id', '=', 'user_responses.registered_user_id');
                 $query->where('questions.category_id', $category->id);
-                $query->where('areas.division', $division->division_name);
+                $query->whereRaw('
+                CASE
+                    WHEN (user_responses.market_id != 0 OR user_responses.market_id!=-100) THEN areas.division
+                    ELSE user_responses.response_division
+                END = ?', [$division->division_name]);
                 // $query->where('user_responses.response_division', $division->division_name);
                 $query->where('user_responses.status', 2);
+                $query->where('user_response_details.sub_question_id', 0);
                 $query->whereBetween('user_responses.response_date',[Carbon::today()->subDays(7)->toDateString(),Carbon::today()->toDateString()]);
                 if ($category->option_value == 'LBM Worker') {
                     $resData = $query->count(DB::raw("DISTINCT(user_response_details.response_id)"));
@@ -111,11 +118,11 @@ class Home extends Component
         user_responses.response_division as division, user_responses.response_district as district
         FROM user_response_details
         LEFT JOIN user_responses ON user_responses.id = user_response_details.response_id
-        LEFT JOIN questions ON questions.id = user_response_details.question_id
+        LEFT JOIN tbl_q questions ON questions.id = user_response_details.question_id
         LEFT JOIN `options` ON options.id = questions.category_id
         -- LEFT JOIN registered_users ON registered_users.id = user_responses.registered_user_id
         ) TBL_RES
-        WHERE status=2 AND response_date >= DATE(NOW() - INTERVAL 7 DAY)
+        WHERE `status`=2 AND sub_question_id=0 AND response_date >= DATE(NOW() - INTERVAL 7 DAY)
         GROUP BY district");
       
         return view('livewire.frontend.home', [

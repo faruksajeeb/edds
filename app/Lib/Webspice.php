@@ -41,9 +41,14 @@ class Webspice
 
 	static function log(string $table, $id, string $action)
 	{
-		$currentTime = Carbon::now("Asia/Dhaka");
-		$userId = Auth::user()->id;
-		$userName = Auth::user()->name;
+		$currentTime = Carbon::now("Asia/Dhaka");		
+		if (Auth::check()) {
+			$userId = Auth::user()->id;
+			$userName = Auth::user()->name;
+		}else{
+			$userId = '';
+			$userName = '';
+		}
 		Log::channel('customlog')->info($currentTime . ' | USER ID:' . $userId . ' | USER NAME:' . $userName . ' | TABLE:' . $table . ' | ROW ID:' . $id . ' | ' . $action);
 	}
 	public function userVerify()
@@ -160,9 +165,9 @@ class Webspice
 			case 0:
 				$text = '<span class="badge bg-info">Pending</span>';
 				break;
-			case 1:
-				$text = '<span class="badge bg-info">Active</span>';
-				break;
+			// case 1:
+			// 	$text = '<span class="badge bg-info">Active</span>';
+			// 	break;
 			case 2:
 				$text = '<span class="badge bg-success">Verified</span>';
 				break;
@@ -178,9 +183,9 @@ class Webspice
 			case 6:
 				$text = '<span class="badge bg-info">New</span>';
 				break;
-				// case 7:
-				// 	$text = '<span class="badge bg-success">Active</span>';
-				// 	break;
+			case 7:
+				$text = '<span class="badge bg-success">Active</span>';
+				break;
 			case 8:
 				$text = '<span class="badge bg-info">Initiated</span>';
 				break;
@@ -255,9 +260,9 @@ class Webspice
 				$text = '<span class="badge bg-danger">Dishonored</span>';
 				break;
 
-			case -1:
-				$text = '<span class="badge bg-danger">Inactive</span>';
-				break;
+			// case -1:
+			// 	$text = '<span class="badge bg-danger">Inactive</span>';
+			// 	break;
 			case -2:
 				$text = '<span class="badge bg-danger">Declined</span>';
 				break;
@@ -270,9 +275,9 @@ class Webspice
 			case -6:
 				$text = '<span class="badge bg-danger">Renewed</span>';
 				break;
-				// case -7:
-				// 	$text = '<span class="badge bg-danger">Inactive</span>';
-				// 	break;
+				case -7:
+					$text = '<span class="badge bg-danger">Inactive</span>';
+					break;
 			default:
 				$text = '<span class="badge bg-default">Unknown</span>';
 				break;
@@ -287,9 +292,9 @@ class Webspice
 			case 0:
 				$text = 'Pending';
 				break;
-			case 1:
-				$text = 'Active';
-				break;
+			// case 1:
+			// 	$text = 'Active';
+			// 	break;
 			case 2:
 				$text = 'Verified';
 				break;
@@ -305,9 +310,9 @@ class Webspice
 			case 6:
 				$text = 'New';
 				break;
-				// case 7:
-				// 	$text = 'Active';
-				// 	break;
+				case 7:
+					$text = 'Active';
+					break;
 			case 8:
 				$text = 'Initiated';
 				break;
@@ -382,9 +387,9 @@ class Webspice
 				$text = 'Dishonored';
 				break;
 
-			case -1:
-				$text = 'Inactive';
-				break;
+			// case -1:
+			// 	$text = 'Inactive';
+			// 	break;
 			case -2:
 				$text = 'Declined';
 				break;
@@ -397,9 +402,9 @@ class Webspice
 			case -6:
 				$text = 'Renewed';
 				break;
-				// case -7:
-				// 	$text = 'Inactive';
-				// 	break;
+				case -7:
+					$text = 'Inactive';
+					break;
 			default:
 				$text = 'Unknown';
 				break;
@@ -414,11 +419,11 @@ class Webspice
 			$id = $this->encryptDecrypt('decrypt', $request->id);
 			$status = '';
 			$text = '';
-			if ($request->status == 1) {
-				$status = -1;
+			if ($request->status == 7) {
+				$status = -7;
 				$text = 'inactivated';
-			} elseif ($request->status == -1) {
-				$status = 1;
+			} elseif ($request->status == -7) {
+				$status = 7;
 				$text = 'activated';
 			}
 			$effectedRow = DB::table($request->table)->where('id', $id)->first();
@@ -882,8 +887,8 @@ class Webspice
 	function convertToBanglaDivision($division)
 	{
 		if ($division) {
-			$englishDivisions = array('Dhaka', "Chittagong", 'Barishal', 'Khulna', 'Mymensingh', 'Rajshahi', 'Rangpur', 'Sylhet');
-			$banglaDivisions = array('ঢাকা', "চট্টগ্রাম", 'বরিশাল', 'খুলনা', 'ময়মনসিংহ', 'রাজশাহী', 'রংপুর', 'সিলেট');
+			$englishDivisions = array('Dhaka', "Chattogram","Chittagong", 'Barishal', 'Khulna', 'Mymensingh', 'Rajshahi', 'Rangpur', 'Sylhet');
+			$banglaDivisions = array('ঢাকা', "চট্টগ্রাম", "চট্টগ্রাম", 'বরিশাল', 'খুলনা', 'ময়মনসিংহ', 'রাজশাহী', 'রংপুর', 'সিলেট');
 
 			$converted = str_replace($englishDivisions, $banglaDivisions, $division);
 			return $converted;

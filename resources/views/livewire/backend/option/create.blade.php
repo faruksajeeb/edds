@@ -34,7 +34,7 @@
                         <div class="col-12">
                   
                                 <select name="option_group" id="option_group" wire:model='option_group'
-                                    class="form-select select2">
+                                    class="form-select ">
                                     <option value="">--Option Group--</option>
                                     @foreach ($option_groups as $val)
                                         <option value="{{ $val->option_group_name }}">{{ $val->option_group_name }}
@@ -97,10 +97,10 @@
          $(document).ready(function() {
           //  $("#option_group").select2({ dropdownParent: "#addModal" });
           $('#addModal').on('shown.bs.modal', function (e) {
-            $('#option_group').select2({
-            placeholder: 'Select an option group',
-            dropdownParent:$('#option_group').parent(),
-            });
+            // $('#option_group').select2({
+            // placeholder: 'Select an option group',
+            // dropdownParent:$('#option_group').parent(),
+            // });
             $('#option_group').on('change', function(e) {
                 var data = $(this).val();
                 Livewire.emit('listenerReferenceHere',data);               

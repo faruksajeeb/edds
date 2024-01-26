@@ -152,10 +152,10 @@
                                                     @can('role.edit')
                                                         <input class="form-check-input active_inactive_btn "
                                                             status="{{ $val->status }}"
-                                                            {{ $val->status == -1 ? '' : '' }} table="roles"
+                                                            {{ $val->status == -7 ? '' : '' }} table="roles"
                                                             type="checkbox" id="row_{{ $val->id }}"
                                                             value="{{ Crypt::encryptString($val->id) }}"
-                                                            {{ $val->status == 1 ? 'checked' : '' }}
+                                                            {{ $val->status == 7 ? 'checked' : '' }}
                                                             style="cursor:pointer">
                                                     @endif
                                     @endif

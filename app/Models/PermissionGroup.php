@@ -19,6 +19,6 @@ class PermissionGroup extends Model
 
     public function activePermissions()
     {
-        return $this->hasMany(Permission::class, 'group_name', 'name')->where('status', 1)->orderBy('group_name');
+        return $this->hasMany(Permission::class, 'group_name', 'name')->where('status', 7)->orderBy('group_name');
     }
 }

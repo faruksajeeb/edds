@@ -3,23 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Lib\Webspice;
-use App\Models\Option;
-use Illuminate\Http\Request;
-use App\Models\UserResponse;
-use Exception;
-use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\UserResponseExport;
 use App\Models\Area;
 use App\Models\Market;
+use App\Models\Option;
+use App\Models\UserResponse;
+use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Spatie\SimpleExcel\SimpleExcelWriter;
-use Carbon\Carbon;
+
 class UserResponseController extends Controller
 {
     public $webspice;
     public $tableName;
     protected $user_responses;
-
 
     public function __construct(UserResponse $user_responses, Webspice $webspice)
     {
@@ -38,6 +35,10 @@ class UserResponseController extends Controller
         // $user_responses = Cache::remember('responses-page-' . request('page', 1), 60*60, function () use($request) {
 
         $fileTag = '';
+        $distance = 0;
+        if ($request->search_distance) {
+            $distance = $request->search_distance;
+        }
 
         if ($request->get('status') == 'archived') {
             $fileTag = 'Archived ';
@@ -48,33 +49,30 @@ class UserResponseController extends Controller
         }
         $query->with('registered_user', 'area', 'market');
 
-        # Start Filter Section        
+        # Start Filter Section
         $query->whereHas('registered_user', function ($query) use ($request) {
-            if ($request->search_division != null) {
-                $query->where('division', $request->search_division);
-            }
-            if ($request->search_district != null) {
-                $query->where('district', $request->search_district);
-            }
-            if ($request->search_thana != null) {
-                $query->where('thana', $request->search_thana);
-            }
             if ($request->search_respodent != null) {
                 $query->where('respondent_type', $request->search_respodent);
             }
         });
+
+        $query->when($request->search_division != '', function ($q) use ($request) {
+            $q->where('response_division', $request->search_division);
+        });
+        $query->when($request->search_district != '', function ($q) use ($request) {
+            $q->where('response_district', $request->search_district);
+        });
+        $query->when($request->address_address != '', function ($q) use ($request) {
+            $q->where('formatted_address', 'LIKE', '%' . $request->address_address . '%');
+        });
+
         if ($request->search_area != null) {
-            $query->where('response_division', $request->search_division);
-        }
-        if ($request->search_area != null) {
-            $query->where('response_district', $request->search_district);
-        }
-        if ($request->address_address != null) {
-            $query->where('formatted_address', 'LIKE', '%' . $request->address_address . '%');
+            $query->where('area_id', $request->search_area);
         }
         if ($request->search_market != null) {
             $query->where('market_id', $request->search_market);
         }
+
         if ($request->search_status != null) {
             $query->where('status', $request->search_status);
         }
@@ -96,6 +94,26 @@ class UserResponseController extends Controller
         } elseif ($request->date_to != null) {
             $query->where('response_date', '<=', $request->date_to);
         }
+
+        if ($request->search_area) {
+            $area = Area::find($request->search_area);
+            $query->whereRaw("(CASE 
+            WHEN user_responses.area_id!=0 
+            THEN user_responses.area_id = $request->search_area 
+            ELSE (6371 * acos(cos(radians($area->latitude)) * cos(radians(user_responses.response_location_latitude)) * cos(radians(user_responses.response_location_longitude) - radians($area->longitude)) + sin(radians($area->latitude)) * sin(radians(user_responses.response_location_latitude))) <= $distance) 
+            END)");
+        }
+        if ($request->search_market) {
+            $market = Market::find($request->search_market);
+            $query->whereRaw("(CASE 
+            WHEN (user_responses.market_id!=0 OR user_responses.market_id!=-100) 
+            THEN user_responses.market_id=$request->search_market 
+            ELSE (6371 * acos(cos(radians($market->latitude)) * cos(radians(user_responses.response_location_latitude)) * cos(radians(user_responses.response_location_longitude) - radians($market->longitude)) + sin(radians($market->latitude)) * sin(radians(user_responses.response_location_latitude))) <= $distance) 
+            END)");
+        }
+
+
+
         # End Filter Section
 
         # Export Section
@@ -103,27 +121,13 @@ class UserResponseController extends Controller
             $title = $fileTag . 'User Response List';
             $this->export($title, $type, $query);
         }
+        $perPage = request()->input('perPage', 10);
+        $user_responses = $query->paginate($perPage);
 
-        $user_responses = $query->paginate(5);
+        $areas = Area::all();
+        // $markets = Market::all();
 
-        # Cache Area
-        $cacheName = 'active-areas';
-        if (!$this->webspice->getCache($cacheName)) {
-            $areas = Area::where(['status' => 1])->get();
-            $this->webspice->createCache($cacheName, $areas);
-        } else {
-            $areas = $this->webspice->getCache($cacheName);
-        }
-
-        # Cache Market
-        $cacheName = 'active-markets';
-        if (!$this->webspice->getCache($cacheName)) {
-            $markets = Market::where(['status' => 1])->get();
-            $this->webspice->createCache($cacheName, $markets);
-        } else {
-            $markets = $this->webspice->getCache($cacheName);
-        }
-        return view('user_response.index', compact('user_responses', 'areas', 'markets'));
+        return view('user_response.index', compact('user_responses', 'areas'));
     }
 
     public function export(string $title, string $type, object $query)
@@ -136,17 +140,18 @@ class UserResponseController extends Controller
 
         $writer = SimpleExcelWriter::streamDownload($fileName);
         $writer->addHeader([$title]);
-        $writer->addHeader(['#', 
-        'Response Date', 
-        'Full Name', 
-        'Gender', 
-        'Email', 
-        'Mobile No.', 
-        'Respondent Type',
-        'Status',
-        'Created At',
-        'Updated At'
-    ]);
+        $writer->addHeader([
+            '#',
+            'Response Date',
+            'Full Name',
+            'Gender',
+            'Email',
+            'Mobile No.',
+            'Respondent Type',
+            'Status',
+            'Created At',
+            'Updated At',
+        ]);
         $i = 0;
         foreach ($query->lazy(1000) as $val) {
             //$writer->addRow($val->toArray()); // for all fields
@@ -175,9 +180,6 @@ class UserResponseController extends Controller
         return $writer->toBrowser();
     }
 
-   
-
-
     /**
      * Show the form for creating a new resource.
      */
@@ -195,7 +197,7 @@ class UserResponseController extends Controller
         }
 
         return view('user_response.create', [
-            'respondents' => $respondents
+            'respondents' => $respondents,
         ]);
     }
 
@@ -235,7 +237,6 @@ class UserResponseController extends Controller
             $this->webspice->insertOrFail('error', $e->getMessage());
         }
 
-
         return redirect()->back();
     }
 
@@ -269,7 +270,7 @@ class UserResponseController extends Controller
         }
         return view('user_response.edit', [
             'responseInfo' => $user_responseInfo,
-            'respondents' => $respondents
+            'respondents' => $respondents,
         ]);
     }
 
@@ -294,7 +295,7 @@ class UserResponseController extends Controller
                 'value.required' => 'Value field is required.',
                 'respondent_id.required' => 'Respondent field is required.',
                 'input_method.required' => 'Input method field is required.',
-                'value.unique' => 'This value has already been taken for another record.'
+                'value.unique' => 'This value has already been taken for another record.',
             ]
         );
         try {
@@ -333,7 +334,6 @@ class UserResponseController extends Controller
         return back();
     }
 
-
     public function forceDelete($id)
     {
         #permission verfy
@@ -356,7 +356,7 @@ class UserResponseController extends Controller
         try {
             $id = $this->webspice->encryptDecrypt('decrypt', $id);
             $user_response = UserResponse::findOrFail($id);
-            $user_response->status = 2; //verified 
+            $user_response->status = 2; //verified
             $user_response->verified_at = $this->webspice->now('datetime24');
             $user_response->verified_by = $this->webspice->getUserId();
             // $user_response->save();

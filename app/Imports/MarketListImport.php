@@ -4,6 +4,8 @@ namespace App\Imports;
 use App\Lib\Webspice;
 use App\Models\Area;
 use App\Models\Market;
+use App\Rules\BanglaCharacters;
+use App\Rules\EnglishCharacters;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Concerns\RemembersRowNumber;
 use Maatwebsite\Excel\Concerns\ToModel;
@@ -31,6 +33,12 @@ class MarketListImport implements ToModel, WithBatchInserts, WithChunkReading, W
             'market_name_eng' => [
                 'required',
                 'string',
+                new EnglishCharacters
+            ],
+            'market_name_ban' => [
+                'required',
+                'string',
+                new BanglaCharacters
             ],
             'latitude' => ['required', 'numeric',
                 'min:-90', 'max:90',
@@ -38,6 +46,7 @@ class MarketListImport implements ToModel, WithBatchInserts, WithChunkReading, W
             'longitude' => ['required', 'numeric',
                 'min:-180', 'max:180',
             ],
+            'sms_code' => ['string','unique:markets'],
         ];
     }
 
@@ -79,6 +88,7 @@ class MarketListImport implements ToModel, WithBatchInserts, WithChunkReading, W
                         'market_address' => $row['market_address'],
                         'latitude' => $row['latitude'],
                         'longitude' => $row['longitude'],
+                        'sms_code' => $row['sms_code'],
                     ]);
                 }
             }

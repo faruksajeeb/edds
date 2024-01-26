@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>{{ $theme_settings->website_name }}</title>
+    <title>{{ $company_settings->company_name }} | Home</title>
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">

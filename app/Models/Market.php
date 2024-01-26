@@ -18,6 +18,7 @@ class Market extends Model
         'area_id',
         'latitude',
         'longitude',
+        'sms_code',
         'created_by',
         'updated_by',
         'status',

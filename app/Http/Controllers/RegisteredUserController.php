@@ -9,6 +9,7 @@ use App\Models\RegisteredUser;
 use Exception;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\RegisteredUserExport;
+use App\Models\RespondentType;
 use Illuminate\Support\Facades\Cache;
 use Spatie\SimpleExcel\SimpleExcelWriter;
 use Carbon\Carbon;
@@ -24,7 +25,7 @@ class RegisteredUserController extends Controller
     {
         $this->webspice = $webspice;
         $this->registered_users = $registered_users;
-        $this->tableName = 'responses';
+        $this->tableName = 'registered_users';
         $this->middleware(function ($request, $next) {
             return $next($request);
         });
@@ -90,9 +91,11 @@ class RegisteredUserController extends Controller
             $this->export($title, $type, $query);
         }
 
-        $registered_users = $query->paginate(5);
+        $registered_users = $query->paginate(10);
 
-        return view('registered_user.index', compact('registered_users'));
+        $respondent_types = RespondentType::all();
+
+        return view('registered_user.index', compact('registered_users','respondent_types'));
     }
 
     public function export(string $title, string $type, object $query)
@@ -193,7 +196,10 @@ class RegisteredUserController extends Controller
             $id = $this->webspice->encryptDecrypt('decrypt', $id);
             $registered_user = $this->registered_users->findOrFail($id);
             if (!is_null($registered_user)) {
+                $registered_user->status = -7;
+                $registered_user->save();
                 $registered_user->delete();
+                $this->webspice->message('delete_success', "User deleted successfully!");
             }
         } catch (Exception $e) {
             $this->webspice->message('error', $e->getMessage());
@@ -211,6 +217,7 @@ class RegisteredUserController extends Controller
             $id = $this->webspice->encryptDecrypt('decrypt', $id);
             $registered_user = RegisteredUser::withTrashed()->findOrFail($id);
             $registered_user->forceDelete();
+            $this->webspice->message('force_delete_success', "User deleted successfully!");
         } catch (Exception $e) {
             $this->webspice->message('error', $e->getMessage());
         }
@@ -247,6 +254,8 @@ class RegisteredUserController extends Controller
         try {
             $id = $this->webspice->encryptDecrypt('decrypt', $id);
             $registered_user = RegisteredUser::withTrashed()->findOrFail($id);
+            $registered_user->status = 7;
+            $registered_user->save();
             $registered_user->restore();
         } catch (Exception $e) {
             $this->webspice->message('error', $e->getMessage());
@@ -261,6 +270,8 @@ class RegisteredUserController extends Controller
         try {
             $registered_users = RegisteredUser::onlyTrashed()->get();
             foreach ($registered_users as $registered_user) {
+                $registered_user->status = 7;
+                $registered_user->save();
                 $registered_user->restore();
             }
         } catch (Exception $e) {

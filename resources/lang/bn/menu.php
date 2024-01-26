@@ -7,5 +7,6 @@ return [
     'services' => 'সেবাসমূহ',
     'contact' => 'যোগাযোগ',
     'login' => 'লগইন',
+    'dashboard' => 'ড্যাশবোর্ড', 
   
 ];

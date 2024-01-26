@@ -9,7 +9,7 @@
     <meta http-equiv='expires' content='0'>
     <meta http-equiv='pragma' content='no-cache'>
     <link rel="shortcut icon" type="image/x-icon" href="{{ asset('/uploads/' . $theme_settings->website_logo) }}">
-    <title>{{ config('app.name', 'Laravel') }} | {{ $title }}</title>
+    <title>{{ $company_settings->company_name }} | {{ $title }}</title>
 
     <!-- Fonts -->
     <link rel="stylesheet" href="https://fonts.bunny.net/css2?family=Nunito:wght@400;600;700&display=swap">
@@ -37,7 +37,17 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('plugins/daterangepicker/daterangepicker.css') }}" />
     <!-- Month Picker -->
     <link rel="stylesheet" type="text/css" href="{{ asset('plugins/monthpicker/MonthPicker.min.css') }}" />
+<!--     
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Siyam+Rupali&display=swap"> -->
+
     <style>
+        /* body{
+            font-size:14px;
+        }
+         */
+        .btn-sm{
+            padding:2px 5px!important;
+        }
         .themed-grid-col {
             padding-top: 1rem;
             padding-bottom: 1rem;
@@ -122,11 +132,8 @@
     <script type="text/javascript" src="{{ asset('plugins/daterangepicker/daterangepicker.js') }}"></script>
     <!-- Month Picker -->
     <script type="text/javascript" src="{{ asset('plugins/monthpicker/MonthPicker.min.js') }}"></script>
-
+  
     <script>
-        $(document).ready(function() {
-
-        });
         // Example starter JavaScript for disabling form submissions if there are invalid fields
         (function() {
             $('.select2').select2({
@@ -317,7 +324,7 @@
             Swal.fire({
                 title: 'Are you sure?',
                 text: "You can be able to revert this!'",
-                icon: 'warning',
+                icon: 'question',
                 allowOutsideClick: false,
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
@@ -337,22 +344,24 @@
         }
         let forceDelete = (id) => {
             Swal.fire({
-                title: 'Are you sure?',
-                text: "You won't be able to revert this!'",
-                icon: 'warning',
+                // title: 'Are you sure?',
+                title: 'SORRY!',
+                // text: "You won't be able to revert this!'",
+                text: "You cannot delete this record. This record is relevant to many reports and deletion is disabled from the backend.",
+                icon: 'question',
                 allowOutsideClick: false,
-                showCancelButton: true,
+                showCancelButton: false,
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, delete it!'
+                // confirmButtonText: 'Yes, delete it!'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    $('.btn-force-delete-' + id).addClass('disabledAnchor');
-                    $('.btn-force-delete-' + id).html(
-                        '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Force Deleting...'
-                    );
-                    document.getElementById('force-delete-form-' + id).submit();
-                    processing('Force Deleting...');
+                    // $('.btn-force-delete-' + id).addClass('disabledAnchor');
+                    // $('.btn-force-delete-' + id).html(
+                    //     '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Force Deleting...'
+                    // );
+                    // document.getElementById('force-delete-form-' + id).submit();
+                    // processing('Force Deleting...');
                 }
 
             })
@@ -361,7 +370,7 @@
             Swal.fire({
                 title: 'Are you sure?',
                 text: "You want to restore this!'",
-                icon: 'warning',
+                icon: 'question',
                 allowOutsideClick: false,
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
@@ -383,7 +392,7 @@
             Swal.fire({
                 title: 'Are you sure?',
                 text: "You want to restore all archived data!'",
-                icon: 'warning',
+                icon: 'question',
                 allowOutsideClick: false,
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
@@ -412,6 +421,17 @@
             $('.filter_btn').html(
                 '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Filtering...'
             );
+        });
+        $(document).on('click', ".report_generate_btn", function() {
+            // processing('Exporting...');
+            // $('.report_generate_btn').html(
+            //     '<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span> Report Generating...'
+            // );
+        });
+        $(document).on('click', ".report_export_btn", function() {
+            // $('.report_export_btn').html(
+            //             '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Exporting...'
+            //         );
         });
         $(document).on('click', ".refresh_btn", function() {
             // processing('Exporting...');
@@ -443,7 +463,6 @@
     </script>
 
     @stack('scripts')
-
     @livewireScripts
     <script>
         Livewire.on('success', message => {
@@ -462,6 +481,8 @@
             )
         })
     </script>
+     
+
 </body>
 
 </html>

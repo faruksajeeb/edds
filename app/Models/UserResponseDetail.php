@@ -42,8 +42,11 @@ class UserResponseDetail extends Model
     public function question(){
         return $this->belongsTo(Question::class)->withTrashed();
     }
+    // public function subQuestion(){
+    //     return $this->belongsTo(SubQuestion::class)->withTrashed();
+    // }
     public function subQuestion(){
-        return $this->belongsTo(SubQuestion::class)->withTrashed();
+        return $this->belongsTo(Answer::class)->withTrashed();
     }
 }
 

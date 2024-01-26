@@ -1,6 +1,7 @@
 <?php
   
-return [  
+return [ 
+    'total' => 'Total', 
     'today' => 'today',  
     'tabular_statistic_title' => 'Division Wise Last 7 Days Statistics',
     'location'=>'Location', 

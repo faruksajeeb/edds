@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Exports\QuestionExport;
 use App\Interfaces\Crud;
 use App\Lib\Webspice;
+use App\Models\Answer;
 use App\Models\Question;
+use App\Models\RespondentType;
 use App\Traits\MasterData;
 use Exception;
 use Illuminate\Http\RedirectResponse;
@@ -13,6 +15,12 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use Maatwebsite\Excel\Facades\Excel;
+use DB;
+
+use Illuminate\Support\Facades\URL;
+
+use App\Rules\EnglishCharacters;
+use App\Rules\BanglaCharacters;
 
 class QuestionController extends Controller implements Crud
 {
@@ -26,7 +34,7 @@ class QuestionController extends Controller implements Crud
     {
         $this->webspice = $webspice;
         $this->questions = $questions;
-        $this->tableName = 'questions';
+        $this->tableName = 'tbl_q';
         $this->middleware(function ($request, $next) {
             return $next($request);
         });
@@ -42,31 +50,45 @@ class QuestionController extends Controller implements Crud
 
         if ($request->get('status') == 'archived') {
             $fileTag = 'Archived ';
-            $query = $this->questions->orderBy('deleted_at', 'desc');
+            $query = $this->questions->orderBy('tbl_q.deleted_at', 'desc');
             $query->onlyTrashed();
         } else {
-            // $query = $this->questions->orderBy('created_at', 'desc');
-            $query = $this->questions->orderBy('sl_order', 'asc');
+            //$query = $this->questions->orderBy('created_at', 'desc');
+            $query = $this->questions->orderBy('tbl_q.sl_order', 'asc');
+        }
+        $query->with('category');
+        $query->leftJoin('tbl_a as ans', function ($join) {
+            $join->on('tbl_q.relation_id', '=', 'ans.id')
+                ->where('tbl_q.related_to', '=', 'answare');
+        })->leftJoin('tbl_q as ques', function ($join) {
+            $join->on('tbl_q.relation_id', '=', 'ques.id')
+                ->where('tbl_q.related_to', '=', 'question');
+        });
+
+
+        if ($request->search_related_to != null) {
+            $query->where('tbl_q.related_to', $request->search_related_to);
+        }
+
+        if ($request->search_status != null) {
+            $query->where('tbl_q.status', $request->search_status);
         }
         if ($request->search_category != null) {
-            $query->where('category_id', $request->search_category);
+            $query->where('tbl_q.category_id', $request->search_category);
         }
-        if ($request->search_respondent != null) {
-            $query->where('respondent', $request->search_respondent);
-        }
-        if ($request->search_status != null) {
-            $query->where('status', $request->search_status);
+        if ($request->search_respondent_type != null) {
+            $query->whereRaw("FIND_IN_SET(?, tbl_q.respondent_type)", $request->search_respondent_type);
         }
 
         $searchText = $request->search_text;
         if ($searchText != null) {
             // $query = $query->search($request->search_text); // search by value
             $query->where(function ($query) use ($searchText) {
-                $query->where('value', 'LIKE', '%' . $searchText . '%')
-                    ->orWhere('value_bangla', 'LIKE', '%' . $searchText . '%');
+                $query->where('tbl_q.question', 'LIKE', '%' . $searchText . '%')
+                    ->orWhere('tbl_q.question_bangla', 'LIKE', '%' . $searchText . '%');
             });
         }
-        $query->with('category', 'subQuestions');
+        $query->select('tbl_q.*', 'ans.answare as aRelName', 'ans.answare_bangla as aRelNameBangla', 'ques.question as qRelName');
         if (in_array($type = $request->submit_btn, array('export', 'csv', 'pdf'))) {
             $title = $fileTag . 'Question List';
             // $this->export($request->submit_btn,$query,$title);
@@ -81,12 +103,12 @@ class QuestionController extends Controller implements Crud
             return Excel::download(new QuestionExport($query->get(), $title), $fileName . '_' . time() . '.xlsx');
         }
         // $query->has('subQuestions'); # It means, get which questions has sub qestions.
-        $perPage = request()->input('perPage', 5);
+        $perPage = request()->input('perPage', 10);
+        // dd($query->toSql());         
         $questions = $query->paginate($perPage);
-
-        $categories = MasterData::getCategory();
-        $respondents = MasterData::getRespondent();
-        return view('question.index', compact('questions', 'categories', 'respondents'));
+        $categories = $this->getCategory();
+        $respondent_types = RespondentType::all();
+        return view('question.index', compact('questions', 'categories', 'respondent_types'));
     }
 
     /**
@@ -94,16 +116,17 @@ class QuestionController extends Controller implements Crud
      */
     public function create(): View
     {
-
         #permission verfy
         $this->webspice->permissionVerify('question.create');
-
-        $categories = MasterData::getActiveCategory();
-        $respondents = MasterData::getActiveRespondent();
-
+        $questions = Question::where('status', 7)->get();
+        $answers = Answer::where('status', 7)->get();
+        $categories = $this->getActiveCategory();
+        $respondent_types = RespondentType::where('status', 7)->get();
         return view('question.create', [
             'categories' => $categories,
-            'respondents' => $respondents,
+            'questions' => $questions,
+            'answers' => $answers,
+            'respondent_types' => $respondent_types,
         ]);
     }
 
@@ -115,54 +138,37 @@ class QuestionController extends Controller implements Crud
         // dd($request->all());
         #permission verfy
         $this->webspice->permissionVerify('question.create');
-        $respondent = implode(",", $request->respondent);
+
         $request->validate(
             [
-                // 'value' => [
-                //     'required','min:1','max:1000',
-                //     Rule::unique('questions')->where(function ($query) use($request,$respondent) {
-                //         return $query->where('value', $request->value)
-                //             ->where('respondent', $respondent);
-                //     })
-                // ],
-                // 'value_bangla' => [
-                //     'required','min:1','max:1000',
-                //     Rule::unique('questions')->where(function ($query) use($request,$respondent) {
-                //         return $query->where('value_bangla', $request->value_bangla)
-                //             ->where('respondent', $respondent);
-                //     })
-                // ],
-                'value' => 'required|min:1|max:1000|unique:questions',
-                'value_bangla' => 'required|min:1|max:1000|unique:questions',
+                'question' => ['required', 'min:3', 'max:1000', 'unique:tbl_q', new EnglishCharacters],
+                'question_bangla' => ['required', 'min:3', 'max:1000', 'unique:tbl_q', new BanglaCharacters],
                 'category_id' => 'required',
-                'respondent' => 'required',
-                'input_method' => 'required',
-                'input_type' => Rule::requiredIf(fn() => ($request->input_method == 'text_box')),
-                'is_required' => 'required',
-                'image_require' => 'required',
-            ],
-            [
-                'value.required' => 'Value field is required.',
-                'value.unique' => 'This question has already been taken for this respondent (' . $respondent . ')',
-                'value_bagla.required' => 'Value Bangla field is required.',
-                'value_bagla.unique' => 'This question value bangla has already been taken for this respondent (' . $respondent . ')',
-                'category_id.required' => 'Category field is required.',
-                'respondent.required' => 'Respondent field is required.',
-                'input_method.required' => 'Input method field is required.',
+                'related_to' => 'required',
+                'answare_type' => 'required',
+                'input_type' => Rule::requiredIf(fn () => ($request->answare_type == 'input')),
+                'relation_id' => Rule::requiredIf(fn () => ($request->related_to != 'level1')),
+                'is_required' => 'required'
             ]
         );
         try {
             $question = new Question();
-            $question->value = $request->value;
-            $question->value_bangla = $request->value_bangla;
+            $question->question = $request->question;
+            $question->question_bangla = $request->question_bangla;
             $question->category_id = $request->category_id;
-            $question->respondent = $respondent;
-            $question->input_method = $request->input_method;
+            $question->respondent_type = implode(",", $request->respondent_type);
+            $question->related_to = $request->related_to;
+            $question->answare_type = $request->answare_type;
             $question->input_type = $request->input_type;
+            $question->relation_id = $request->relation_id;
             $question->is_required = $request->is_required;
-            $question->image_require = $request->image_require;
+            $question->info = $request->info;
+            $question->info_bangla = $request->info_bangla;
+            $question->sub_info = $request->sub_info;
+            $question->sub_info_bangla = $request->sub_info_bangla;
             $question->created_at = $this->webspice->now('datetime24');
             $question->created_by = $this->webspice->getUserId();
+            $question->status = 7;
             $question->save();
             # if sub questions
             // if($request->get('sub_question_value') !=''){
@@ -193,6 +199,7 @@ class QuestionController extends Controller implements Crud
      */
     public function edit(string $id): View
     {
+       
         # permission verfy
         $this->webspice->permissionVerify('question.edit');
         # decrypt value
@@ -200,13 +207,17 @@ class QuestionController extends Controller implements Crud
 
         $questionInfo = $this->questions->find($id);
 
-        $categories = MasterData::getActiveCategory();
-        $respondents = MasterData::getActiveRespondent();
-
+        $questions = Question::where('status', 7)->get();
+        $answers = Answer::where('status', 7)->get();
+        $categories = $this->getActiveCategory();
+        $respondent_types = RespondentType::where('status', 7)->get();
         return view('question.edit', [
             'questionInfo' => $questionInfo,
+            'questions' => $questions,
+            'answers' => $answers,
             'categories' => $categories,
-            'respondents' => $respondents,
+            'respondent_types' => $respondent_types,
+            'currentPage' =>  request()->query('page', 1)
         ]);
     }
 
@@ -220,48 +231,48 @@ class QuestionController extends Controller implements Crud
 
         # decrypt value
         $id = $this->webspice->encryptDecrypt('decrypt', $id);
-        $respondent = implode(",", $request->respondent);
+
         $request->validate(
             [
                 //     'value' => ['required','min:3','max:1000',Rule::unique('questions')->ignore($id, 'id')->where(function ($query) use($request,$respondent) {
                 //         return $query->where('value', $request->value)
                 //             ->where('respondent', $respondent);
                 //     })],
-                //     'value_bangla' => ['required','min:3','max:1000',Rule::unique('questions')->ignore($id, 'id')->where(function ($query) use($request,$respondent) {
-                //         return $query->where('value_bangla', $request->value_bangla)
-                //             ->where('respondent', $respondent);
-                //     })],
-                'value' => 'required|min:1|max:1000|unique:questions,value,' . $id,
-                'value_bangla' => 'required|min:1|max:1000|unique:questions,value_bangla,' . $id,
+                'question' => ['required', 'min:3', 'max:1000', new EnglishCharacters, Rule::unique('tbl_q')->ignore($id, 'id')->where(function ($query) use ($request) {
+                    return $query->where('question_bangla', $request->question_bangla)
+                        ->where('question', $request->question)
+                        ->where('relation_id', $request->relation_id);
+                })],
+
+                'question_bangla' => ['required', 'min:3', 'max:1000', new BanglaCharacters],
+
+                // 'question' => 'required|min:1|max:1000|unique:tbl_q,question,' . $id,
+                // 'question_bangla' => 'required|min:1|max:1000|unique:tbl_q,question_bangla,' . $id,
                 'category_id' => 'required',
-                'respondent' => 'required',
-                'input_method' => 'required',
-                'input_type' => Rule::requiredIf(fn() => ($request->input_method == 'text_box')),
-                'is_required' => 'required',
-                'image_require' => 'required',
-            ],
-            [
-                'value.required' => 'Value field is required.',
-                'value.unique' => 'This question has already been taken for this respondent (' . $respondent . ')',
-                'value_bangla.required' => 'Value Bangla field is required.',
-                'value_bangla.unique' => 'This question value bangla has already been taken for this respondent (' . $respondent . ')',
-                'category_id.required' => 'Category field is required.',
-                'respondent.required' => 'Respondent field is required.',
-                'value.unique' => 'This value has already been taken for another record.',
-                'input_method.required' => 'Input method field is required.',
-                // 'input_type.required' => 'Input type field is required.',
+                'respondent_type' => 'required',
+                'related_to' => 'required',
+                'answare_type' => 'required',
+                'input_type' => Rule::requiredIf(fn () => ($request->answare_type == 'input')),
+                'relation_id' => Rule::requiredIf(fn () => ($request->related_to != 'level1')),
+                'is_required' => 'required'
             ]
         );
         try {
+            // dd($request->respondent_type);
             $question = $this->questions->find($id);
-            $question->value = $request->value;
-            $question->value_bangla = $request->value_bangla;
+            $question->question = $request->question;
+            $question->question_bangla = $request->question_bangla;
             $question->category_id = $request->category_id;
-            $question->respondent = $respondent;
-            $question->input_method = $request->input_method;
+            $question->respondent_type = implode(",", $request->respondent_type);
+            $question->related_to = $request->related_to;
+            $question->answare_type = $request->answare_type;
             $question->input_type = $request->input_type;
+            $question->relation_id = $request->relation_id;
             $question->is_required = $request->is_required;
-            $question->image_require = $request->image_require;
+            $question->info = $request->info;
+            $question->info_bangla = $request->info_bangla;
+            $question->sub_info = $request->sub_info;
+            $question->sub_info_bangla = $request->sub_info_bangla;
             $question->updated_at = $this->webspice->now('datetime24');
             $question->updated_by = $this->webspice->getUserId();
             $question->save();
@@ -269,7 +280,8 @@ class QuestionController extends Controller implements Crud
             $this->webspice->updateOrFail('error', $e->getMessage());
         }
 
-        return redirect('questions');
+        return redirect(route('questions.index', ['page' => $request->input('currentPage', 1)]));
+       
     }
 
     /**
@@ -284,6 +296,8 @@ class QuestionController extends Controller implements Crud
             $id = $this->webspice->encryptDecrypt('decrypt', $id);
             $question = $this->questions->findOrFail($id);
             if (!is_null($question)) {
+                $question->status = -7;
+                $question->save();
                 $question->delete();
             }
         } catch (Exception $e) {
@@ -314,6 +328,8 @@ class QuestionController extends Controller implements Crud
         try {
             $id = $this->webspice->encryptDecrypt('decrypt', $id);
             $question = Question::withTrashed()->findOrFail($id);
+            $question->status = 7;
+            $question->save();
             $question->restore();
         } catch (Exception $e) {
             $this->webspice->message('error', $e->getMessage());
@@ -328,6 +344,8 @@ class QuestionController extends Controller implements Crud
         try {
             $questions = Question::onlyTrashed()->get();
             foreach ($questions as $question) {
+                $question->status = 7;
+                $question->save();
                 $question->restore();
             }
         } catch (Exception $e) {

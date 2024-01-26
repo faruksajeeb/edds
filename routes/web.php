@@ -30,6 +30,12 @@ use App\Http\Livewire\Backend\SubCategoryComponent;
 use App\Http\Livewire\Frontend\Home;
 
 use App\Http\Controllers\Api\DropdownController;
+use App\Http\Controllers\HealthcareController;
+use App\Http\Controllers\AppFooterLogoController;
+use App\Http\Controllers\TipController;
+use App\Http\Controllers\HelpController;
+use App\Http\Controllers\SmsResponseController;
+use App\Http\Controllers\RespondentTypeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -42,15 +48,18 @@ use App\Http\Controllers\Api\DropdownController;
 |
 */
 
-Route::get('/', Home::class)->name('/');
-Route::match(['get', 'post'], 'district-wise-warnings-report', Home::class)->name('district-wise-warnings-report');
-
-Route::get('lang/change', [LanguageController::class, 'change'])->name('changeLang');
 Route::middleware('auth')->group(function () {
+    Route::get('/home', Home::class)->name('home');
+    Route::match(['get', 'post'], 'district-wise-warnings-report', Home::class)->name('district-wise-warnings-report');
+
+    Route::get('lang/change', [LanguageController::class, 'change'])->name('changeLang');
+
     Route::get('active-inactive', [Webspice::class, 'activeInactive'])->name('active.inactive');
     Route::post('change-order', [Webspice::class, 'changeOrder'])->name('change-order');
+    Route::post('api/fetch-districts', [DropdownController::class, 'fetchDistrict']);
     Route::post('api/fetch-areas', [DropdownController::class, 'fetchArea']);
     Route::get('api/fetch-markets/{id}', [DropdownController::class, 'fetchMarket']);
+    Route::get('api/fetch-items/{id}', [DropdownController::class, 'fetchItems']);
 
     // Route::match(['get','post'],'/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
     Route::match(['get', 'post'], '/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -61,6 +70,7 @@ Route::middleware('auth')->group(function () {
     Route::get('options', Options::class)->name('options');
     Route::get('categories', CategoryComponent::class)->name('categories');
     Route::get('sub_categories', SubCategoryComponent::class)->name('sub_categories');
+  
 
     Route::group([
         'middleware' =>
@@ -93,8 +103,15 @@ Route::middleware('auth')->group(function () {
         'user_responses' => UserResponseController::class,
         'areas' => AreaController::class,
         'markets' => MarketController::class,
-        'registered_users' => RegisteredUserController::class
+        'registered_users' => RegisteredUserController::class,
+        'healthcares' => HealthcareController::class,
+        'app_footer_logos' => AppFooterLogoController::class,
+        'tips' => TipController::class,
+        'helps' => HelpController::class,
+        'respondent_types' => RespondentTypeController::class,
     ]);
+
+    Route::get('manage_sms_responses',[SmsResponseController::class,'index'])->name('manage_sms_responses');
 
 
     # User
@@ -188,13 +205,13 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{area}/force-delete', [AreaController::class, 'forceDelete'])->name('force-delete');
         Route::post('/restore-all', [AreaController::class, 'restoreAll'])->name('restore-all');
     });
-    Route::match(['get', 'post'],'/markets_import', [MarketController::class, 'import'])->name('markets.import');
+    Route::match(['get', 'post'], '/markets_import', [MarketController::class, 'import'])->name('markets.import');
     # Market
     Route::group([
         'prefix' => '/markets',
         'as' => 'markets.',
     ], function () {
-        
+
         Route::post('/{market}/restore', [MarketController::class, 'restore'])->name('restore');
         Route::delete('/{market}/force-delete', [MarketController::class, 'forceDelete'])->name('force-delete');
         Route::post('/restore-all', [MarketController::class, 'restoreAll'])->name('restore-all');
@@ -210,13 +227,63 @@ Route::middleware('auth')->group(function () {
         Route::post('/restore-all', [RegisteredUserController::class, 'restoreAll'])->name('restore-all');
     });
 
+    # Healthcare
+    Route::group([
+        'prefix' => '/healthcares',
+        'as' => 'healthcares.',
+    ], function () {
+        Route::post('/{healthcare}/restore', [HealthcareController::class, 'restore'])->name('restore');
+        Route::delete('/{healthcare}/force-delete', [HealthcareController::class, 'forceDelete'])->name('force-delete');
+        Route::post('/restore-all', [HealthcareController::class, 'restoreAll'])->name('restore-all');
+    });
+
+    Route::match(['get', 'post'], '/healthcare_import', [HealthcareController::class, 'import'])->name('healthcares.import');
+
+    # App footer logo
+    Route::group([
+        'prefix' => '/app_footer_logos',
+        'as' => 'app_footer_logos.',
+    ], function () {
+        Route::post('/{app_footer_logo}/restore', [AppFooterLogoController::class, 'restore'])->name('restore');
+        Route::delete('/{app_footer_logo}/force-delete', [AppFooterLogoController::class, 'forceDelete'])->name('force-delete');
+        Route::post('/restore-all', [AppFooterLogoController::class, 'restoreAll'])->name('restore-all');
+    });
+
+    # Tips
+    Route::group([
+        'prefix' => '/tips',
+        'as' => 'tips.',
+    ], function () {
+        Route::post('/{tip}/restore', [TipController::class, 'restore'])->name('restore');
+        Route::delete('/{tip}/force-delete', [TipController::class, 'forceDelete'])->name('force-delete');
+        Route::post('/restore-all', [TipController::class, 'restoreAll'])->name('restore-all');
+    });
+
+       # Help
+       Route::group([
+        'prefix' => '/helps',
+        'as' => 'helps.',
+    ], function () {
+        Route::post('/{help}/restore', [HelpController::class, 'restore'])->name('restore');
+        Route::delete('/{help}/force-delete', [HelpController::class, 'forceDelete'])->name('force-delete');
+        Route::post('/restore-all', [HelpController::class, 'restoreAll'])->name('restore-all');
+    });
+
+       # Respondent Type
+       Route::group([
+        'prefix' => '/respondent_types',
+        'as' => 'respondent_types.',
+    ], function () {
+        Route::post('/{respondent_type}/restore', [RespondentTypeController::class, 'restore'])->name('restore');
+        Route::delete('/{respondent_type}/force-delete', [RespondentTypeController::class, 'forceDelete'])->name('force-delete');
+        Route::post('/restore-all', [RespondentTypeController::class, 'restoreAll'])->name('restore-all');
+    });
+
     # Report
     Route::match(['get', 'post'], 'survey-report', [ReportController::class, 'surveyReport'])->name('survey-report');
     // Route::match(['get', 'post'], 'district-wise-warnings-report', [ReportController::class, 'districtWiseWarningsReport'])->name('district-wise-warnings-report');
     // Route::get('district-wise-warnings-report/category', [ReportController::class, 'change'])->name('changeLang');
     Route::match(['get', 'post'], 'division-wise-counting-report', [ReportController::class, 'divisionWiseCountingReport'])->name('division-wise-counting-report');
-
-    
 });
 Route::get('/clear', function () {
     // Artisan::call('optimize:clear');

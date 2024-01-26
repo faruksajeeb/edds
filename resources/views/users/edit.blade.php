@@ -45,20 +45,59 @@
                                     <label for="">User Name <span class="text-danger">*<span></label>
                                     <input type="text" name='name' value="{{ old('name', $user->name) }}"
                                         class="form-control" required>
+                                        @if ($errors->has('name'))
+                                        @error('name')
+                                            <div class="alert alert-danger">{{ $message }}</div>
+                                        @enderror
+                                    @else
+                                        <div class="invalid-feedback">
+                                            Please enter a name.
+                                        </div>
+                                    @endif
                                 </div>
                                 <div class="form-group">
                                     <label for="">User Email <span class="text-danger">*<span></label>
                                     <input type="text" name='email' value="{{ old('email', $user->email) }}"
                                         class="form-control" required>
+
+                                        @if ($errors->has('email'))
+                                        @error('email')
+                                            <div class="alert alert-danger">{{ $message }}</div>
+                                        @enderror
+                                    @else
+                                        <div class="invalid-feedback">
+                                            Please enter an email.
+                                        </div>
+                                    @endif
                                 </div>
                                 <div class="form-group">
                                     <label for="">Password</label>
                                     <input type="password" name='password' value="{{ old('password') }}"
                                         class="form-control">
+
+                                        @if ($errors->has('password'))
+                                        @error('password')
+                                            <div class="alert alert-danger">{{ $message }}</div>
+                                        @enderror
+                                    @else
+                                        <div class="invalid-feedback">
+                                            Please enter a password.
+                                        </div>
+                                    @endif
                                 </div>
                                 <div class="form-group">
                                     <label for="">Confirm Password</label>
                                     <input type="password" name='password_confirmation' class="form-control">
+
+                                    @if ($errors->has('password_confirmation'))
+                                        @error('password_confirmation')
+                                            <div class="alert alert-danger">{{ $message }}</div>
+                                        @enderror
+                                    @else
+                                        <div class="invalid-feedback">
+                                            Please enter a value.
+                                        </div>
+                                    @endif
                                 </div>
                                 <div class="form-group">
                                     <label for="roles">Assign Roles <span class="text-danger">*<span></label>
@@ -66,11 +105,20 @@
                                         data-placeholder="Select one or more..." multiple required>
                                         @foreach ($roles as $role)
                                             <option value="{{ $role->id }}"
-                                                {{ $user->hasRole($role->id) ? 'selected' : '' }}>
+                                                {{ $user->hasRole($role->id) ? 'selected' : (in_array($role->id, old('roles')!=null?old('roles'):[]) ? 'selected' : '') }}>
                                                 {{ ucwords($role->name) }}
                                             </option>
                                         @endforeach
                                     </select>
+                                    @if ($errors->has('roles'))
+                                        @error('roles')
+                                            <div class="alert alert-danger">{{ $message }}</div>
+                                        @enderror
+                                    @else
+                                        <div class="invalid-feedback">
+                                            Please select a role.
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
                             <div class="col-md-7">

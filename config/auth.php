@@ -39,7 +39,12 @@ return [
         'web' => [
             'driver' => 'session',
             'provider' => 'users',
-        ]
+        ],
+        'api' => [
+            'driver' => 'sanctum',
+            'provider' => 'registered_users',
+            'hash' => false,
+        ],
     ],
 
     /*
@@ -63,7 +68,11 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
-        ]
+        ],
+        'registered_users' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\RegisteredUser::class,
+        ],
 
         // 'users' => [
         //     'driver' => 'database',

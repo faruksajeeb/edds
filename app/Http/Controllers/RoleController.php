@@ -75,7 +75,7 @@ class RoleController extends Controller
         #permission verfy
         $this->webspice->permissionVerify('role.create');
 
-        $permission_groups = PermissionGroup::with('activePermissions')->where('status', 1)->orderBy('order')->get();
+        $permission_groups = PermissionGroup::with('activePermissions')->where('status', 7)->orderBy('order')->get();
 
         return view('role.create', [
             'permission_groups' => $permission_groups,
@@ -135,7 +135,7 @@ class RoleController extends Controller
 
             $roleInfo = $this->roles->findById($id);
 
-            $permission_groups = PermissionGroup::with('activePermissions')->where('status', 1)->orderBy('order')->get();
+            $permission_groups = PermissionGroup::with('activePermissions')->where('status', 7)->orderBy('order')->get();
         } catch (Exception $e) {
             $this->webspice->message('error', $e->getMessage());
         }
@@ -170,9 +170,10 @@ class RoleController extends Controller
 
             $role = $this->roles->findById($id);
             $permissions = $request->input('permissions');
-            if (!empty($permissions)) {
+            // dd($permissions);
+            // if (!empty($permissions)) {
                 $role->syncPermissions($permissions);
-            }
+            // }
             if (!in_array($role->name, ['superadmin', 'developer'])) {
                 $role->name = $role->name;
             } else {
@@ -185,7 +186,6 @@ class RoleController extends Controller
         return redirect()->route('roles.index');
     }
 
-
     public function destroy($id)
     {
         #permission verfy
@@ -195,6 +195,8 @@ class RoleController extends Controller
             $id = $this->webspice->encryptDecrypt('decrypt', $id);
 
             $role = $this->roles->findById($id);
+            $role->status = -7;
+            $role->save();
             $role->delete();
         } catch (Exception $e) {
             $this->webspice->message('error', $e->getMessage());
@@ -225,6 +227,8 @@ class RoleController extends Controller
         try {
             $id = $this->webspice->encryptDecrypt('decrypt', $id);
             $role = Role::withTrashed()->findOrFail($id);
+            $role->status = 7;
+            $role->save();
             $role->restore();
         } catch (Exception $e) {
             $this->webspice->message('error', $e->getMessage());
@@ -240,6 +244,8 @@ class RoleController extends Controller
         try {
             $roles = Role::onlyTrashed()->get();
             foreach ($roles as $role) {
+                $role->status = 7;
+                $role->save();
                 $role->restore();
             }
         } catch (Exception $e) {

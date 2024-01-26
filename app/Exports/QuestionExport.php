@@ -29,7 +29,6 @@ class QuestionExport implements FromArray, WithHeadings, Responsable,  WithStyle
 
     public function registerEvents(): array
     {
-
         return  [
             BeforeSheet::class => function (BeforeSheet $event) {
                
@@ -92,17 +91,17 @@ class QuestionExport implements FromArray, WithHeadings, Responsable,  WithStyle
         return [
             [
                 "Sl No",
-                "Value",
-                "Value Bangla",
-                "Category",
-                "Respondent",
-                "Input method",
-                "Is Required",
-                "Show Image Field?",
-                // "Created At",
-                // "Updated At",
-                // "Created By",
-                // "Updated By"
+                "Question",
+                "Question Bangla",
+                "Related To",
+                "Relation",
+                "Answer Type",
+                "Input Type",
+                "Is Required"
+                // "Info",
+                // "Info Bangla",
+                // "Sub Info",
+                // "Sub Info Bangla",
             ]
         ];
     }
@@ -114,19 +113,25 @@ class QuestionExport implements FromArray, WithHeadings, Responsable,  WithStyle
     {
         $customArray = array();
         foreach ($this->data as $k => $val) {
+            $relationName = '';
+            if($val['related_to']=='question'){
+                $relationName = $val['qRelName'];
+            }elseif($val['related_to']=='answare'){
+                $relationName = $val['aRelName'].'('.$val['aRelNameBangla'].')';
+            }
             $customArray[] = array(
                 $k + 1,
-                $val['value'],
-                $val['value_bangla'],
-                isset($val['option']['option_value']) ? $val['option']['option_value'] : '',
-                $val['respondent'],
-                $val['input_method'],
-                $val['is_required'],
-                $val['image_require'],
-                // $val['created_at'],
-                // $val['updated_at'],
-                // $val['created_by'],
-                // $val['updated_by'],
+                $val['question'],
+                $val['question_bangla'],
+                $val['related_to'],
+                $relationName,
+                $val['answare_type'],
+                $val['input_type'],
+                $val['is_required']
+                // $val['info'],
+                // $val['info_bangla'],
+                // $val['sub_info'],
+                // $val['sub_info_bangla']
             );
         }
         return $customArray;

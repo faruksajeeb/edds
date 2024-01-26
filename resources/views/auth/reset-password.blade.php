@@ -9,7 +9,7 @@
     <meta http-equiv='expires' content='0'>
     <meta http-equiv='pragma' content='no-cache'>
 
-    <title>{{ config('app.name', 'Laravel') }} Forgot Password</title>
+    <title>{{ $company_settings->company_name }} | Forgot Password</title>
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])

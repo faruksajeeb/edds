@@ -74,7 +74,7 @@ class PermissionController extends Controller
         $this->webspice->permissionVerify('permission.create');
 
         $permissions = Permission::all();
-        $permission_groups = DB::table('permission_groups')->where('status', 1)->get();
+        $permission_groups = DB::table('permission_groups')->where('status', 7)->orderBy('name','ASC')->get();
         return view('permission.create', [
             'permission_groups' => $permission_groups,
         ]);
@@ -153,7 +153,7 @@ class PermissionController extends Controller
         $id = $this->webspice->encryptDecrypt('decrypt', $id);
         $permissionInfo = $this->permissions->findById($id);
 
-        $permission_groups = DB::table('permission_groups')->where('status', 1)->get();
+        $permission_groups = DB::table('permission_groups')->where('status', 7)->get();
 
         return view('permission.edit', [
             'permissionInfo' => $permissionInfo,
@@ -229,6 +229,8 @@ class PermissionController extends Controller
         try {
             $id = $this->webspice->encryptDecrypt('decrypt', $id);
             $permission = $this->permissions->findById($id);
+            $permission->status = -7;
+            $permission->save();
             $permission->delete();
         } catch (Exception $e) {
             $this->webspice->message('error', $e->getMessage());
@@ -258,6 +260,8 @@ class PermissionController extends Controller
         try {
             $id = $this->webspice->encryptDecrypt('decrypt', $id);
             $permission = Permission::withTrashed()->findOrFail($id);
+            $permission->status = 7;
+            $permission->save();
             $permission->restore();
         } catch (Exception $e) {
             $this->webspice->message('error', $e->getMessage());
@@ -272,6 +276,8 @@ class PermissionController extends Controller
         try {
             $permissions = Permission::onlyTrashed()->get();
             foreach ($permissions as $permission) {
+                $permission->status = 7;
+                $permission->save();
                 $permission->restore();
             }
         } catch (Exception $e) {

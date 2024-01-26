@@ -7,5 +7,6 @@ return [
     'services' => 'Services',
     'contact' => 'Contact',
     'login' => 'Log In',
+    'dashboard' => 'Dashboard',
   
 ];

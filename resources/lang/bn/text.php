@@ -3,6 +3,7 @@ use App\Lib\Webspice;
 $webspice = new Webspice();
   
 return [  
+    'total' => 'মোট', 
     'today' => 'আজ',  
     'tabular_statistic_title' => 'বিভাগভিত্তিক শেষ সাত দিনের পরিসংখ্যান',  
     'location'=>'এলাকা',

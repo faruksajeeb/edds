@@ -65,8 +65,7 @@
             /* style="background-color: #F5F0BB;" */
             /* background-color: rgba(255, 0, 0, 0.5); */
         }
-    </style>
-    <style>
+
         #map {
             height: 100%;
         }
@@ -78,6 +77,17 @@
             height: 500px;
             margin: 0;
             padding: 0;
+        }
+        .category-item{
+            border:10px solid #F2CD5C;
+            border-radius: 5px;
+            opacity: 0.9;
+            transition: 0.5s;
+            /* transition: transform .2s; */
+        }
+        .category-item:hover {
+            opacity: 1;
+            transform: scale(1.1); 
         }
     </style>
 @endpush
@@ -102,7 +112,7 @@
             <header class="navigation">
                 <nav class="navbar sticky-top navbar-expand-xl navbar-light text-center py-3">
                     <div class="container">
-                        <a class="navbar-brand" href="{{ route('/') }}">
+                        <a class="navbar-brand" href="{{ route('home') }}">
                             <img loading="prelaod" decoding="async" class="img-fluid" width="160"
                                 src="{{ asset('/uploads/' . $theme_settings->website_logo) }}" alt="icddr,b">
                         </a>
@@ -114,16 +124,16 @@
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
                             <ul class="navbar-nav ms-auto mb-2 mb-lg-0 me-3">
                                 <li class="nav-item"> <a class="nav-link"
-                                        href="{{ route('/') }}">{{ __('menu.home') }}</a>
+                                        href="{{ route('home') }}">{{ __('menu.home') }}</a>
                                 </li>
                                 <li class="nav-item "> <a class="nav-link"
-                                        href="{{ route('/') }}">{{ __('menu.about') }}</a>
+                                        href="{{ route('home') }}">{{ __('menu.about') }}</a>
                                 </li>
                                 <li class="nav-item "> <a class="nav-link"
-                                        href="{{ route('/') }}">{{ __('menu.services') }}</a>
+                                        href="{{ route('home') }}">{{ __('menu.services') }}</a>
                                 </li>
                                 <li class="nav-item "> <a class="nav-link"
-                                        href="{{ route('/') }}">{{ __('menu.contact') }}</a>
+                                        href="{{ route('home') }}">{{ __('menu.contact') }}</a>
                                 </li>
                                 {{-- <li class="nav-item dropdown"> <a class="nav-link dropdown-toggle" href="#"
                                         id="navbarDropdown" role="button" data-bs-toggle="dropdown"
@@ -138,7 +148,7 @@
                                     </ul>
                                 </li> --}}
                             </ul>
-                            <a href="{{ route('login') }}" class="btn btn-outline-primary">{{ __('menu.login') }}</a>
+                            <a href="{{ route('dashboard') }}" class="btn btn-outline-primary">{{ __('menu.dashboard') }}</a>
                             @if (session()->get('locale') == 'bn')
                                 <button class="btn btn-danger text-white ms-2 changeLang"
                                     value="en">English</button>
@@ -160,7 +170,7 @@
             <div class="row align-items-md-stretch">
                 @foreach ($categories as $category)
                     <div class="col-md-4 my-3 ">
-                        <div class="h-100 p-4 text-dark bg-white rounded-1 text-center category-item">
+                        <div class="h-100 p-4 text-dark bg-white text-center category-item" >
                             <div class="iconBox">
                                 {{-- <i class="fa fa-eye"></i> --}}
                                 <span
@@ -176,18 +186,7 @@
                     </div>
                 @endforeach
             </div>
-            {{-- <div class="row row-cols-1 row-cols-md-3 gx-4 m-1">
-                <div class="col themed-grid-col h-100 py-5 text-center align-middle">
 
-                    <h1 class="text-center ">Poultry</h1>
-                </div>
-                <div class="col themed-grid-col h-100 py-5">
-                    <h1 class="text-center">Wild Bird</h1>
-                </div>
-                <div class="col themed-grid-col h-100 py-5">
-                    <h1 class="text-center">LBM Worker</h1>
-                </div>                
-            </div> --}}
         </div>
 
     </div>
@@ -214,7 +213,13 @@
                     </tr>
                 </thead>
                 <tbody>
-
+                    @php
+                    $totalArr = [];
+                   
+                    foreach ($categories as $key => $category){
+                    $totalArr[$key]['total'] = 0;
+                    }
+                    @endphp
                     @foreach ($divisions as $division)
                         <tr class="table-warning">
                             <td class="">
@@ -225,9 +230,20 @@
                                 <td class="text-center">
                                     {{ session()->get('locale') == 'bn' ? $webspice->convertToBanglaNumber($division[$key]) : $division[$key] }}
                                 </td>
+                                @php                                                               
+                                $totalArr[$key]['total'] += $division[$key];
+                                @endphp
                             @endforeach
                         </tr>
                     @endforeach
+                    <tr class="primary_bg_color text-white">
+                        <td>{{ __('text.total') }}</td>
+                        @foreach ($totalArr as $val)
+                        <td class="text-center">                           
+                            {{ session()->get('locale') == 'bn' ? $webspice->convertToBanglaNumber($val['total']) : $val['total'] }}
+                        </td>
+                        @endforeach
+                    </tr>
 
                 </tbody>
             </table>

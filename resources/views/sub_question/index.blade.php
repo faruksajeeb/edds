@@ -79,11 +79,11 @@
                                     </select>
                                     <select name="search_status" class="form-select" id="search_status">
                                         <option value="">Select Status</option>
-                                        <option value="1"
-                                            {{ request()->get('search_status') == '1' ? 'selected' : '' }}>Active
+                                        <option value="7"
+                                            {{ request()->get('search_status') == '7' ? 'selected' : '' }}>Active
                                         </option>
-                                        <option value="-1"
-                                            {{ request()->get('search_status') == '-1' ? 'selected' : '' }}>Inactive
+                                        <option value="-7"
+                                            {{ request()->get('search_status') == '-7' ? 'selected' : '' }}>Inactive
                                         </option>
                                     </select>
                                     <input type="text" name="search_text" value="{{ request()->get('search_text') }}"
@@ -195,10 +195,10 @@
                                                     @can('sub_question.edit')
                                                         <input class="form-check-input active_inactive_btn "
                                                             status="{{ $val->status }}"
-                                                            {{ $val->status == -1 ? '' : '' }} table="sub_questions"
+                                                            {{ $val->status == -7 ? '' : '' }} table="sub_questions"
                                                             type="checkbox" id="row_{{ $val->id }}"
                                                             value="{{ Crypt::encryptString($val->id) }}"
-                                                            {{ $val->status == 1 ? 'checked' : '' }}
+                                                            {{ $val->status == 7 ? 'checked' : '' }}
                                                             style="cursor:pointer">
                                                     @endif
                                     @endif

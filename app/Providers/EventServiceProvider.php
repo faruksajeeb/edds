@@ -31,6 +31,20 @@ use App\Observers\AreaObserver;
 use App\Models\Market;
 use App\Observers\MarketObserver;
 
+use App\Models\Healthcare;
+use App\Observers\HealthcareObserver;
+
+use App\Models\AppFooterLogo;
+use App\Observers\AppFooterLogoObserver;
+
+use App\Models\Tip;
+use App\Observers\TipObserver;
+
+use App\Models\Help;
+use App\Observers\HelpObserver;
+
+use App\Models\RespondentType;
+use App\Observers\RespondentTypeObserver;
 
 
 class EventServiceProvider extends ServiceProvider
@@ -63,7 +77,12 @@ class EventServiceProvider extends ServiceProvider
         UserResponse::observe(UserResponseObserver::class);
         Area::observe(AreaObserver::class);
         Market::observe(MarketObserver::class);
-        RegisteredUser::observe(RegisteredUserObserver::class);
+        // RegisteredUser::observe(RegisteredUserObserver::class);
+        Healthcare::observe(HealthcareObserver::class);
+        AppFooterLogo::observe(AppFooterLogoObserver::class);
+        Tip::observe(TipObserver::class);
+        Help::observe(HelpObserver::class);
+        RespondentType::observe(RespondentTypeObserver::class);
     }
 
     /**

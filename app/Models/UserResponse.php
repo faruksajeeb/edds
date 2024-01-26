@@ -64,7 +64,7 @@ class UserResponse extends Model
     }
 
     public function userResponseDetails(){
-        return $this->hasMany(UserResponseDetail::class,'response_id','id')->orderBy('question_id');
+        return $this->hasMany(UserResponseDetail::class,'response_id','id')->orderBy('id');
     }
 
     function responses() {
